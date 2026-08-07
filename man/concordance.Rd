@@ -2,18 +2,19 @@
 % Please edit documentation in R/concordance.R
 \name{concordance}
 \alias{concordance}
-\title{Construct and validate an efile data-normalization concordance}
+\title{Construct a field-level data-normalization concordance}
 \usage{
 concordance(
-  field,
-  blank_meaning,
+  field = NULL,
+  blank_meaning = NULL,
   forms = "*",
   table = NA_character_,
   notes = NA_character_
 )
 }
 \arguments{
-\item{field}{Character vector of source field names.}
+\item{field}{Character vector of source field names. \code{NULL} (the default)
+returns the built-in 990 concordance.}
 
 \item{blank_meaning}{Character vector containing \code{"implicit_zero"},
 \code{"implicit_false"}, or \code{"literal_missing"}.}
@@ -27,10 +28,19 @@ as a separator. Use \code{"*"} for every form.}
 \item{notes}{Optional explanatory notes.}
 }
 \value{
-An \code{concordance} data frame with a list-column named \code{forms}.
+A \code{concordance} data frame with a list-column named \code{forms}.
 }
 \description{
 Creates field-level rules for interpreting blank source values. Data
 normalization is distinct from panel imputation: it interprets source
 encoding only and never creates missing organization-year rows.
+
+Called with no arguments, \code{concordance()} returns the package's built-in
+concordance for IRS 990 efile variables, derived from the IRS Efile Master
+Concordance File (see \link{field_concordance}). Supply \code{field} and
+\code{blank_meaning} to build a custom concordance instead.
+}
+\seealso{
+\link{field_concordance} for the underlying data, \code{\link[=fields_in_scope]{fields_in_scope()}} to
+select fields by form scope, and \code{\link[=normalize]{normalize()}} to apply the rules.
 }

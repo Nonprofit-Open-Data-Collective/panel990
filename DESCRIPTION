@@ -12,6 +12,7 @@ Description: Retrieve IRS efile tables, normalize source encodings using
     panel classification, filtering, missing-year imputation, and smoothing.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Depends: R (>= 4.1.0)
 Imports: data.table
 Suggests: DBI, duckdb, testthat (>= 3.0.0)
