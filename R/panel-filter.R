@@ -5,9 +5,9 @@
 #' precomputed one is supplied.
 #'
 #' @param data A panel data frame.
-#' @param panel_type Panel types to keep (`balanced`, `gapped`, `entrant`,
-#'   `exit`, `interloper`, `empty`). `NULL` keeps all types.
-#' @param spell Spell-balance values to keep (`contiguous`, `fragmented`).
+#' @param panel_type Panel types to keep (`persistent`, `entrant`, `exit`,
+#'   `transient`, `empty`). `NULL` keeps all types.
+#' @param spell Spell continuity values to keep (`seamless`, `segmented`).
 #'   `NULL` keeps all.
 #' @param min_obs Minimum number of observed years per organization. `NULL`
 #'   applies no minimum.
@@ -39,7 +39,7 @@ panel_filter <- function(data, panel_type = NULL, spell = NULL, min_obs = NULL,
   }
   if (!is.null(spell)) {
     spell <- validate(spell, .PANEL_SPELL, "spell")
-    sel <- sel & cls$panel_spell_balance %in% spell
+    sel <- sel & cls$panel_spell %in% spell
   }
   if (!is.null(min_obs)) sel <- sel & cls$panel_year_count >= min_obs
 

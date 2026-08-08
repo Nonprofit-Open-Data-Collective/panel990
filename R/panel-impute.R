@@ -5,9 +5,9 @@
 #'
 #' @param data A panel data frame.
 #' @param classification Optional classification from [panel_describe()].
-#' @param types Panel types eligible for imputation. Default the panel-spanning
-#'   types `c("balanced", "gapped")` (only `gapped` organizations actually have
-#'   interior years to fill).
+#' @param types Panel types eligible for imputation. Default `"persistent"`
+#'   (the panel-spanning type); only `segmented` organizations actually have
+#'   interior years to fill.
 #' @param max_gap_size Maximum single gap length.
 #' @param max_gap_count Maximum number of gaps per ID.
 #' @param vars Numeric variables to fill; `NULL` selects numeric non-key fields.
@@ -17,7 +17,7 @@
 #' @return A panel with inserted rows identified by `imputed_row`.
 #' @export
 panel_impute <- function(
-    data, classification = NULL, types = c("balanced", "gapped"),
+    data, classification = NULL, types = "persistent",
     max_gap_size = Inf, max_gap_count = Inf, vars = NULL,
     time = "TAX_YEAR", id = "EIN2", as_integers = FALSE
 ) {
@@ -25,7 +25,7 @@ panel_impute <- function(
   if (!id %in% names(data)) stop("ID column not found: ", id)
   if (!time %in% names(data)) stop("Time column not found: ", time)
   data <- as.data.frame(data)
-  class_cols <- c("panel_type", "panel_spell_balance", "panel_gap_count",
+  class_cols <- c("panel_type", "panel_spell", "panel_gap_count",
                   "panel_gap_size_max", "panel_year_first", "panel_year_last")
   if (is.null(classification)) {
     if (all(class_cols %in% names(data))) {
@@ -45,7 +45,7 @@ panel_impute <- function(
   if (length(bad_types)) stop("Unknown panel type(s): ", paste(bad_types, collapse = ", "))
   eligible <- classification[
     classification$panel_type %in% types &
-      classification$panel_spell_balance == "fragmented" &
+      classification$panel_spell == "segmented" &
       classification$panel_gap_size_max <= max_gap_size &
       classification$panel_gap_count <= max_gap_count, , drop = FALSE]
   if (!nrow(eligible)) return(data)

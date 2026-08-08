@@ -1,7 +1,7 @@
 #' Label rows with panel membership
 #'
 #' Appends the per-organization panel classification (`panel_type`,
-#' `panel_spell_balance`, first/last/count and gap metrics) to every input row,
+#' `panel_spell`, first/last/count and gap metrics) to every input row,
 #' preserving row order.
 #'
 #' @param data A panel data frame.

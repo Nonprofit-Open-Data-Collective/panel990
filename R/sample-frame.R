@@ -403,9 +403,9 @@ drop_attribute <- function(sfw, name) {
 #' Classify panel membership and store it on a sample frame
 #'
 #' Runs [panel_describe()] on `df` and stores two derived attributes keyed by
-#' organization id: `panel_type` (`balanced`, `gapped`, `entrant`, `exit`,
-#' `interloper`, `empty`) and `panel_spell` (`contiguous`/`fragmented`). Filter
-#' on them via, e.g., `apply_sfw(df, sfw, panel_type = "balanced")`.
+#' organization id: `panel_type` (`persistent`, `entrant`, `exit`, `transient`,
+#' `empty`) and `panel_spell` (`seamless`/`segmented`). Filter on them via, e.g.,
+#' `apply_sfw(df, sfw, panel_type = "persistent", spell = "seamless")`.
 #'
 #' @param sfw A `sample_frame`.
 #' @param df A panel data frame containing the frame's id and time columns.
@@ -423,7 +423,7 @@ classify_panel <- function(sfw, df, method = c("describe")) {
   sfw <- attach_attribute(sfw, "panel_type",
                           stats::setNames(as.character(cls$panel_type), ids))
   sfw <- attach_attribute(sfw, "panel_spell",
-                          stats::setNames(as.character(cls$panel_spell_balance), ids))
+                          stats::setNames(as.character(cls$panel_spell), ids))
   .sfw_touch(sfw)
 }
 
@@ -480,7 +480,7 @@ classify_panel <- function(sfw, df, method = c("describe")) {
 #' Applies all stored row filters (and any ad-hoc `...` filters), then the
 #' column selection, recording a per-step manifest attached to the result as the
 #' `"sfw_steps"` attribute. Ad-hoc `...` filters may reference derived attributes
-#' (e.g. `panel_type = "balanced"`). Filters whose column is absent are skipped.
+#' (e.g. `panel_type = "persistent"`). Filters whose column is absent are skipped.
 #'
 #' @param df A data frame.
 #' @param sfw A `sample_frame`.

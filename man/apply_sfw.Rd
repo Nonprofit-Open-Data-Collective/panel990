@@ -26,5 +26,5 @@ The filtered data frame, with an \code{"sfw_steps"} manifest attribute.
 Applies all stored row filters (and any ad-hoc \code{...} filters), then the
 column selection, recording a per-step manifest attached to the result as the
 \code{"sfw_steps"} attribute. Ad-hoc \code{...} filters may reference derived attributes
-(e.g. \code{panel_type = "balanced"}). Filters whose column is absent are skipped.
+(e.g. \code{panel_type = "persistent"}). Filters whose column is absent are skipped.
 }

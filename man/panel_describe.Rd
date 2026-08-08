@@ -28,7 +28,9 @@ Invisibly, a \code{panel_summary} object carrying the per-organization
 classification as its \code{"classification"} attribute.
 }
 \description{
-Classifies each organization by panel membership type and summarizes the
-panel. See \code{\link[=panel_label]{panel_label()}} to append the classification to rows and
-\code{\link[=panel_filter]{panel_filter()}} to select organizations by type.
+Classifies each organization on two axes -- \code{panel_type} (boundary:
+\code{persistent}, \code{entrant}, \code{exit}, \code{transient}, \code{empty}) and \code{panel_spell}
+(continuity: \code{seamless}, \code{segmented}) -- and summarizes the panel. See
+\code{\link[=panel_label]{panel_label()}} to append the classification to rows and \code{\link[=panel_filter]{panel_filter()}} to
+select organizations.
 }

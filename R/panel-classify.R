@@ -1,24 +1,27 @@
 # Panel membership classification shared by panel_describe(), panel_label(),
-# panel_filter(), and the sample-frame classifier.
+# panel_filter(), panel_impute(), and the sample-frame classifier.
 #
-# panel_type (single label):
-#   balanced   - observed in every panel year (spans the panel, no gaps)
-#   gapped     - spans the panel (first and last year) but misses interior years
-#   entrant    - enters after the first year, present through the last
-#   exit       - present from the first year, gone before the last
-#   interloper - only interior years (enters late and leaves early)
-#   empty      - no observations
-# panel_spell (orthogonal): contiguous | fragmented -- so a gapped *entrant* is
-# expressible as panel_type = "entrant", panel_spell_balance = "fragmented".
+# Two orthogonal dimensions:
+#   panel_type  (boundary: which edges of the panel window the org touches)
+#     persistent - present at the first AND last panel year (spans the window)
+#     entrant    - enters after the first year, present through the last
+#     exit       - present from the first year, gone before the last
+#     transient  - only interior years (enters late and leaves early)
+#     empty      - no observations
+#   panel_spell (continuity of the observed years within the org's span)
+#     seamless   - consecutive years, no interior gaps
+#     segmented  - one or more interior years missing
+# A gapped entrant, for example, is panel_type = "entrant", panel_spell =
+# "segmented". A "balanced" organization is persistent + seamless.
 
-.PANEL_TYPES <- c("balanced", "gapped", "entrant", "exit", "interloper", "empty")
-.PANEL_SPELL <- c("contiguous", "fragmented")
+.PANEL_TYPES <- c("persistent", "entrant", "exit", "transient", "empty")
+.PANEL_SPELL <- c("seamless", "segmented")
 
 .panel_classify_pattern <- function(observed, panel_years) {
   observed <- sort(unique(observed))
   panel_years <- sort(unique(panel_years))
   if (length(observed) == 0L) return(list(
-    panel_type = "empty", panel_spell_balance = NA_character_,
+    panel_type = "empty", panel_spell = NA_character_,
     panel_gap_count = NA_integer_, panel_gap_size_max = NA_integer_
   ))
 
@@ -29,11 +32,10 @@
   contiguous <- span == length(positions)
   touches_first <- first == 1L
   touches_last <- last == length(panel_years)
-  panel_type <- if (touches_first && touches_last) {
-    if (contiguous) "balanced" else "gapped"
-  } else if (!touches_first && touches_last) "entrant"
+  panel_type <- if (touches_first && touches_last) "persistent"
+    else if (!touches_first && touches_last) "entrant"
     else if (touches_first && !touches_last) "exit"
-    else "interloper"
+    else "transient"
 
   if (contiguous) {
     gap_count <- 0L
@@ -47,7 +49,7 @@
   }
   list(
     panel_type = panel_type,
-    panel_spell_balance = if (contiguous) "contiguous" else "fragmented",
+    panel_spell = if (contiguous) "seamless" else "segmented",
     panel_gap_count = as.integer(gap_count),
     panel_gap_size_max = as.integer(gap_size)
   )
@@ -95,9 +97,11 @@
 
 #' Describe panel coverage and membership
 #'
-#' Classifies each organization by panel membership type and summarizes the
-#' panel. See [panel_label()] to append the classification to rows and
-#' [panel_filter()] to select organizations by type.
+#' Classifies each organization on two axes -- `panel_type` (boundary:
+#' `persistent`, `entrant`, `exit`, `transient`, `empty`) and `panel_spell`
+#' (continuity: `seamless`, `segmented`) -- and summarizes the panel. See
+#' [panel_label()] to append the classification to rows and [panel_filter()] to
+#' select organizations.
 #'
 #' @param data A panel data frame.
 #' @param time Name of the panel-time column.
@@ -115,11 +119,13 @@ panel_describe <- function(data, time = "TAX_YEAR", id = "EIN2",
   panel_years <- attr(class_df, "panel_years")
 
   tt <- factor(class_df$panel_type, levels = .PANEL_TYPES)
-  by_type <- data.frame(panel_type = .PANEL_TYPES,
-                        n_orgs = as.integer(table(tt)),
-                        stringsAsFactors = FALSE)
-  by_type$pct <- round(100 * by_type$n_orgs / sum(by_type$n_orgs), 1)
-  by_type <- by_type[by_type$n_orgs > 0L, , drop = FALSE]
+  ss <- factor(class_df$panel_spell, levels = .PANEL_SPELL)
+  ct <- as.data.frame.matrix(table(tt, ss))
+  by_type <- data.frame(panel_type = rownames(ct), ct, check.names = FALSE,
+                        row.names = NULL, stringsAsFactors = FALSE)
+  by_type$total <- as.integer(table(tt))
+  by_type$pct <- round(100 * by_type$total / sum(by_type$total), 1)
+  by_type <- by_type[by_type$total > 0L, , drop = FALSE]
   rownames(by_type) <- NULL
 
   by_year_df <- NULL
@@ -149,7 +155,7 @@ panel_describe <- function(data, time = "TAX_YEAR", id = "EIN2",
 print.panel_summary <- function(x, ...) {
   cat("<panel_summary>  ", x$n_orgs, " orgs x ", x$n_years, " years (",
       min(x$years), "-", max(x$years), ")\n", sep = "")
-  cat("\npanel types:\n")
+  cat("\npanel types (org counts by spell):\n")
   print(x$by_type, row.names = FALSE)
   if (!is.null(x$by_year)) {
     cat("\norg-years by type:\n")

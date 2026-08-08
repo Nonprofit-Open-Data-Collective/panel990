@@ -17,10 +17,10 @@ panel_filter(
 \arguments{
 \item{data}{A panel data frame.}
 
-\item{panel_type}{Panel types to keep (\code{balanced}, \code{gapped}, \code{entrant},
-\code{exit}, \code{interloper}, \code{empty}). \code{NULL} keeps all types.}
+\item{panel_type}{Panel types to keep (\code{persistent}, \code{entrant}, \code{exit},
+\code{transient}, \code{empty}). \code{NULL} keeps all types.}
 
-\item{spell}{Spell-balance values to keep (\code{contiguous}, \code{fragmented}).
+\item{spell}{Spell continuity values to keep (\code{seamless}, \code{segmented}).
 \code{NULL} keeps all.}
 
 \item{min_obs}{Minimum number of observed years per organization. \code{NULL}

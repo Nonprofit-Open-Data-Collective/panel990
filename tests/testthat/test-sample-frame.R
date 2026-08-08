@@ -64,9 +64,9 @@ test_that("classify_panel stores derived labels filterable by apply_sfw", {
   df <- make_sfw_df()
   sfw <- classify_panel(create_sample_frame("t"), df)
   expect_true(all(c("panel_type", "panel_spell") %in% names(sfw$attributes)))
-  # A spans 2019-2021 contiguous -> balanced
-  balanced <- apply_sfw(df, sfw, panel_type = "balanced", verbose = FALSE)
-  expect_setequal(unique(balanced$EIN2), "A")
+  # A spans 2019-2021 seamlessly -> persistent
+  persistent <- apply_sfw(df, sfw, panel_type = "persistent", verbose = FALSE)
+  expect_setequal(unique(persistent$EIN2), "A")
 })
 
 test_that("column selection keeps header/custom, drops out-of-scope dict vars", {

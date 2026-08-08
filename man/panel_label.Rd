@@ -21,7 +21,7 @@ panel_label(data, time = "TAX_YEAR", id = "EIN2", classification = NULL)
 }
 \description{
 Appends the per-organization panel classification (\code{panel_type},
-\code{panel_spell_balance}, first/last/count and gap metrics) to every input row,
+\code{panel_spell}, first/last/count and gap metrics) to every input row,
 preserving row order.
 }
 \seealso{
