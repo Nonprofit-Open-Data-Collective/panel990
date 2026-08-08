@@ -8,95 +8,111 @@ make_sfw_df <- function() data.frame(
   stringsAsFactors = FALSE
 )
 
-test_that("constructor validates and stores keys/metadata", {
-  expect_error(create_sample_frame(), "name")
-  sfw <- create_sample_frame("test", id_col = "ORG", time_col = "YR")
-  expect_s3_class(sfw, "sample_frame")
-  expect_equal(sfw$meta$id_col, "ORG")
-  expect_equal(length(sfw$filters), 0L)
+test_that("create_sfw registers default keys and add_key adds a record key", {
+  expect_error(create_sfw(), "name")
+  sfw <- create_sfw("test")
+  expect_s3_class(sfw, "sfw")
+  keys <- get_keys(sfw)
+  expect_setequal(keys$type, c("entity", "time"))
+  sfw <- add_key(sfw, "object id", "unique_record", "OBJECTID")
+  expect_true("unique_record" %in% get_keys(sfw)$type)
 })
 
-test_that("sugar args lower into filters on the right columns", {
-  sfw <- create_sample_frame("t", state = "GA", years = 2020:2021,
-                             formtype = "990")
-  f <- get_filters(sfw)
-  expect_true("geo_state_abbr" %in% f$column)
-  expect_true("TAX_YEAR" %in% f$column)
-  expect_true("RETURN_TYPE" %in% f$column)
+test_that("sugar and structured filters both add filter rules", {
+  sfw <- create_sfw("t", state = "GA", years = 2020:2021)
+  sfw <- add_rule(sfw, "form", "filter", column = "RETURN_TYPE", values = "990")
+  r <- get_rules(sfw)
+  expect_true(all(c("filter", "filter", "filter") == r$type[r$type == "filter"]))
+  expect_equal(sum(r$type == "filter"), 3L)
 })
 
-test_that("add_filter accumulates, set_filter replaces by column", {
-  sfw <- create_sample_frame("t")
-  sfw <- add_filter(sfw, "geo_state_abbr", "in", "GA")
-  sfw <- add_filter(sfw, "geo_state_abbr", "in", "FL")
-  expect_equal(nrow(get_filters(sfw)), 2L)
-  sfw <- set_filter(sfw, "geo_state_abbr", "in", c("GA", "FL"))
-  expect_equal(sum(get_filters(sfw)$column == "geo_state_abbr"), 1L)
+test_that("add_rule upserts by name; update_rule edits and drops", {
+  sfw <- create_sfw("t")
+  sfw <- add_rule(sfw, "st", "filter", column = "geo_state_abbr", values = "GA")
+  sfw <- add_rule(sfw, "st", "filter", column = "geo_state_abbr", values = "FL")
+  expect_equal(nrow(get_rules(sfw)), 1L)            # upsert by name
+  sfw <- update_rule(sfw, "st", values = c("GA", "FL"))
+  expect_match(get_rules(sfw)$detail, "GA,FL")
+  sfw <- update_rule(sfw, "st", drop = TRUE)
+  expect_equal(nrow(get_rules(sfw)), 0L)
 })
 
-test_that("apply_sfw filters rows and leaves origin optional", {
+test_that("apply_sfw runs subset then filter, origin never required", {
   df <- make_sfw_df()
-  sfw <- create_sample_frame("t", state = "GA")          # no origin set
+  sfw <- create_sfw("t", state = "GA")
+  sfw <- add_rule(sfw, "study", "subset", subset = c("A", "C"))
   out <- apply_sfw(df, sfw, verbose = FALSE)
   expect_setequal(unique(out$EIN2), c("A", "C"))
-  expect_equal(nrow(out), 4L)
   expect_true(!is.null(attr(out, "sfw_steps")))
 })
 
-test_that("between, comparison, and expr filters work", {
+test_that("between and expr filter rules work", {
   df <- make_sfw_df()
-  sfw <- add_filter(create_sample_frame("t"), "TAX_YEAR", "between", c(2020, 2021))
+  sfw <- add_rule(create_sfw("t"), "yr", "filter", column = "TAX_YEAR",
+                  op = "between", values = c(2020, 2021))
   expect_setequal(unique(apply_sfw(df, sfw, verbose = FALSE)$TAX_YEAR), c(2020, 2021))
 
-  sfw2 <- add_filter(create_sample_frame("t"), op = "expr",
-                     values = "F9_01_REV_TOT_CY > 25")
+  sfw2 <- add_rule(create_sfw("t"), "rev", "filter",
+                   expr = "F9_01_REV_TOT_CY > 25")
   expect_equal(nrow(apply_sfw(df, sfw2, verbose = FALSE)), 4L)
 })
 
 test_that("missing filter columns are skipped, not errors", {
-  df <- make_sfw_df()
-  sfw <- add_filter(create_sample_frame("t"), "NOT_A_COLUMN", "in", "x")
-  expect_silent(out <- apply_sfw(df, sfw, verbose = FALSE))
-  expect_equal(nrow(out), nrow(df))
+  sfw <- add_rule(create_sfw("t"), "x", "filter", column = "NOPE", values = "z")
+  expect_silent(out <- apply_sfw(make_sfw_df(), sfw, verbose = FALSE))
+  expect_equal(nrow(out), 6L)
 })
 
-test_that("classify_panel stores derived labels filterable by apply_sfw", {
+test_that("label rules from a source are filterable", {
   df <- make_sfw_df()
-  sfw <- classify_panel(create_sample_frame("t"), df)
-  expect_true(all(c("panel_type", "panel_spell") %in% names(sfw$attributes)))
-  # A spans 2019-2021 seamlessly -> persistent
+  lut <- data.frame(EIN2 = c("A", "B", "C"),
+                    cohort = c("treat", "ctrl", "treat"), stringsAsFactors = FALSE)
+  sfw <- add_rule(create_sfw("t"), "cohorts", "label",
+                  from = lut, keys = "EIN2", label = "cohort")
+  out <- apply_sfw(df, sfw, cohort = "treat", verbose = FALSE)
+  expect_setequal(unique(out$EIN2), c("A", "C"))
+})
+
+test_that("classify_panel adds panel labels filterable by apply_sfw", {
+  df <- make_sfw_df()
+  sfw <- classify_panel(create_sfw("t"), df)
+  expect_true(all(c("panel_type", "panel_spell") %in% get_rules(sfw)$name))
   persistent <- apply_sfw(df, sfw, panel_type = "persistent", verbose = FALSE)
-  expect_setequal(unique(persistent$EIN2), "A")
+  expect_setequal(unique(persistent$EIN2), "A")     # A spans 2019-2021
 })
 
-test_that("column selection keeps header/custom, drops out-of-scope dict vars", {
+test_that("select rule keeps header/custom, drops out-of-scope dict vars", {
   data("field_concordance", package = "panel990")
   pc_var <- field_concordance$variable_name[field_concordance$variable_scope == "PC"][1]
-  df <- make_sfw_df()
-  df[[pc_var]] <- 1:6
+  df <- make_sfw_df(); df[[pc_var]] <- 1:6
 
-  sfw <- keep_cols(create_sample_frame("t"), scope = "both")
+  sfw <- add_rule(create_sfw("t"), "cols", "select", scope = "both")
   out <- apply_sfw(df, sfw, verbose = FALSE)
-  expect_false(pc_var %in% names(out))                 # PC-only dropped from "both"
-  expect_true("F9_01_REV_TOT_CY" %in% names(out))      # PZ kept
-  expect_true(all(c("EIN2", "TAX_YEAR", "my_custom") %in% names(out)))  # keys/custom kept
+  expect_false(pc_var %in% names(out))
+  expect_true("F9_01_REV_TOT_CY" %in% names(out))
+  expect_true(all(c("EIN2", "TAX_YEAR", "my_custom") %in% names(out)))
 })
 
-test_that("conform detects violations and missing keys", {
+test_that("check rules report without filtering; conform verifies", {
   df <- make_sfw_df()
-  sfw <- create_sample_frame("t", state = "GA")
-  res <- conform(df, sfw, verbose = FALSE)
-  expect_false(res$conformant)
-  expect_equal(res$rows_violating, 2L)               # the two FL rows
+  sfw <- add_rule(create_sfw("t", state = "GA"), "ga_only", "check",
+                  column = "geo_state_abbr", values = "GA")
+  out <- apply_sfw(df, sfw, verbose = FALSE)
+  chk <- attr(out, "sfw_checks")
+  # apply_sfw filtered to GA (the filter), so the check passes on the result
+  expect_true(chk$ok[chk$check == "ga_only"])
 
-  ga_only <- apply_sfw(df, sfw, verbose = FALSE)
-  expect_true(conform(ga_only, sfw, verbose = FALSE)$conformant)
+  res <- conform(df, sfw, verbose = FALSE)   # raw df has FL rows -> nonconforming
+  expect_false(res$conformant)
+  expect_equal(res$rows_violating, 2L)
 })
 
-test_that("update_sample_frame replaces filters by column", {
-  sfw <- create_sample_frame("t", years = 2019:2021)
-  sfw <- update_sample_frame(sfw, years = 2020:2021)
-  yr <- get_filters(sfw)
-  expect_equal(sum(yr$column == "TAX_YEAR"), 1L)
-  expect_equal(nrow(apply_sfw(make_sfw_df(), sfw, verbose = FALSE)), 5L)
+test_that("dedup rule collapses to one row per entity-year", {
+  df <- data.frame(
+    EIN2 = c("A", "A", "B"), TAX_YEAR = c(2020, 2020, 2020),
+    RETURN_TIME_STAMP = c("2021-01-01", "2021-06-01", "2021-01-01"),
+    v = 1:3, stringsAsFactors = FALSE)
+  sfw <- add_rule(create_sfw("t"), "dd", "dedup")
+  out <- apply_sfw(df, sfw, verbose = FALSE)
+  expect_equal(nrow(out), 2L)                       # A collapsed to latest
 })

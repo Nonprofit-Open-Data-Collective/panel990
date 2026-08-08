@@ -1,25 +1,33 @@
 # =============================================================================
 #  sample-frame.R
-#  A free-standing, structured specification object ("sample frame") that stores
-#  reusable rules -- row filters, column selection, enumerated cohorts, derived
-#  classifier labels, and operation policies -- and can be applied to, or checked
-#  against, any data frame.
+#  A free-standing "sample frame" (sfw): a small set of keys + typed rules + meta
+#  + policy that specifies which rows and columns belong in a research dataset,
+#  and can be applied to, or checked against, any data frame.
 #
-#  Design notes:
-#   * Filters are generic records: {column, op, values, origin, label}. `origin`
-#     is an optional pushdown hint only; a filter applies to any data frame that
-#     has `column`. Left NULL, everything still works.
-#   * The object is a plain classed list (value semantics): every mutator returns
-#     a NEW frame and re-stamps `updated`. Nothing is mutated in place.
-#   * Derived labels (e.g. panel type) are stored as id -> value maps and can be
-#     filtered on exactly like real columns.
+#  The sfw is just a registry of rules. Each rule is a typed record; the engine
+#  knows how to execute each type. Rule types:
+#    subset  (row)     restrict to a captured set of entity ids
+#    filter  (row)     structured {column, op, values} OR an {expr} string
+#    dedup   (row)     one filing per entity x time (via deduplicate())
+#    label   (derived) an id -> value map; filterable like a column
+#    refresh (recompute) a function re-run after row-dimension changes
+#    select  (column)  which columns to keep (scope/tables/vars/drop)
+#    check   (report)  a predicate reported, never enforced
+#    view    (report)  a crosstab/tapply summary
+#    function(archive) reusable code, referenced by other operations
+#
+#  Structured filters are primary (introspectable -> pushdown, validation,
+#  captured-by-value). Opaque `expr` strings are the escape hatch only.
+#  Value semantics: every mutator returns a NEW frame and re-stamps `updated`.
 # =============================================================================
 
+.SFW_RULE_TYPES <- c("subset", "filter", "dedup", "label", "refresh",
+                     "select", "check", "view", "function")
 .SFW_OPS <- c("in", "not_in", "==", "!=", ">", ">=", "<", "<=",
-              "between", "is_true", "is_false", "expr")
+              "between", "is_true", "is_false")
 
-# Friendly constructor/sugar aliases -> (column, op). "@id"/"@time" resolve to
-# the frame's key columns; BMF aliases match the package's bmf_merge() output.
+# Friendly sugar aliases -> (column, op). "@id"/"@time" resolve to the frame's
+# entity/time keys; BMF aliases match bmf_merge() output columns.
 .SFW_ALIASES <- list(
   years        = list(col = "@time", op = "in"),
   year         = list(col = "@time", op = "in"),
@@ -40,49 +48,20 @@
   filter_501c  = list(col = "subsection_code", op = "in")
 )
 
+`%||%` <- function(a, b) if (is.null(a)) b else a
 .sfw_time <- function() Sys.time()
-
 .sfw_pkg_version <- function()
   tryCatch(as.character(utils::packageVersion("panel990")),
            error = function(e) NA_character_)
-
 .sfw_check <- function(sfw)
-  if (!inherits(sfw, "sample_frame")) stop("`sfw` must be a `sample_frame`.")
-
+  if (!inherits(sfw, "sfw")) stop("`sfw` must be a sample frame (see create_sfw).")
 .sfw_touch <- function(sfw) { sfw$meta$updated <- .sfw_time(); sfw }
-
-# ---- filter construction / evaluation ---------------------------------------
-
-.sfw_auto_label <- function(column, op, values) {
-  if (op == "expr") return(paste0("expr(", substr(as.character(values), 1L, 40L), ")"))
-  v <- if (is.null(values)) "" else paste(utils::head(as.character(values), 4L), collapse = ",")
-  paste0(column, " ", op, if (nzchar(v)) paste0(" ", v) else "")
+.sfw_key <- function(sfw, type) {
+  for (k in sfw$keys) if (identical(k$type, type)) return(k$var)
+  NA_character_
 }
 
-.sfw_make_filter <- function(column, op = "in", values = NULL,
-                             origin = NULL, label = NULL) {
-  if (length(op) != 1L || !op %in% .SFW_OPS)
-    stop("`op` must be one of: ", paste(.SFW_OPS, collapse = ", "))
-  if (op == "expr") {
-    if (!is.character(values) || length(values) != 1L || !nzchar(values))
-      stop("`expr` filters need a single expression string in `values`.")
-    column <- if (is.null(column)) NA_character_ else column
-  } else {
-    if (is.null(column) || !is.character(column) || length(column) != 1L || !nzchar(column))
-      stop("`column` must be a single non-empty name.")
-    if (op %in% c("is_true", "is_false")) values <- NULL
-    else if (op == "between") {
-      if (length(values) != 2L) stop("`between` needs length-2 `values`.")
-    } else if (op %in% c("==", "!=", ">", ">=", "<", "<=")) {
-      if (length(values) != 1L) stop("`", op, "` needs length-1 `values`.")
-    } else if (is.null(values) || !length(values)) {
-      stop("`", op, "` needs non-empty `values`.")
-    }
-  }
-  if (is.null(label) || !nzchar(label)) label <- .sfw_auto_label(column, op, values)
-  list(column = column, op = op, values = values,
-       origin = if (is.null(origin)) NA_character_ else origin, label = label)
-}
+# ---- predicate evaluation (filters & checks) --------------------------------
 
 .sfw_truthy <- function(x) {
   if (is.logical(x)) return(!is.na(x) & x)
@@ -108,250 +87,313 @@
   )
 }
 
-# Returns a logical keep-vector, or NULL when the filter cannot be resolved
-# against this data frame (column absent and no matching derived attribute).
-.sfw_eval_filter <- function(df, sfw, f) {
-  if (f$op == "expr") {
-    val <- tryCatch(eval(parse(text = f$values), envir = df),
-                    error = function(e) {
-                      warning("expr filter failed (", f$values, "): ",
-                              conditionMessage(e), call. = FALSE); NULL
-                    })
-    if (is.null(val)) return(NULL)
-    val <- as.logical(val); val[is.na(val)] <- FALSE
-    return(val)
+.sfw_filter_payload <- function(dots) {
+  if (!is.null(dots$expr)) {
+    if (!is.character(dots$expr) || length(dots$expr) != 1L || !nzchar(dots$expr))
+      stop("`expr` must be a single non-empty string.")
+    return(list(column = NA_character_, op = NA_character_, values = NULL,
+                expr = dots$expr))
   }
-  col <- f$column
-  if (col %in% names(df)) {
-    x <- df[[col]]
-  } else if (col %in% names(sfw$attributes)) {
-    x <- unname(sfw$attributes[[col]]$values[as.character(df[[sfw$meta$id_col]])])
-  } else {
-    return(NULL)
-  }
-  keep <- .sfw_test(x, f$op, f$values)
-  keep[is.na(keep)] <- FALSE
-  as.logical(keep)
+  column <- dots$column
+  if (is.null(column) || !is.character(column) || length(column) != 1L || !nzchar(column))
+    stop("filter/check needs a single `column` (or an `expr` string).")
+  op <- dots$op %||% "in"
+  if (!op %in% .SFW_OPS) stop("`op` must be one of: ", paste(.SFW_OPS, collapse = ", "))
+  values <- dots$values
+  if (op %in% c("is_true", "is_false")) values <- NULL
+  else if (op == "between") { if (length(values) != 2L) stop("`between` needs length-2 `values`.") }
+  else if (op %in% c("==", "!=", ">", ">=", "<", "<=")) {
+    if (length(values) != 1L) stop("`", op, "` needs length-1 `values`.")
+  } else if (is.null(values) || !length(values)) stop("`", op, "` needs `values`.")
+  list(column = column, op = op, values = values, expr = NULL)
+}
+
+.sfw_label_payload <- function(dots) {
+  if (!is.null(dots$map)) {
+    m <- dots$map
+    if (is.data.frame(m)) {
+      if (ncol(m) < 2L) stop("label `map` data frame needs id and value columns.")
+      v <- stats::setNames(m[[2L]], as.character(m[[1L]]))
+    } else {
+      v <- m
+      if (is.null(names(v))) stop("label `map` must be named by id.")
+    }
+    col <- dots$label %||% dots$column
+    if (is.null(col)) stop("label rule needs `label` (the derived column name).")
+  } else if (!is.null(dots$from)) {
+    from <- dots$from; keys <- dots$keys; label <- dots$label
+    if (!is.data.frame(from) || is.null(keys) || is.null(label))
+      stop("label from-source needs `from`, `keys`, and `label`.")
+    if (!all(c(keys, label) %in% names(from)))
+      stop("`from` must contain the `keys` and `label` columns.")
+    v <- stats::setNames(from[[label]], as.character(from[[keys]]))
+    col <- label
+  } else stop("label rule needs `map`, or (`from`, `keys`, `label`).")
+  list(column = col, map = v)
+}
+
+# ---- construction & keys ----------------------------------------------------
+
+#' Create a sample frame
+#'
+#' A sample frame (`sfw`) is a free-standing registry of keys and typed rules
+#' that specifies which rows and columns belong in a dataset. It applies to, and
+#' validates against, any data frame. See [add_rule()] for the rule types and
+#' [apply_sfw()] to realize them.
+#'
+#' Default entity and time keys are registered from `entity`/`time`; add a
+#' filing-level key with [add_key()]. Named `...` are convenience filters
+#' (`state = "GA"`, `years = 2020:2022`).
+#'
+#' @param name Project/panel name (used for identification and logging).
+#' @param entity Entity (organization) key column. Default `"EIN2"`. `NULL` to
+#'   register none.
+#' @param time Time key column. Default `"TAX_YEAR"`. `NULL` to register none.
+#' @param record Optional filing-level (`unique_record`) key column, e.g.
+#'   `"OBJECTID"`.
+#' @param source Optional data-source description stored in metadata.
+#' @param ... Convenience filters lowered into filter rules.
+#' @return An object of class `sfw`.
+#' @export
+create_sfw <- function(name, entity = "EIN2", time = "TAX_YEAR",
+                       record = NULL, source = NA_character_, ...) {
+  if (missing(name) || !is.character(name) || length(name) != 1L)
+    stop("`name` is required and must be a single string.")
+  sfw <- structure(list(
+    meta = list(name = trimws(name), source = source, created = .sfw_time(),
+                updated = .sfw_time(), pkg_version = .sfw_pkg_version()),
+    keys = list(), rules = list(), policy = list()
+  ), class = "sfw")
+  if (!is.null(entity)) sfw <- add_key(sfw, "entity", "entity", entity)
+  if (!is.null(time))   sfw <- add_key(sfw, "time", "time", time)
+  if (!is.null(record)) sfw <- add_key(sfw, "record", "unique_record", record)
+  dots <- list(...)
+  for (nm in names(dots)) sfw <- .sfw_sugar_filter(sfw, nm, dots[[nm]])
+  sfw
+}
+
+#' Register a key on a sample frame
+#'
+#' Keys are structural columns that other operations reference. There is one key
+#' per `type`; re-registering a type replaces it.
+#'
+#' @param sfw A sample frame.
+#' @param name Human-readable key name.
+#' @param type Key role: `"entity"`, `"time"`, `"unique_record"` (or a custom
+#'   role).
+#' @param var The column name.
+#' @return The updated sample frame.
+#' @seealso [get_keys()]
+#' @export
+add_key <- function(sfw, name, type, var) {
+  .sfw_check(sfw)
+  if (!is.character(type) || length(type) != 1L) stop("`type` must be a single string.")
+  key <- list(name = name, type = type, var = var)
+  idx <- which(vapply(sfw$keys, function(k) identical(k$type, type), logical(1L)))
+  if (length(idx)) sfw$keys[[idx[1L]]] <- key else sfw$keys[[length(sfw$keys) + 1L]] <- key
+  .sfw_touch(sfw)
+}
+
+#' @rdname add_key
+#' @export
+get_keys <- function(sfw) {
+  .sfw_check(sfw)
+  if (!length(sfw$keys))
+    return(data.frame(name = character(), type = character(), var = character(),
+                      stringsAsFactors = FALSE))
+  do.call(rbind, lapply(sfw$keys, function(k) data.frame(
+    name = k$name, type = k$type, var = k$var, stringsAsFactors = FALSE)))
 }
 
 .sfw_sugar_filter <- function(sfw, name, values) {
   a <- .SFW_ALIASES[[tolower(name)]]
   if (is.null(a)) { col <- name; op <- "in" } else {
     col <- a$col; op <- a$op
-    if (identical(col, "@time")) col <- sfw$meta$time_col
-    if (identical(col, "@id"))   col <- sfw$meta$id_col
+    if (identical(col, "@time")) col <- .sfw_key(sfw, "time")
+    if (identical(col, "@id"))   col <- .sfw_key(sfw, "entity")
   }
-  set_filter(sfw, column = col, op = op, values = values, label = name)
+  add_rule(sfw, name = paste0("filter:", col), type = "filter",
+           column = col, op = op, values = values)
 }
 
-# ---- construction -----------------------------------------------------------
+# ---- rules ------------------------------------------------------------------
 
-#' Create a sample frame
-#'
-#' A sample frame is a reusable, free-standing specification of which rows and
-#' columns belong in a research dataset, plus derived labels and operation
-#' policies. It stores rules as data so they can be applied, checked, logged,
-#' and serialized consistently across a workflow.
-#'
-#' Named arguments in `...` are convenience filters: recognized aliases
-#' (`years`, `formtype`, `state`, `county`, `msa`, `ntee`, `ntee_industry`,
-#' `subsection`, `eins`) map to their columns; any other name is treated as a
-#' literal column with an `in` filter.
-#'
-#' @param name Required project/panel name (used for logging and identification).
-#' @param id_col Organization identifier column. Default `"EIN2"`.
-#' @param time_col Panel time column. Default `"TAX_YEAR"`.
-#' @param source Optional data-source description recorded in metadata.
-#' @param ... Convenience filters, e.g. `state = "GA"`, `years = 2020:2022`.
-#' @return A `sample_frame` object.
-#' @seealso [add_filter()], [keep_cols()], [apply_sfw()], [conform()].
-#' @export
-create_sample_frame <- function(name, id_col = "EIN2", time_col = "TAX_YEAR",
-                                source = NA_character_, ...) {
-  if (missing(name) || !is.character(name) || length(name) != 1L ||
-      !nzchar(trimws(name)))
-    stop("`name` is required and must be a non-empty character string.")
-  sfw <- structure(list(
-    meta = list(name = trimws(name), id_col = id_col, time_col = time_col,
-                source = source, created = .sfw_time(), updated = .sfw_time(),
-                pkg_version = .sfw_pkg_version()),
-    filters    = list(),
-    cohorts    = list(),
-    columns    = list(keep = NULL, scope = NULL, tables = NULL, drop = NULL),
-    attributes = list(),
-    policy     = list(),
-    log        = list()
-  ), class = "sample_frame")
-  dots <- list(...)
-  for (nm in names(dots)) sfw <- .sfw_sugar_filter(sfw, nm, dots[[nm]])
-  sfw
+.sfw_auto_name <- function(sfw, type) {
+  k <- sum(vapply(sfw$rules, function(r) identical(r$type, type), logical(1L)))
+  paste0(type, "_", k + 1L)
 }
 
-#' Update a sample frame
+#' Add or replace a rule on a sample frame
 #'
-#' Returns a new frame with the supplied changes; unspecified fields carry
-#' forward. Named `...` arguments are applied as replace-by-column convenience
-#' filters (the same aliases as [create_sample_frame()]).
+#' Appends a typed rule, or replaces the rule with the same `name` (upsert). The
+#' payload arguments depend on `type`:
+#' \describe{
+#'   \item{`filter`, `check`}{`column`, `op`, `values` (structured) **or**
+#'     `expr` (a predicate string). `op` in `in`, `not_in`, `==`, `!=`, `>`,
+#'     `>=`, `<`, `<=`, `between`, `is_true`, `is_false`.}
+#'   \item{`subset`}{`subset` -- a vector of entity ids to keep (captured).}
+#'   \item{`label`}{`map` (an id-named vector) or `from` (a data frame) with
+#'     `keys` and `label` column names; `label` also names the derived column.}
+#'   \item{`select`}{`vars`, `scope`, `tables`, `drop` (resolved via
+#'     [field_concordance]).}
+#'   \item{`dedup`}{`group`, `partial`, `amended`, `timestamp` column overrides
+#'     for [deduplicate()].}
+#'   \item{`refresh`}{`fn` -- a function taking and returning a data frame.}
+#'   \item{`view`}{`rows`, `cols`, `value`, `fun` -- a crosstab/tapply summary.}
+#'   \item{`function`}{`value`/`code` (a string) or `fn` (a function).}
+#' }
 #'
-#' @param sfw A `sample_frame`.
-#' @param ... Convenience filters to set/replace.
-#' @param name,id_col,time_col Optional metadata/key overrides.
-#' @return The updated `sample_frame`.
+#' @param sfw A sample frame.
+#' @param name Rule name. Empty/`NULL` auto-generates `<type>_<n>`. An existing
+#'   name replaces that rule.
+#' @param type One of the rule types above.
+#' @param ... Type-specific payload (see Details).
+#' @return The updated sample frame.
+#' @seealso [update_rule()], [get_rules()], [apply_sfw()].
 #' @export
-update_sample_frame <- function(sfw, ..., name = NULL, id_col = NULL,
-                                time_col = NULL) {
+add_rule <- function(sfw, name = NULL, type, ...) {
   .sfw_check(sfw)
-  if (!is.null(name))     sfw$meta$name <- trimws(name)
-  if (!is.null(id_col))   sfw$meta$id_col <- id_col
-  if (!is.null(time_col)) sfw$meta$time_col <- time_col
+  if (missing(type) || length(type) != 1L || !type %in% .SFW_RULE_TYPES)
+    stop("`type` must be one of: ", paste(.SFW_RULE_TYPES, collapse = ", "))
   dots <- list(...)
-  for (nm in names(dots)) sfw <- .sfw_sugar_filter(sfw, nm, dots[[nm]])
+  payload <- switch(type,
+    filter = ,
+    check  = .sfw_filter_payload(dots),
+    subset = list(ids = as.character(dots$subset %||% dots$ids %||%
+                                       stop("subset rule needs `subset`."))),
+    label  = .sfw_label_payload(dots),
+    select = Filter(Negate(is.null),
+                    list(vars = dots$vars, scope = dots$scope,
+                         tables = dots$tables, drop = dots$drop)),
+    dedup  = dots[intersect(names(dots),
+                            c("group", "partial", "amended", "timestamp"))],
+    refresh = { if (!is.function(dots$fn)) stop("refresh rule needs `fn` (a function).")
+                list(fn = dots$fn) },
+    view   = Filter(Negate(is.null),
+                    list(rows = dots$rows, cols = dots$cols,
+                         value = dots$value, fun = dots$fun %||% "length")),
+    "function" = { code <- dots$value %||% dots$code
+                   if (is.null(code) && is.null(dots$fn))
+                     stop("function rule needs `value`/`code` or `fn`.")
+                   list(code = code, fn = dots$fn) }
+  )
+  nm <- if (is.null(name) || !nzchar(name)) .sfw_auto_name(sfw, type) else name
+  rule <- c(list(name = nm, type = type, active = TRUE), payload)
+  idx <- which(vapply(sfw$rules, function(r) identical(r$name, nm), logical(1L)))
+  if (length(idx)) sfw$rules[[idx[1L]]] <- rule
+  else sfw$rules[[length(sfw$rules) + 1L]] <- rule
   .sfw_touch(sfw)
 }
 
-# ---- row filters ------------------------------------------------------------
-
-#' Row filters for a sample frame
+#' Update, drop, or list sample-frame rules
 #'
-#' Add, replace, remove, list, or clear the row-filter specifications. A filter
-#' is a record of `column`, `op`, and `values`; `add_filter()` appends,
-#' `set_filter()` replaces any existing filter on the same column.
-#'
-#' @param sfw A `sample_frame`.
-#' @param column Column or derived-attribute name to test (ignored for `expr`).
-#' @param op One of `in`, `not_in`, `==`, `!=`, `>`, `>=`, `<`, `<=`, `between`,
-#'   `is_true`, `is_false`, `expr`.
-#' @param values Operand(s): a vector for `in`/`not_in`, a scalar for
-#'   comparisons, length-2 for `between`, an expression string for `expr`.
-#' @param origin Optional pushdown hint (`"efile"`, `"bmf"`, `"derived"`); may be
-#'   `NULL` -- filters apply to any data frame that has the column.
-#' @param label Optional human-readable label used in logs.
-#' @param index Integer position(s) to drop (`remove_filter`).
-#' @param ids Character vector of identifiers (`set_ids`).
-#' @return The updated `sample_frame`, or a data frame for `get_filters()`.
-#' @name sample_frame_filters
+#' @param sfw A sample frame.
+#' @param name Rule name to update or drop.
+#' @param ... Payload fields to overwrite on the named rule (same as
+#'   [add_rule()] for its type).
+#' @param drop If `TRUE`, remove the named rule instead of updating it.
+#' @return The updated sample frame, or a data frame for `get_rules()`.
+#' @name sfw_rules
 NULL
 
-#' @rdname sample_frame_filters
+#' @rdname sfw_rules
 #' @export
-add_filter <- function(sfw, column = NULL, op = "in", values = NULL,
-                       origin = NULL, label = NULL) {
+update_rule <- function(sfw, name, ..., drop = FALSE) {
   .sfw_check(sfw)
-  spec <- .sfw_make_filter(column, op, values, origin, label)
-  sfw$filters[[length(sfw$filters) + 1L]] <- spec
-  .sfw_touch(sfw)
+  idx <- which(vapply(sfw$rules, function(r) identical(r$name, name), logical(1L)))
+  if (!length(idx)) stop("No rule named: ", name)
+  if (isTRUE(drop)) { sfw$rules[[idx[1L]]] <- NULL; return(.sfw_touch(sfw)) }
+  r <- sfw$rules[[idx[1L]]]
+  base <- r[setdiff(names(r), c("name", "type", "active"))]
+  merged <- utils::modifyList(base, list(...))
+  sfw$rules[[idx[1L]]] <- NULL
+  do.call(add_rule, c(list(sfw = sfw, name = name, type = r$type), merged))
 }
 
-#' @rdname sample_frame_filters
+#' @rdname sfw_rules
 #' @export
-set_filter <- function(sfw, column = NULL, op = "in", values = NULL,
-                       origin = NULL, label = NULL) {
-  .sfw_check(sfw)
-  sfw$filters <- Filter(function(f) is.na(f$column) || !identical(f$column, column),
-                        sfw$filters)
-  add_filter(sfw, column, op, values, origin, label)
+remove_rule <- function(sfw, name) update_rule(sfw, name, drop = TRUE)
+
+.sfw_rule_detail <- function(r) {
+  switch(r$type,
+    filter = , check = if (!is.null(r$expr)) paste0("expr: ", r$expr) else
+      paste(r$column, r$op, paste(utils::head(as.character(r$values), 4L), collapse = ",")),
+    subset = paste0(length(r$ids), " ids"),
+    label  = paste0("-> ", r$column, " (", length(r$map), " ids)"),
+    select = paste(c(
+      if (!is.null(r$scope)) paste0("scope=", paste(r$scope, collapse = ",")),
+      if (!is.null(r$tables)) paste0("tables=", paste(r$tables, collapse = ",")),
+      if (!is.null(r$vars)) paste0("vars=", length(r$vars)),
+      if (!is.null(r$drop)) paste0("drop=", length(r$drop))), collapse = "; "),
+    dedup  = "one per entity-time",
+    refresh = "recompute fn",
+    view   = paste0(r$rows %||% "", if (!is.null(r$cols)) paste0(" x ", r$cols) else ""),
+    "function" = if (!is.null(r$fn)) "fn" else "code",
+    ""
+  )
 }
 
-#' @rdname sample_frame_filters
+#' @rdname sfw_rules
 #' @export
-remove_filter <- function(sfw, column = NULL, label = NULL, index = NULL) {
+get_rules <- function(sfw) {
   .sfw_check(sfw)
-  if (!is.null(index)) {
-    sfw$filters[index] <- NULL
-  } else {
-    sfw$filters <- Filter(function(f) !(
-      (!is.null(column) && !is.na(f$column) && f$column %in% column) ||
-      (!is.null(label) && f$label %in% label)), sfw$filters)
-  }
-  .sfw_touch(sfw)
-}
-
-#' @rdname sample_frame_filters
-#' @export
-clear_filters <- function(sfw) { .sfw_check(sfw); sfw$filters <- list(); .sfw_touch(sfw) }
-
-#' @rdname sample_frame_filters
-#' @export
-get_filters <- function(sfw) {
-  .sfw_check(sfw)
-  if (!length(sfw$filters))
-    return(data.frame(column = character(), op = character(), values = character(),
-                      origin = character(), label = character(),
+  if (!length(sfw$rules))
+    return(data.frame(name = character(), type = character(),
+                      active = logical(), detail = character(),
                       stringsAsFactors = FALSE))
-  do.call(rbind, lapply(sfw$filters, function(f) data.frame(
-    column = f$column, op = f$op,
-    values = paste(utils::head(as.character(f$values), 6L), collapse = ","),
-    origin = f$origin, label = f$label, stringsAsFactors = FALSE)))
+  do.call(rbind, lapply(sfw$rules, function(r) data.frame(
+    name = r$name, type = r$type, active = isTRUE(r$active),
+    detail = .sfw_rule_detail(r), stringsAsFactors = FALSE)))
 }
 
-#' @rdname sample_frame_filters
-#' @export
-set_ids <- function(sfw, ids)
-  set_filter(sfw, column = sfw$meta$id_col, op = "in",
-             values = as.character(ids), label = "ids")
-
-# ---- keys, columns, cohorts, policies ---------------------------------------
-
-#' Configure a sample frame's keys, columns, cohorts, and policies
+#' Classify panel membership and store it as label rules
 #'
-#' @param sfw A `sample_frame`.
-#' @param id,time Key column names (`set_keys`).
-#' @param vars Explicit variable names to keep (additive; `keep_cols`).
-#' @param scope Column scope: form codes `PC`/`EZ`/`PZ`/`HD`/`SG`, or a form
-#'   presence value `"both"`/`"990"`/`"990EZ"`/`"all"` (resolved via
-#'   [fields_in_scope()]). Header (`HD`) fields are always kept.
-#' @param tables Table specs to keep columns from: bare part tokens (`"P01"`) or
-#'   `rdb_table` prefixes.
-#' @param drop Columns to drop (never drops header/key columns).
-#' @param name Cohort name (`add_cohort`).
-#' @param ids Character vector of identifiers for the cohort (`add_cohort`).
-#' @param rule Deduplication rule/preset passed to downstream steps (`set_dedup`).
-#' @param ... Named metadata (`set_meta`) or named policies (`set_policy`).
-#' @return The updated `sample_frame`.
-#' @name sample_frame_config
-NULL
-
-#' @rdname sample_frame_config
+#' Runs [panel_describe()] on `df` and adds two `label` rules keyed by entity:
+#' `panel_type` (`persistent`/`entrant`/`exit`/`transient`/`empty`) and
+#' `panel_spell` (`seamless`/`segmented`). Filter on them via, e.g.,
+#' `apply_sfw(df, sfw, panel_type = "persistent")`.
+#'
+#' @param sfw A sample frame.
+#' @param df A panel data frame with the frame's entity and time key columns.
+#' @param method Classifier to use. Currently `"describe"`.
+#' @return The updated sample frame.
 #' @export
-set_keys <- function(sfw, id = NULL, time = NULL) {
+classify_panel <- function(sfw, df, method = c("describe")) {
   .sfw_check(sfw)
-  if (!is.null(id))   sfw$meta$id_col <- id
-  if (!is.null(time)) sfw$meta$time_col <- time
+  if (!is.data.frame(df)) stop("`df` must be a data.frame.")
+  method <- match.arg(method)
+  entity <- .sfw_key(sfw, "entity"); time <- .sfw_key(sfw, "time")
+  s <- panel_describe(df, time = time, id = entity, print = FALSE)
+  cls <- attr(s, "classification")
+  ids <- as.character(cls[[entity]])
+  sfw <- add_rule(sfw, "panel_type", "label", label = "panel_type",
+                  map = stats::setNames(as.character(cls$panel_type), ids))
+  sfw <- add_rule(sfw, "panel_spell", "label", label = "panel_spell",
+                  map = stats::setNames(as.character(cls$panel_spell), ids))
   .sfw_touch(sfw)
 }
 
-#' @rdname sample_frame_config
+# ---- meta, policy, functions ------------------------------------------------
+
+#' Metadata, policies, and archived functions on a sample frame
+#'
+#' @param sfw A sample frame.
+#' @param name Function rule name (`add_function`).
+#' @param value,fn A function body string (`value`) or a function object (`fn`).
+#' @param ... Named metadata (`add_meta`) or named policies (`set_policy`).
+#' @return The updated sample frame.
+#' @name sfw_config
+NULL
+
+#' @rdname sfw_config
 #' @export
-set_meta <- function(sfw, ...) {
+add_meta <- function(sfw, ...) {
   .sfw_check(sfw); m <- list(...)
   for (nm in names(m)) sfw$meta[[nm]] <- m[[nm]]
   .sfw_touch(sfw)
 }
 
-#' @rdname sample_frame_config
-#' @export
-keep_cols <- function(sfw, vars = NULL, scope = NULL, tables = NULL, drop = NULL) {
-  .sfw_check(sfw)
-  if (!is.null(vars))   sfw$columns$keep <- vars
-  if (!is.null(scope))  sfw$columns$scope <- scope
-  if (!is.null(tables)) sfw$columns$tables <- tables
-  if (!is.null(drop))   sfw$columns$drop <- drop
-  .sfw_touch(sfw)
-}
-
-#' @rdname sample_frame_config
-#' @export
-add_cohort <- function(sfw, name, ids) {
-  .sfw_check(sfw); sfw$cohorts[[name]] <- as.character(ids); .sfw_touch(sfw)
-}
-
-#' @rdname sample_frame_config
-#' @export
-set_dedup <- function(sfw, rule) {
-  .sfw_check(sfw); sfw$policy$dedup <- rule; .sfw_touch(sfw)
-}
-
-#' @rdname sample_frame_config
+#' @rdname sfw_config
 #' @export
 set_policy <- function(sfw, ...) {
   .sfw_check(sfw); p <- list(...)
@@ -359,73 +401,10 @@ set_policy <- function(sfw, ...) {
   .sfw_touch(sfw)
 }
 
-# ---- derived attributes -----------------------------------------------------
-
-#' Derived attributes (class labels) on a sample frame
-#'
-#' Attach or drop per-organization labels that live in the frame rather than the
-#' data. Once attached, an attribute can be filtered on exactly like a column.
-#' [classify_panel()] runs [panel_describe()] and stores its labels.
-#'
-#' @param sfw A `sample_frame`.
-#' @param name Attribute name.
-#' @param map A named vector (names are ids) or a two-column data frame
-#'   (id, value).
-#' @param ids Optional ids when `map` is unnamed.
-#' @return The updated `sample_frame`.
-#' @name sample_frame_attributes
-NULL
-
-#' @rdname sample_frame_attributes
+#' @rdname sfw_config
 #' @export
-attach_attribute <- function(sfw, name, map, ids = NULL) {
-  .sfw_check(sfw)
-  if (is.data.frame(map)) {
-    if (ncol(map) < 2L) stop("`map` data frame needs id and value columns.")
-    v <- stats::setNames(map[[2L]], as.character(map[[1L]]))
-  } else {
-    v <- map
-    if (is.null(names(v))) {
-      if (is.null(ids)) stop("`map` must be named by id, or supply `ids`.")
-      names(v) <- as.character(ids)
-    }
-  }
-  sfw$attributes[[name]] <- list(values = v, ids = names(v), computed = .sfw_time())
-  .sfw_touch(sfw)
-}
-
-#' @rdname sample_frame_attributes
-#' @export
-drop_attribute <- function(sfw, name) {
-  .sfw_check(sfw); sfw$attributes[[name]] <- NULL; .sfw_touch(sfw)
-}
-
-#' Classify panel membership and store it on a sample frame
-#'
-#' Runs [panel_describe()] on `df` and stores two derived attributes keyed by
-#' organization id: `panel_type` (`persistent`, `entrant`, `exit`, `transient`,
-#' `empty`) and `panel_spell` (`seamless`/`segmented`). Filter on them via, e.g.,
-#' `apply_sfw(df, sfw, panel_type = "persistent", spell = "seamless")`.
-#'
-#' @param sfw A `sample_frame`.
-#' @param df A panel data frame containing the frame's id and time columns.
-#' @param method Classifier to use. Currently `"describe"`.
-#' @return The updated `sample_frame`.
-#' @export
-classify_panel <- function(sfw, df, method = c("describe")) {
-  .sfw_check(sfw)
-  if (!is.data.frame(df)) stop("`df` must be a data.frame.")
-  method <- match.arg(method)
-  id_col <- sfw$meta$id_col; time_col <- sfw$meta$time_col
-  s <- panel_describe(df, time = time_col, id = id_col, print = FALSE)
-  cls <- attr(s, "classification")
-  ids <- as.character(cls[[id_col]])
-  sfw <- attach_attribute(sfw, "panel_type",
-                          stats::setNames(as.character(cls$panel_type), ids))
-  sfw <- attach_attribute(sfw, "panel_spell",
-                          stats::setNames(as.character(cls$panel_spell), ids))
-  .sfw_touch(sfw)
-}
+add_function <- function(sfw, name, value = NULL, fn = NULL)
+  add_rule(sfw, name = name, type = "function", value = value, fn = fn)
 
 # ---- column resolution ------------------------------------------------------
 
@@ -436,171 +415,279 @@ classify_panel <- function(sfw, df, method = c("describe")) {
     tu <- toupper(trimws(t))
     if (grepl("^P[0-9]{2}$", tu))
       res <- c(res, all_tables[grepl(paste0("-", tu, "-"), all_tables)])
-    else
-      res <- c(res, all_tables[startsWith(toupper(all_tables), tu)])
+    else res <- c(res, all_tables[startsWith(toupper(all_tables), tu)])
   }
   unique(res)
 }
 
-.sfw_has_colspec <- function(sfw) {
-  cs <- sfw$columns
-  !is.null(cs$keep) || !is.null(cs$scope) || !is.null(cs$tables) || !is.null(cs$drop)
-}
-
-.sfw_resolve_columns <- function(sfw, df_names) {
+.sfw_resolve_columns <- function(cs, df_names) {
   fc <- .field_concordance()
   dict_vars <- fc$variable_name
   hd_vars   <- fc$variable_name[fc$variable_scope == "HD"]
-  cs <- sfw$columns
-
   form_vals <- c("both", "990", "990EZ", "all")
   scope_vars <- if (is.null(cs$scope)) dict_vars else if (all(cs$scope %in% form_vals))
     unique(unlist(lapply(cs$scope, fields_in_scope), use.names = FALSE)) else
       fc$variable_name[fc$variable_scope %in% toupper(cs$scope)]
-
   table_vars <- if (is.null(cs$tables)) dict_vars else
     fc$variable_name[fc$rdb_table %in% .sfw_expand_tables(cs$tables, fc)]
-
   keep <- union(hd_vars, intersect(scope_vars, table_vars))
   if (!is.null(cs$keep)) keep <- union(keep, cs$keep)
-
-  custom_cols <- setdiff(df_names, dict_vars)       # user/computed cols kept
+  custom_cols <- setdiff(df_names, dict_vars)
   final <- union(intersect(df_names, keep), custom_cols)
   if (!is.null(cs$drop)) {
     final <- setdiff(final, cs$drop)
-    final <- union(final, intersect(df_names, hd_vars))  # header never dropped
+    final <- union(final, intersect(df_names, hd_vars))
   }
-  intersect(df_names, final)                         # preserve original order
+  intersect(df_names, final)
 }
 
-# ---- apply & conform --------------------------------------------------------
+# ---- apply / conform --------------------------------------------------------
+
+.sfw_label_maps <- function(sfw) {
+  out <- list()
+  for (r in sfw$rules)
+    if (identical(r$type, "label") && isTRUE(r$active)) out[[r$column]] <- r$map
+  out
+}
+
+.sfw_eval_predicate <- function(df, rule, entity, labels) {
+  if (!is.null(rule$expr)) {
+    val <- tryCatch(eval(parse(text = rule$expr), envir = df),
+                    error = function(e) {
+                      warning("expr rule '", rule$name, "' failed: ",
+                              conditionMessage(e), call. = FALSE); NULL })
+    if (is.null(val)) return(NULL)
+    val <- as.logical(val); val[is.na(val)] <- FALSE; return(val)
+  }
+  col <- rule$column
+  if (col %in% names(df)) x <- df[[col]]
+  else if (col %in% names(labels)) x <- unname(labels[[col]][as.character(df[[entity]])])
+  else return(NULL)
+  keep <- .sfw_test(x, rule$op, rule$values)
+  keep[is.na(keep)] <- FALSE
+  as.logical(keep)
+}
+
+.sfw_apply_dedup <- function(df, sfw, rule) {
+  args <- list(data = df, id = .sfw_key(sfw, "entity"),
+               year = .sfw_key(sfw, "time"), verbose = FALSE)
+  for (k in c("group", "partial", "amended", "timestamp"))
+    if (!is.null(rule[[k]])) args[[k]] <- rule[[k]]
+  do.call(deduplicate, args)
+}
+
+.sfw_run_checks <- function(df, checks, entity, labels) {
+  if (!length(checks)) return(NULL)
+  do.call(rbind, lapply(checks, function(r) {
+    keep <- .sfw_eval_predicate(df, r, entity, labels)
+    if (is.null(keep))
+      data.frame(check = r$name, n = nrow(df), pass = NA_integer_,
+                 fail = NA_integer_, ok = NA, note = "column absent",
+                 stringsAsFactors = FALSE)
+    else data.frame(check = r$name, n = length(keep), pass = sum(keep),
+                    fail = sum(!keep), ok = all(keep), note = "",
+                    stringsAsFactors = FALSE)
+  }))
+}
+
+.sfw_compute_view <- function(df, r) {
+  if (!is.null(r$rows) && !is.null(r$cols)) {
+    if (!all(c(r$rows, r$cols) %in% names(df))) return(NULL)
+    table(df[[r$rows]], df[[r$cols]])
+  } else if (!is.null(r$rows)) {
+    if (!r$rows %in% names(df)) return(NULL)
+    if (!is.null(r$value) && r$value %in% names(df))
+      tapply(df[[r$value]], df[[r$rows]], match.fun(r$fun %||% "length"))
+    else table(df[[r$rows]])
+  } else NULL
+}
 
 #' Apply a sample frame to a data frame
 #'
-#' Applies all stored row filters (and any ad-hoc `...` filters), then the
-#' column selection, recording a per-step manifest attached to the result as the
-#' `"sfw_steps"` attribute. Ad-hoc `...` filters may reference derived attributes
-#' (e.g. `panel_type = "persistent"`). Filters whose column is absent are skipped.
+#' Runs the frame's active rules in phase order -- `subset`, `filter`, `dedup`,
+#' `refresh`, then `select` -- recording a per-step manifest as the `"sfw_steps"`
+#' attribute. `check` and `view` rules are evaluated and attached as
+#' `"sfw_checks"` / `"sfw_views"` without altering the data. Ad-hoc `...` filters
+#' (e.g. `panel_type = "persistent"`) apply on top of the stored rules.
 #'
 #' @param df A data frame.
-#' @param sfw A `sample_frame`.
-#' @param ... Ad-hoc convenience filters applied on top of the stored ones.
-#' @param cohort Optional named cohort ([add_cohort()]) to restrict ids to.
-#' @param columns Apply the column selection? Default `TRUE`.
+#' @param sfw A sample frame.
+#' @param ... Ad-hoc convenience filters.
+#' @param columns Apply `select` rules? Default `TRUE`.
+#' @param checks Evaluate `check`/`view` rules? Default `TRUE`.
 #' @param verbose Print a one-line summary.
-#' @return The filtered data frame, with an `"sfw_steps"` manifest attribute.
+#' @return The filtered/selected data frame, with manifest attributes.
 #' @export
-apply_sfw <- function(df, sfw, ..., cohort = NULL, columns = TRUE, verbose = TRUE) {
+apply_sfw <- function(df, sfw, ..., columns = TRUE, checks = TRUE, verbose = TRUE) {
   .sfw_check(sfw)
   if (!is.data.frame(df)) stop("`df` must be a data.frame.")
-  id_col <- sfw$meta$id_col
+  entity <- .sfw_key(sfw, "entity")
+  labels <- .sfw_label_maps(sfw)
   steps <- list()
   rec <- function(step, crit, r0, c0, r1, c1)
     steps[[length(steps) + 1L]] <<- data.frame(
       step = step, criteria = crit, rows_before = r0, rows_after = r1,
       cols_before = c0, cols_after = c1, stringsAsFactors = FALSE)
 
-  fl <- sfw$filters
+  active <- Filter(function(r) isTRUE(r$active), sfw$rules)
   extra <- list(...)
   for (nm in names(extra))
-    fl[[length(fl) + 1L]] <- .sfw_make_filter(nm, "in", extra[[nm]], NULL, nm)
-  if (!is.null(cohort)) {
-    ids <- sfw$cohorts[[cohort]]
-    if (is.null(ids)) stop("Unknown cohort: ", cohort)
-    fl <- c(list(.sfw_make_filter(id_col, "in", ids, NULL,
-                                  paste0("cohort:", cohort))), fl)
-  }
+    active[[length(active) + 1L]] <-
+      c(list(name = paste0("adhoc:", nm), type = "filter", active = TRUE),
+        .sfw_filter_payload(.sfw_adhoc_spec(sfw, nm, extra[[nm]])))
+  of_type <- function(t) Filter(function(r) identical(r$type, t), active)
 
-  for (f in fl) {
+  for (r in of_type("subset")) {
     r0 <- nrow(df); c0 <- ncol(df)
-    keep <- .sfw_eval_filter(df, sfw, f)
+    df <- df[as.character(df[[entity]]) %in% r$ids, , drop = FALSE]
+    rec(paste0("subset: ", r$name), paste0(length(r$ids), " ids"),
+        r0, c0, nrow(df), ncol(df))
+  }
+  for (r in of_type("filter")) {
+    r0 <- nrow(df); c0 <- ncol(df)
+    keep <- .sfw_eval_predicate(df, r, entity, labels)
     if (is.null(keep)) {
-      if (verbose) message("apply_sfw: skipped '", f$label,
-                           "' (column not in data)")
+      if (verbose) message("apply_sfw: skipped '", r$name, "' (column absent)")
       next
     }
     df <- df[keep, , drop = FALSE]
-    rec(paste0("filter: ", f$label), f$label, r0, c0, nrow(df), ncol(df))
+    rec(paste0("filter: ", r$name), .sfw_rule_detail(r), r0, c0, nrow(df), ncol(df))
   }
-
-  if (isTRUE(columns) && .sfw_has_colspec(sfw)) {
+  for (r in of_type("dedup")) {
     r0 <- nrow(df); c0 <- ncol(df)
-    df <- df[, .sfw_resolve_columns(sfw, names(df)), drop = FALSE]
-    rec("columns", "column selection", r0, c0, nrow(df), ncol(df))
+    df <- .sfw_apply_dedup(df, sfw, r)
+    rec(paste0("dedup: ", r$name), "one per entity-time", r0, c0, nrow(df), ncol(df))
+  }
+  for (r in of_type("refresh")) {
+    r0 <- nrow(df); c0 <- ncol(df)
+    df <- r$fn(df)
+    if (!is.data.frame(df)) stop("refresh '", r$name, "' must return a data.frame.")
+    rec(paste0("refresh: ", r$name), "recompute", r0, c0, nrow(df), ncol(df))
+  }
+  sels <- of_type("select")
+  if (isTRUE(columns) && length(sels)) {
+    r0 <- nrow(df); c0 <- ncol(df)
+    cs <- list(
+      scope  = unique(unlist(lapply(sels, `[[`, "scope"))),
+      tables = unique(unlist(lapply(sels, `[[`, "tables"))),
+      keep   = unique(unlist(lapply(sels, `[[`, "vars"))),
+      drop   = unique(unlist(lapply(sels, `[[`, "drop"))))
+    cs <- lapply(cs, function(x) if (length(x)) x else NULL)
+    df <- df[, .sfw_resolve_columns(cs, names(df)), drop = FALSE]
+    rec("select", "column selection", r0, c0, nrow(df), ncol(df))
   }
 
   rownames(df) <- NULL
-  log_df <- if (length(steps)) do.call(rbind, steps) else NULL
-  attr(df, "sfw_steps") <- log_df
-  if (verbose)
-    message("apply_sfw: ", nrow(df), " rows x ", ncol(df), " cols",
-            if (!is.null(log_df)) paste0(" after ", nrow(log_df), " step(s)") else "")
+  attr(df, "sfw_steps") <- if (length(steps)) do.call(rbind, steps) else NULL
+  if (isTRUE(checks)) {
+    attr(df, "sfw_checks") <- .sfw_run_checks(df, of_type("check"), entity, labels)
+    vs <- of_type("view")
+    if (length(vs))
+      attr(df, "sfw_views") <- stats::setNames(
+        lapply(vs, function(r) .sfw_compute_view(df, r)),
+        vapply(vs, function(r) r$name, character(1L)))
+  }
+  if (verbose) message("apply_sfw: ", nrow(df), " rows x ", ncol(df), " cols")
   df
+}
+
+.sfw_adhoc_spec <- function(sfw, name, values) {
+  a <- .SFW_ALIASES[[tolower(name)]]
+  col <- if (is.null(a)) name else {
+    c0 <- a$col
+    if (identical(c0, "@time")) .sfw_key(sfw, "time")
+    else if (identical(c0, "@id")) .sfw_key(sfw, "entity") else c0
+  }
+  list(column = col, op = "in", values = values)
+}
+
+#' Run a sample frame's check rules
+#'
+#' @param df A data frame.
+#' @param sfw A sample frame.
+#' @param verbose Print the results.
+#' @return Invisibly, a data frame of check results.
+#' @export
+apply_check <- function(df, sfw, verbose = TRUE) {
+  .sfw_check(sfw)
+  if (!is.data.frame(df)) stop("`df` must be a data.frame.")
+  checks <- Filter(function(r) identical(r$type, "check") && isTRUE(r$active), sfw$rules)
+  res <- .sfw_run_checks(df, checks, .sfw_key(sfw, "entity"), .sfw_label_maps(sfw))
+  if (is.null(res))
+    res <- data.frame(check = character(), n = integer(), pass = integer(),
+                      fail = integer(), ok = logical(), note = character(),
+                      stringsAsFactors = FALSE)
+  if (verbose) print(res, row.names = FALSE)
+  invisible(res)
 }
 
 #' Check whether a data frame conforms to a sample frame
 #'
-#' Verifies that no row violates any stored filter and that the key columns are
-#' present. Use it to enforce the "contract" at any point in a pipeline.
+#' Verifies that no row violates any `subset`/`filter` rule, that key columns are
+#' present, and reports `check` rules. Use it to enforce the "contract" at any
+#' point.
 #'
 #' @param df A data frame.
-#' @param sfw A `sample_frame`.
+#' @param sfw A sample frame.
 #' @param verbose Print a summary.
 #' @return Invisibly, a list: `conformant`, `rows_total`, `rows_violating`,
-#'   `missing_columns`.
+#'   `missing_keys`, `checks`.
 #' @export
 conform <- function(df, sfw, verbose = TRUE) {
   .sfw_check(sfw)
   if (!is.data.frame(df)) stop("`df` must be a data.frame.")
-  missing_cols <- setdiff(c(sfw$meta$id_col, sfw$meta$time_col), names(df))
+  entity <- .sfw_key(sfw, "entity"); time <- .sfw_key(sfw, "time")
+  labels <- .sfw_label_maps(sfw)
+  missing_keys <- setdiff(c(entity, time), names(df))
+  missing_keys <- missing_keys[!is.na(missing_keys)]
   keep <- rep(TRUE, nrow(df))
-  for (f in sfw$filters) {
-    k <- .sfw_eval_filter(df, sfw, f)
-    if (!is.null(k)) keep <- keep & k
+  for (r in sfw$rules) {
+    if (!isTRUE(r$active)) next
+    if (identical(r$type, "subset"))
+      keep <- keep & as.character(df[[entity]]) %in% r$ids
+    else if (identical(r$type, "filter")) {
+      k <- .sfw_eval_predicate(df, r, entity, labels)
+      if (!is.null(k)) keep <- keep & k
+    }
   }
   viol <- sum(!keep)
-  ok <- viol == 0L && length(missing_cols) == 0L
+  checks <- .sfw_run_checks(df, Filter(function(r)
+    identical(r$type, "check") && isTRUE(r$active), sfw$rules), entity, labels)
+  ok <- viol == 0L && length(missing_keys) == 0L &&
+    (is.null(checks) || all(checks$ok %in% c(TRUE, NA)))
   if (verbose)
     message("conform: ", if (ok) "OK" else "NONCONFORMING", " (", viol,
             " violating row(s)",
-            if (length(missing_cols))
-              paste0(", missing: ", paste(missing_cols, collapse = ", ")) else "",
+            if (length(missing_keys))
+              paste0(", missing keys: ", paste(missing_keys, collapse = ", ")) else "",
             ")")
-  invisible(list(conformant = ok, rows_total = nrow(df),
-                 rows_violating = viol, missing_columns = missing_cols))
+  invisible(list(conformant = ok, rows_total = nrow(df), rows_violating = viol,
+                 missing_keys = missing_keys, checks = checks))
 }
 
 # ---- print / summary --------------------------------------------------------
 
 #' @export
-print.sample_frame <- function(x, ...) {
-  cat("<sample_frame>\n")
-  cat("  name:      ", x$meta$name, "\n", sep = "")
-  cat("  keys:      id=", x$meta$id_col, "  time=", x$meta$time_col, "\n", sep = "")
-  cat("  updated:   ", format(x$meta$updated, "%Y-%m-%d %H:%M:%S"), "\n", sep = "")
-  cat("  filters:   ", length(x$filters), "\n", sep = "")
-  for (f in x$filters) cat("    - ", f$label,
-                           if (!is.na(f$origin)) paste0("  [", f$origin, "]") else "",
-                           "\n", sep = "")
-  if (.sfw_has_colspec(x)) cat("  columns:   ", .sfw_col_crit(x), "\n", sep = "")
-  if (length(x$attributes)) cat("  attributes: ", paste(names(x$attributes), collapse = ", "), "\n", sep = "")
-  if (length(x$cohorts))    cat("  cohorts:   ", paste(names(x$cohorts), collapse = ", "), "\n", sep = "")
-  if (length(x$policy))     cat("  policy:    ", paste(names(x$policy), collapse = ", "), "\n", sep = "")
+print.sfw <- function(x, ...) {
+  cat("<sfw>  ", x$meta$name, "\n", sep = "")
+  cat("  keys:\n")
+  for (k in x$keys)
+    cat("    - ", k$type, ": ", k$var, "  (", k$name, ")\n", sep = "")
+  cat("  rules: ", length(x$rules), "\n", sep = "")
+  for (r in x$rules)
+    cat("    - [", r$type, "] ", r$name,
+        if (!isTRUE(r$active)) " (inactive)" else "", "\n", sep = "")
+  if (length(x$policy))
+    cat("  policy: ", paste(names(x$policy), collapse = ", "), "\n", sep = "")
   invisible(x)
 }
 
-.sfw_col_crit <- function(sfw) {
-  cs <- sfw$columns
-  paste(c(
-    if (!is.null(cs$scope))  paste0("scope=", paste(cs$scope, collapse = ",")),
-    if (!is.null(cs$tables)) paste0("tables=", paste(cs$tables, collapse = ",")),
-    if (!is.null(cs$keep))   paste0("keep=", length(cs$keep)),
-    if (!is.null(cs$drop))   paste0("drop=", length(cs$drop))
-  ), collapse = "; ")
-}
-
 #' @export
-summary.sample_frame <- function(object, ...) {
+summary.sfw <- function(object, ...) {
   print(object)
-  invisible(get_filters(object))
+  if (length(object$rules)) {
+    cat("\nrules:\n")
+    print(get_rules(object), row.names = FALSE)
+  }
+  invisible(get_rules(object))
 }

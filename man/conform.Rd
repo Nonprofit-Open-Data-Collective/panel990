@@ -9,15 +9,16 @@ conform(df, sfw, verbose = TRUE)
 \arguments{
 \item{df}{A data frame.}
 
-\item{sfw}{A \code{sample_frame}.}
+\item{sfw}{A sample frame.}
 
 \item{verbose}{Print a summary.}
 }
 \value{
 Invisibly, a list: \code{conformant}, \code{rows_total}, \code{rows_violating},
-\code{missing_columns}.
+\code{missing_keys}, \code{checks}.
 }
 \description{
-Verifies that no row violates any stored filter and that the key columns are
-present. Use it to enforce the "contract" at any point in a pipeline.
+Verifies that no row violates any \code{subset}/\code{filter} rule, that key columns are
+present, and reports \code{check} rules. Use it to enforce the "contract" at any
+point.
 }

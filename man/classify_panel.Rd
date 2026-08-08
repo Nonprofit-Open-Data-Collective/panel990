@@ -2,23 +2,23 @@
 % Please edit documentation in R/sample-frame.R
 \name{classify_panel}
 \alias{classify_panel}
-\title{Classify panel membership and store it on a sample frame}
+\title{Classify panel membership and store it as label rules}
 \usage{
 classify_panel(sfw, df, method = c("describe"))
 }
 \arguments{
-\item{sfw}{A \code{sample_frame}.}
+\item{sfw}{A sample frame.}
 
-\item{df}{A panel data frame containing the frame's id and time columns.}
+\item{df}{A panel data frame with the frame's entity and time key columns.}
 
 \item{method}{Classifier to use. Currently \code{"describe"}.}
 }
 \value{
-The updated \code{sample_frame}.
+The updated sample frame.
 }
 \description{
-Runs \code{\link[=panel_describe]{panel_describe()}} on \code{df} and stores two derived attributes keyed by
-organization id: \code{panel_type} (\code{persistent}, \code{entrant}, \code{exit}, \code{transient},
-\code{empty}) and \code{panel_spell} (\code{seamless}/\code{segmented}). Filter on them via, e.g.,
-\code{apply_sfw(df, sfw, panel_type = "persistent", spell = "seamless")}.
+Runs \code{\link[=panel_describe]{panel_describe()}} on \code{df} and adds two \code{label} rules keyed by entity:
+\code{panel_type} (\code{persistent}/\code{entrant}/\code{exit}/\code{transient}/\code{empty}) and
+\code{panel_spell} (\code{seamless}/\code{segmented}). Filter on them via, e.g.,
+\code{apply_sfw(df, sfw, panel_type = "persistent")}.
 }

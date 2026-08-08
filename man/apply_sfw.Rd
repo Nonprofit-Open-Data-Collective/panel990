@@ -4,27 +4,28 @@
 \alias{apply_sfw}
 \title{Apply a sample frame to a data frame}
 \usage{
-apply_sfw(df, sfw, ..., cohort = NULL, columns = TRUE, verbose = TRUE)
+apply_sfw(df, sfw, ..., columns = TRUE, checks = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{df}{A data frame.}
 
-\item{sfw}{A \code{sample_frame}.}
+\item{sfw}{A sample frame.}
 
-\item{...}{Ad-hoc convenience filters applied on top of the stored ones.}
+\item{...}{Ad-hoc convenience filters.}
 
-\item{cohort}{Optional named cohort (\code{\link[=add_cohort]{add_cohort()}}) to restrict ids to.}
+\item{columns}{Apply \code{select} rules? Default \code{TRUE}.}
 
-\item{columns}{Apply the column selection? Default \code{TRUE}.}
+\item{checks}{Evaluate \code{check}/\code{view} rules? Default \code{TRUE}.}
 
 \item{verbose}{Print a one-line summary.}
 }
 \value{
-The filtered data frame, with an \code{"sfw_steps"} manifest attribute.
+The filtered/selected data frame, with manifest attributes.
 }
 \description{
-Applies all stored row filters (and any ad-hoc \code{...} filters), then the
-column selection, recording a per-step manifest attached to the result as the
-\code{"sfw_steps"} attribute. Ad-hoc \code{...} filters may reference derived attributes
-(e.g. \code{panel_type = "persistent"}). Filters whose column is absent are skipped.
+Runs the frame's active rules in phase order -- \code{subset}, \code{filter}, \code{dedup},
+\code{refresh}, then \code{select} -- recording a per-step manifest as the \code{"sfw_steps"}
+attribute. \code{check} and \code{view} rules are evaluated and attached as
+\code{"sfw_checks"} / \code{"sfw_views"} without altering the data. Ad-hoc \code{...} filters
+(e.g. \code{panel_type = "persistent"}) apply on top of the stored rules.
 }
