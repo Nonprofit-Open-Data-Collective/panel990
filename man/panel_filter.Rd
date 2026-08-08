@@ -2,31 +2,45 @@
 % Please edit documentation in R/panel-filter.R
 \name{panel_filter}
 \alias{panel_filter}
-\title{Filter a panel by type and spell balance}
+\title{Select panel organizations by membership type}
 \usage{
 panel_filter(
   data,
-  classification,
-  keep = .EFILE_PANEL_TYPES,
-  spell_balance = .EFILE_SPELL_BALANCE,
+  panel_type = NULL,
+  spell = NULL,
+  min_obs = NULL,
+  classification = NULL,
+  time = "TAX_YEAR",
   id = "EIN2"
 )
 }
 \arguments{
 \item{data}{A panel data frame.}
 
-\item{classification}{A per-ID classification, a classification summary, or
-data with appended classification columns.}
+\item{panel_type}{Panel types to keep (\code{balanced}, \code{gapped}, \code{entrant},
+\code{exit}, \code{interloper}, \code{empty}). \code{NULL} keeps all types.}
 
-\item{keep}{Panel types to retain.}
+\item{spell}{Spell-balance values to keep (\code{contiguous}, \code{fragmented}).
+\code{NULL} keeps all.}
 
-\item{spell_balance}{Spell-balance values to retain.}
+\item{min_obs}{Minimum number of observed years per organization. \code{NULL}
+applies no minimum.}
 
-\item{id}{Name of the ID column.}
+\item{classification}{Optional precomputed classification (from
+\code{\link[=panel_describe]{panel_describe()}}); computed from \code{data} when \code{NULL}.}
+
+\item{time}{Name of the panel-time column.}
+
+\item{id}{Name of the panel-ID column.}
 }
 \value{
-Filtered input rows.
+The rows of \code{data} for the selected organizations.
 }
 \description{
-Filter a panel by type and spell balance
+Keeps the rows of organizations whose panel classification matches the given
+criteria. The classification is computed from \code{data} automatically unless a
+precomputed one is supplied.
+}
+\seealso{
+\code{\link[=panel_describe]{panel_describe()}}, \code{\link[=panel_label]{panel_label()}}.
 }

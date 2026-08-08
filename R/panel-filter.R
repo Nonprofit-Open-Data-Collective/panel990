@@ -1,31 +1,29 @@
-#' Filter a panel by type and spell balance
+#' Select panel organizations by membership type
+#'
+#' Keeps the rows of organizations whose panel classification matches the given
+#' criteria. The classification is computed from `data` automatically unless a
+#' precomputed one is supplied.
 #'
 #' @param data A panel data frame.
-#' @param classification A per-ID classification, a classification summary, or
-#'   data with appended classification columns.
-#' @param keep Panel types to retain.
-#' @param spell_balance Spell-balance values to retain.
-#' @param id Name of the ID column.
-#' @return Filtered input rows.
+#' @param panel_type Panel types to keep (`balanced`, `gapped`, `entrant`,
+#'   `exit`, `interloper`, `empty`). `NULL` keeps all types.
+#' @param spell Spell-balance values to keep (`contiguous`, `fragmented`).
+#'   `NULL` keeps all.
+#' @param min_obs Minimum number of observed years per organization. `NULL`
+#'   applies no minimum.
+#' @param classification Optional precomputed classification (from
+#'   [panel_describe()]); computed from `data` when `NULL`.
+#' @param time Name of the panel-time column.
+#' @param id Name of the panel-ID column.
+#' @return The rows of `data` for the selected organizations.
+#' @seealso [panel_describe()], [panel_label()].
 #' @export
-panel_filter <- function(
-    data,
-    classification,
-    keep = .EFILE_PANEL_TYPES,
-    spell_balance = .EFILE_SPELL_BALANCE,
-    id = "EIN2"
-) {
+panel_filter <- function(data, panel_type = NULL, spell = NULL, min_obs = NULL,
+                         classification = NULL, time = "TAX_YEAR", id = "EIN2") {
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("ID column not found: ", id)
   data <- as.data.frame(data)
-  if (!is.data.frame(classification))
-    stop("`classification` must be a data frame.")
-  attached <- attr(classification, "classification", exact = TRUE)
-  if (!is.null(attached)) classification <- attached
-  required <- c(id, "panel_type", "panel_spell_balance")
-  missing <- setdiff(required, names(classification))
-  if (length(missing))
-    stop("Classification missing column(s): ", paste(missing, collapse = ", "))
+  cls <- .panel_resolve_classification(classification, data, time, id)
 
   validate <- function(x, valid, arg) {
     if (!is.character(x) || !length(x) || anyNA(x))
@@ -34,11 +32,19 @@ panel_filter <- function(
     if (length(bad)) stop("Unknown `", arg, "`: ", paste(bad, collapse = ", "))
     unique(x)
   }
-  keep <- validate(keep, .EFILE_PANEL_TYPES, "keep")
-  spell_balance <- validate(spell_balance, .EFILE_SPELL_BALANCE,
-                            "spell_balance")
-  selected <- classification$panel_type %in% keep &
-    classification$panel_spell_balance %in% spell_balance
-  ids <- classification[[id]][selected & !is.na(selected)]
-  data[data[[id]] %in% ids, , drop = FALSE]
+  sel <- rep(TRUE, nrow(cls))
+  if (!is.null(panel_type)) {
+    panel_type <- validate(panel_type, .PANEL_TYPES, "panel_type")
+    sel <- sel & cls$panel_type %in% panel_type
+  }
+  if (!is.null(spell)) {
+    spell <- validate(spell, .PANEL_SPELL, "spell")
+    sel <- sel & cls$panel_spell_balance %in% spell
+  }
+  if (!is.null(min_obs)) sel <- sel & cls$panel_year_count >= min_obs
+
+  ids <- cls[[id]][sel & !is.na(sel)]
+  out <- data[data[[id]] %in% ids, , drop = FALSE]
+  rownames(out) <- NULL
+  out
 }

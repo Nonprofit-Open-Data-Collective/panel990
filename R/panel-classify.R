@@ -1,7 +1,20 @@
-.EFILE_PANEL_TYPES <- c("full", "entry", "exit", "interior", "empty")
-.EFILE_SPELL_BALANCE <- c("contiguous", "fragmented")
+# Panel membership classification shared by panel_describe(), panel_label(),
+# panel_filter(), and the sample-frame classifier.
+#
+# panel_type (single label):
+#   balanced   - observed in every panel year (spans the panel, no gaps)
+#   gapped     - spans the panel (first and last year) but misses interior years
+#   entrant    - enters after the first year, present through the last
+#   exit       - present from the first year, gone before the last
+#   interloper - only interior years (enters late and leaves early)
+#   empty      - no observations
+# panel_spell (orthogonal): contiguous | fragmented -- so a gapped *entrant* is
+# expressible as panel_type = "entrant", panel_spell_balance = "fragmented".
 
-.efile_classify_pattern <- function(observed, panel_years) {
+.PANEL_TYPES <- c("balanced", "gapped", "entrant", "exit", "interloper", "empty")
+.PANEL_SPELL <- c("contiguous", "fragmented")
+
+.panel_classify_pattern <- function(observed, panel_years) {
   observed <- sort(unique(observed))
   panel_years <- sort(unique(panel_years))
   if (length(observed) == 0L) return(list(
@@ -16,9 +29,11 @@
   contiguous <- span == length(positions)
   touches_first <- first == 1L
   touches_last <- last == length(panel_years)
-  panel_type <- if (touches_first && touches_last) "full" else
-    if (!touches_first && touches_last) "entry" else
-      if (touches_first && !touches_last) "exit" else "interior"
+  panel_type <- if (touches_first && touches_last) {
+    if (contiguous) "balanced" else "gapped"
+  } else if (!touches_first && touches_last) "entrant"
+    else if (touches_first && !touches_last) "exit"
+    else "interloper"
 
   if (contiguous) {
     gap_count <- 0L
@@ -38,72 +53,107 @@
   )
 }
 
-#' Classify panel coverage and internal gaps
-#'
-#' Assigns each observed ID a boundary type (`full`, `entry`, `exit`, or
-#' `interior`) and spell balance (`contiguous` or `fragmented`).
-#'
-#' @param data A panel data frame.
-#' @param time Name of the panel-time column.
-#' @param id Name of the panel-ID column.
-#' @param append_classification Append classification fields to every input row.
-#' @param return_classification Attach the per-ID classification to the summary.
-#' @param print_table Print the year-by-type summary.
-#' @return Either the input data with classification columns or a year-by-type
-#'   summary carrying a `classification` attribute.
-#' @export
-panel_describe <- function(
-    data,
-    time = "TAX_YEAR",
-    id = "EIN2",
-    append_classification = FALSE,
-    return_classification = TRUE,
-    print_table = TRUE
-) {
-  if (!is.data.frame(data)) stop("`data` must be a data.frame.")
-  if (!time %in% names(data)) stop("Time column not found: ", time)
+# Per-organization classification data frame (one row per id). Carries the panel
+# years vector as an attribute.
+.panel_classify <- function(data, time, id) {
   if (!id %in% names(data)) stop("ID column not found: ", id)
-  data <- as.data.frame(data)
-
+  if (!time %in% names(data)) stop("Time column not found: ", time)
   pairs <- unique(data[!is.na(data[[id]]) & !is.na(data[[time]]),
                        c(id, time), drop = FALSE])
   if (nrow(pairs) == 0L) stop("No non-missing ID/time observations found.")
   panel_years <- sort(unique(pairs[[time]]))
   split_years <- split(pairs[[time]], pairs[[id]])
-  classified <- lapply(split_years, .efile_classify_pattern,
+  classified <- lapply(split_years, .panel_classify_pattern,
                        panel_years = panel_years)
   details <- do.call(rbind, lapply(classified, as.data.frame,
                                    stringsAsFactors = FALSE))
   class_df <- stats::setNames(
-    data.frame(names(split_years), stringsAsFactors = FALSE),
-    id
-  )
+    data.frame(names(split_years), stringsAsFactors = FALSE), id)
   class_df$panel_year_first <- vapply(split_years, min, panel_years[[1]])
-  class_df$panel_year_last <- vapply(split_years, max, panel_years[[1]])
-  class_df$panel_year_count <- vapply(split_years, function(x) length(unique(x)),
-                                      integer(1L))
+  class_df$panel_year_last  <- vapply(split_years, max, panel_years[[1]])
+  class_df$panel_year_count <- vapply(split_years,
+                                      function(x) length(unique(x)), integer(1L))
   class_df <- cbind(class_df, details)
+  rownames(class_df) <- NULL
+  attr(class_df, "panel_years") <- panel_years
+  class_df
+}
 
-  typed <- merge(pairs, class_df[, c(id, "panel_type"), drop = FALSE],
-                 by = id, all.x = TRUE, sort = FALSE)
-  counts <- table(factor(typed[[time]], levels = panel_years),
-                  factor(typed$panel_type, levels = .EFILE_PANEL_TYPES))
-  count_df <- as.data.frame.matrix(counts, stringsAsFactors = FALSE)
-  summary <- data.frame(year = panel_years, count_df, check.names = FALSE,
-                        row.names = NULL)
+# Accept a precomputed classification (data frame, or object carrying a
+# "classification" attribute), or compute one from data.
+.panel_resolve_classification <- function(classification, data, time, id) {
+  if (is.null(classification)) return(.panel_classify(data, time, id))
+  attached <- attr(classification, "classification", exact = TRUE)
+  if (!is.null(attached)) classification <- attached
+  if (!is.data.frame(classification))
+    stop("`classification` must be a data frame.")
+  miss <- setdiff(c(id, "panel_type"), names(classification))
+  if (length(miss))
+    stop("Classification missing column(s): ", paste(miss, collapse = ", "))
+  classification
+}
 
-  if (print_table) print(summary, row.names = FALSE)
-  if (append_classification) {
-    input <- data
-    old <- intersect(setdiff(names(class_df), id), names(input))
-    if (length(old)) input[old] <- NULL
-    input$.efile_order__ <- seq_len(nrow(input))
-    out <- merge(input, class_df, by = id, all.x = TRUE, sort = FALSE)
-    out <- out[order(out$.efile_order__), , drop = FALSE]
-    out$.efile_order__ <- NULL
-    rownames(out) <- NULL
-    return(out)
+#' Describe panel coverage and membership
+#'
+#' Classifies each organization by panel membership type and summarizes the
+#' panel. See [panel_label()] to append the classification to rows and
+#' [panel_filter()] to select organizations by type.
+#'
+#' @param data A panel data frame.
+#' @param time Name of the panel-time column.
+#' @param id Name of the panel-ID column.
+#' @param by_year Include the org-years-by-type breakdown. Default `TRUE`.
+#' @param print Print the summary. Default `TRUE`.
+#' @return Invisibly, a `panel_summary` object carrying the per-organization
+#'   classification as its `"classification"` attribute.
+#' @export
+panel_describe <- function(data, time = "TAX_YEAR", id = "EIN2",
+                           by_year = TRUE, print = TRUE) {
+  if (!is.data.frame(data)) stop("`data` must be a data.frame.")
+  data <- as.data.frame(data)
+  class_df <- .panel_classify(data, time, id)
+  panel_years <- attr(class_df, "panel_years")
+
+  tt <- factor(class_df$panel_type, levels = .PANEL_TYPES)
+  by_type <- data.frame(panel_type = .PANEL_TYPES,
+                        n_orgs = as.integer(table(tt)),
+                        stringsAsFactors = FALSE)
+  by_type$pct <- round(100 * by_type$n_orgs / sum(by_type$n_orgs), 1)
+  by_type <- by_type[by_type$n_orgs > 0L, , drop = FALSE]
+  rownames(by_type) <- NULL
+
+  by_year_df <- NULL
+  if (isTRUE(by_year)) {
+    pairs <- unique(data[!is.na(data[[id]]) & !is.na(data[[time]]),
+                         c(id, time), drop = FALSE])
+    typed <- merge(pairs, class_df[, c(id, "panel_type")], by = id,
+                   all.x = TRUE, sort = FALSE)
+    counts <- table(factor(typed[[time]], levels = panel_years),
+                    factor(typed$panel_type, levels = .PANEL_TYPES))
+    cm <- as.data.frame.matrix(counts, stringsAsFactors = FALSE)
+    cm <- cm[, colSums(cm) > 0L, drop = FALSE]
+    by_year_df <- data.frame(year = panel_years, cm, check.names = FALSE,
+                             row.names = NULL)
   }
-  if (return_classification) attr(summary, "classification") <- class_df
-  summary
+
+  out <- structure(list(
+    n_orgs = nrow(class_df), n_years = length(panel_years),
+    years = panel_years, by_type = by_type, by_year = by_year_df
+  ), class = "panel_summary")
+  attr(out, "classification") <- class_df
+  if (isTRUE(print)) print(out)
+  invisible(out)
+}
+
+#' @export
+print.panel_summary <- function(x, ...) {
+  cat("<panel_summary>  ", x$n_orgs, " orgs x ", x$n_years, " years (",
+      min(x$years), "-", max(x$years), ")\n", sep = "")
+  cat("\npanel types:\n")
+  print(x$by_type, row.names = FALSE)
+  if (!is.null(x$by_year)) {
+    cat("\norg-years by type:\n")
+    print(x$by_year, row.names = FALSE)
+  }
+  invisible(x)
 }

@@ -27,6 +27,6 @@ test_that("out-of-scope tails are not inserted", {
     TAX_YEAR = c(2022:2023, 2020:2023),
     amount = 1:6
   )
-  out <- panel_impute(data, types = "entry", vars = "amount")
+  out <- panel_impute(data, types = "entrant", vars = "amount")
   expect_equal(nrow(out[out$EIN2 == "A", ]), 2L)
 })

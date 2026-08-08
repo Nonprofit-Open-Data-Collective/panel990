@@ -17,9 +17,8 @@ classify_panel(sfw, df, method = c("describe"))
 The updated \code{sample_frame}.
 }
 \description{
-Runs \code{\link[=panel_describe]{panel_describe()}} on \code{df} and stores three derived attributes keyed by
+Runs \code{\link[=panel_describe]{panel_describe()}} on \code{df} and stores two derived attributes keyed by
 organization id: \code{panel_type} (\code{balanced}, \code{gapped}, \code{entrant}, \code{exit},
-\code{interloper}, \code{empty}), \code{panel_boundary} (the native \code{full}/\code{entry}/\code{exit}/
-\code{interior}/\code{empty}), and \code{panel_spell} (\code{contiguous}/\code{fragmented}). Filter on
-them via, e.g., \code{apply_sfw(df, sfw, panel_type = "balanced")}.
+\code{interloper}, \code{empty}) and \code{panel_spell} (\code{contiguous}/\code{fragmented}). Filter
+on them via, e.g., \code{apply_sfw(df, sfw, panel_type = "balanced")}.
 }

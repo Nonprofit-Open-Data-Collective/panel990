@@ -2,15 +2,14 @@
 % Please edit documentation in R/panel-classify.R
 \name{panel_describe}
 \alias{panel_describe}
-\title{Classify panel coverage and internal gaps}
+\title{Describe panel coverage and membership}
 \usage{
 panel_describe(
   data,
   time = "TAX_YEAR",
   id = "EIN2",
-  append_classification = FALSE,
-  return_classification = TRUE,
-  print_table = TRUE
+  by_year = TRUE,
+  print = TRUE
 )
 }
 \arguments{
@@ -20,17 +19,16 @@ panel_describe(
 
 \item{id}{Name of the panel-ID column.}
 
-\item{append_classification}{Append classification fields to every input row.}
+\item{by_year}{Include the org-years-by-type breakdown. Default \code{TRUE}.}
 
-\item{return_classification}{Attach the per-ID classification to the summary.}
-
-\item{print_table}{Print the year-by-type summary.}
+\item{print}{Print the summary. Default \code{TRUE}.}
 }
 \value{
-Either the input data with classification columns or a year-by-type
-summary carrying a \code{classification} attribute.
+Invisibly, a \code{panel_summary} object carrying the per-organization
+classification as its \code{"classification"} attribute.
 }
 \description{
-Assigns each observed ID a boundary type (\code{full}, \code{entry}, \code{exit}, or
-\code{interior}) and spell balance (\code{contiguous} or \code{fragmented}).
+Classifies each organization by panel membership type and summarizes the
+panel. See \code{\link[=panel_label]{panel_label()}} to append the classification to rows and
+\code{\link[=panel_filter]{panel_filter()}} to select organizations by type.
 }

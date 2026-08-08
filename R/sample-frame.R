@@ -400,24 +400,12 @@ drop_attribute <- function(sfw, name) {
   .sfw_check(sfw); sfw$attributes[[name]] <- NULL; .sfw_touch(sfw)
 }
 
-.sfw_panel_group <- function(type, spell) {
-  g <- as.character(type)
-  g[type == "full" & spell == "contiguous"] <- "balanced"
-  g[type == "full" & spell == "fragmented"] <- "gapped"
-  g[type == "entry"]    <- "entrant"
-  g[type == "exit"]     <- "exit"
-  g[type == "interior"] <- "interloper"
-  g[type == "empty"]    <- "empty"
-  g
-}
-
 #' Classify panel membership and store it on a sample frame
 #'
-#' Runs [panel_describe()] on `df` and stores three derived attributes keyed by
+#' Runs [panel_describe()] on `df` and stores two derived attributes keyed by
 #' organization id: `panel_type` (`balanced`, `gapped`, `entrant`, `exit`,
-#' `interloper`, `empty`), `panel_boundary` (the native `full`/`entry`/`exit`/
-#' `interior`/`empty`), and `panel_spell` (`contiguous`/`fragmented`). Filter on
-#' them via, e.g., `apply_sfw(df, sfw, panel_type = "balanced")`.
+#' `interloper`, `empty`) and `panel_spell` (`contiguous`/`fragmented`). Filter
+#' on them via, e.g., `apply_sfw(df, sfw, panel_type = "balanced")`.
 #'
 #' @param sfw A `sample_frame`.
 #' @param df A panel data frame containing the frame's id and time columns.
@@ -429,14 +417,10 @@ classify_panel <- function(sfw, df, method = c("describe")) {
   if (!is.data.frame(df)) stop("`df` must be a data.frame.")
   method <- match.arg(method)
   id_col <- sfw$meta$id_col; time_col <- sfw$meta$time_col
-  s <- panel_describe(df, time = time_col, id = id_col,
-                      print_table = FALSE, return_classification = TRUE)
+  s <- panel_describe(df, time = time_col, id = id_col, print = FALSE)
   cls <- attr(s, "classification")
   ids <- as.character(cls[[id_col]])
   sfw <- attach_attribute(sfw, "panel_type",
-                          stats::setNames(.sfw_panel_group(cls$panel_type,
-                                                           cls$panel_spell_balance), ids))
-  sfw <- attach_attribute(sfw, "panel_boundary",
                           stats::setNames(as.character(cls$panel_type), ids))
   sfw <- attach_attribute(sfw, "panel_spell",
                           stats::setNames(as.character(cls$panel_spell_balance), ids))

@@ -5,7 +5,9 @@
 #'
 #' @param data A panel data frame.
 #' @param classification Optional classification from [panel_describe()].
-#' @param types Boundary types eligible for imputation.
+#' @param types Panel types eligible for imputation. Default the panel-spanning
+#'   types `c("balanced", "gapped")` (only `gapped` organizations actually have
+#'   interior years to fill).
 #' @param max_gap_size Maximum single gap length.
 #' @param max_gap_count Maximum number of gaps per ID.
 #' @param vars Numeric variables to fill; `NULL` selects numeric non-key fields.
@@ -15,7 +17,7 @@
 #' @return A panel with inserted rows identified by `imputed_row`.
 #' @export
 panel_impute <- function(
-    data, classification = NULL, types = "full",
+    data, classification = NULL, types = c("balanced", "gapped"),
     max_gap_size = Inf, max_gap_count = Inf, vars = NULL,
     time = "TAX_YEAR", id = "EIN2", as_integers = FALSE
 ) {
@@ -29,8 +31,7 @@ panel_impute <- function(
     if (all(class_cols %in% names(data))) {
       classification <- unique(data[, c(id, class_cols), drop = FALSE])
     } else {
-      summary <- panel_describe(data, time = time, id = id,
-                                      print_table = FALSE)
+      summary <- panel_describe(data, time = time, id = id, print = FALSE)
       classification <- attr(summary, "classification")
     }
   } else {
@@ -40,7 +41,7 @@ panel_impute <- function(
   needed <- c(id, class_cols)
   missing <- setdiff(needed, names(classification))
   if (length(missing)) stop("Classification missing: ", paste(missing, collapse = ", "))
-  bad_types <- setdiff(types, .EFILE_PANEL_TYPES)
+  bad_types <- setdiff(types, .PANEL_TYPES)
   if (length(bad_types)) stop("Unknown panel type(s): ", paste(bad_types, collapse = ", "))
   eligible <- classification[
     classification$panel_type %in% types &

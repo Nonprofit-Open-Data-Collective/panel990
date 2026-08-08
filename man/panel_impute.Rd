@@ -7,7 +7,7 @@
 panel_impute(
   data,
   classification = NULL,
-  types = "full",
+  types = c("balanced", "gapped"),
   max_gap_size = Inf,
   max_gap_count = Inf,
   vars = NULL,
@@ -21,7 +21,9 @@ panel_impute(
 
 \item{classification}{Optional classification from \code{\link[=panel_describe]{panel_describe()}}.}
 
-\item{types}{Boundary types eligible for imputation.}
+\item{types}{Panel types eligible for imputation. Default the panel-spanning
+types \code{c("balanced", "gapped")} (only \code{gapped} organizations actually have
+interior years to fill).}
 
 \item{max_gap_size}{Maximum single gap length.}
 
