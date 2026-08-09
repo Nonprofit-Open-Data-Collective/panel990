@@ -267,8 +267,14 @@ add_rule <- function(sfw, name = NULL, type, ...) {
                          tables = dots$tables, drop = dots$drop)),
     dedup  = dots[intersect(names(dots),
                             c("group", "partial", "amended", "timestamp"))],
-    refresh = { if (!is.function(dots$fn)) stop("refresh rule needs `fn` (a function).")
-                list(fn = dots$fn) },
+    refresh = if (!is.null(dots$fn)) {
+      if (!is.function(dots$fn)) stop("refresh `fn` must be a function.")
+      list(fn = dots$fn)
+    } else if (!is.null(dots$action)) {
+      Filter(Negate(is.null), list(action = dots$action, cols = dots$cols,
+                                   by = dots$by, value = dots$value,
+                                   into = dots$into, fun = dots$fun))
+    } else stop("refresh rule needs `fn` (a function) or `action` (a built-in)."),
     view   = Filter(Negate(is.null),
                     list(rows = dots$rows, cols = dots$cols,
                          value = dots$value, fun = dots$fun %||% "length")),
@@ -326,7 +332,7 @@ remove_rule <- function(sfw, name) update_rule(sfw, name, drop = TRUE)
       if (!is.null(r$vars)) paste0("vars=", length(r$vars)),
       if (!is.null(r$drop)) paste0("drop=", length(r$drop))), collapse = "; "),
     dedup  = "one per entity-time",
-    refresh = "recompute fn",
+    refresh = if (!is.null(r$fn)) "fn" else paste0("action: ", r$action),
     view   = paste0(r$rows %||% "", if (!is.null(r$cols)) paste0(" x ", r$cols) else ""),
     "function" = if (!is.null(r$fn)) "fn" else "code",
     ""
@@ -375,11 +381,21 @@ classify_panel <- function(sfw, df, method = c("describe")) {
 
 # ---- meta, policy, functions ------------------------------------------------
 
-#' Metadata, policies, and archived functions on a sample frame
+#' Metadata, policies, and rule sugar for a sample frame
+#'
+#' Thin convenience wrappers over [add_rule()] plus metadata/policy setters.
 #'
 #' @param sfw A sample frame.
-#' @param name Function rule name (`add_function`).
-#' @param value,fn A function body string (`value`) or a function object (`fn`).
+#' @param name Rule name.
+#' @param fn A function object (`add_function`/`add_refresh`).
+#' @param value A function body string (`add_function`) or a view's value column
+#'   (`add_view`).
+#' @param rows,cols A view's grouping column(s) (`add_view`); `cols` also names
+#'   the columns for a `droplevels`/`factor` refresh.
+#' @param fun A view's aggregation, or the statistic for a `group_stat` refresh.
+#' @param action A built-in refresh: `"droplevels"`, `"factor"`, or
+#'   `"group_stat"` (`add_refresh`).
+#' @param by,into Group column and output column for a `group_stat` refresh.
 #' @param ... Named metadata (`add_meta`) or named policies (`set_policy`).
 #' @return The updated sample frame.
 #' @name sfw_config
@@ -405,6 +421,37 @@ set_policy <- function(sfw, ...) {
 #' @export
 add_function <- function(sfw, name, value = NULL, fn = NULL)
   add_rule(sfw, name = name, type = "function", value = value, fn = fn)
+
+#' @rdname sfw_config
+#' @export
+add_view <- function(sfw, name, rows, cols = NULL, value = NULL, fun = "length")
+  add_rule(sfw, name = name, type = "view", rows = rows, cols = cols,
+           value = value, fun = fun)
+
+#' @rdname sfw_config
+#' @export
+add_refresh <- function(sfw, name, fn = NULL, action = NULL, cols = NULL,
+                        by = NULL, value = NULL, into = NULL, fun = NULL)
+  add_rule(sfw, name = name, type = "refresh", fn = fn, action = action,
+           cols = cols, by = by, value = value, into = into, fun = fun)
+
+#' Compute a sample frame's view rules against a data frame
+#'
+#' @param df A data frame.
+#' @param sfw A sample frame.
+#' @param verbose Print each view.
+#' @return Invisibly, a named list of view results (tables / tapply summaries).
+#' @export
+views <- function(df, sfw, verbose = TRUE) {
+  .sfw_check(sfw)
+  if (!is.data.frame(df)) stop("`df` must be a data.frame.")
+  vs <- Filter(function(r) identical(r$type, "view") && isTRUE(r$active), sfw$rules)
+  out <- stats::setNames(lapply(vs, function(r) .sfw_compute_view(df, r)),
+                         vapply(vs, function(r) r$name, character(1L)))
+  if (isTRUE(verbose))
+    for (nm in names(out)) { cat("\n== ", nm, " ==\n", sep = ""); print(out[[nm]]) }
+  invisible(out)
+}
 
 # ---- column resolution ------------------------------------------------------
 
@@ -502,6 +549,34 @@ add_function <- function(sfw, name, value = NULL, fn = NULL)
   } else NULL
 }
 
+# Refresh: re-derive values after row-dimension changes. Either a custom `fn`
+# (df -> df) or a built-in `action`.
+.sfw_apply_refresh <- function(df, rule) {
+  if (!is.null(rule$fn)) return(rule$fn(df))
+  switch(rule$action,
+    droplevels = {
+      cols <- rule$cols %||% names(df)[vapply(df, is.factor, logical(1L))]
+      for (col in intersect(cols, names(df)))
+        if (is.factor(df[[col]])) df[[col]] <- droplevels(df[[col]])
+      df
+    },
+    factor = {
+      if (is.null(rule$cols)) stop("factor refresh needs `cols`.")
+      for (col in intersect(rule$cols, names(df))) df[[col]] <- factor(df[[col]])
+      df
+    },
+    group_stat = {
+      if (is.null(rule$by) || is.null(rule$value))
+        stop("group_stat refresh needs `by` and `value`.")
+      f <- match.fun(rule$fun %||% "mean")
+      into <- rule$into %||% paste0(rule$value, "_", rule$fun %||% "mean")
+      df[[into]] <- stats::ave(df[[rule$value]], df[[rule$by]], FUN = f)
+      df
+    },
+    stop("Unknown refresh action: ", rule$action)
+  )
+}
+
 #' Apply a sample frame to a data frame
 #'
 #' Runs the frame's active rules in phase order -- `subset`, `filter`, `dedup`,
@@ -560,9 +635,9 @@ apply_sfw <- function(df, sfw, ..., columns = TRUE, checks = TRUE, verbose = TRU
   }
   for (r in of_type("refresh")) {
     r0 <- nrow(df); c0 <- ncol(df)
-    df <- r$fn(df)
+    df <- .sfw_apply_refresh(df, r)
     if (!is.data.frame(df)) stop("refresh '", r$name, "' must return a data.frame.")
-    rec(paste0("refresh: ", r$name), "recompute", r0, c0, nrow(df), ncol(df))
+    rec(paste0("refresh: ", r$name), r$action %||% "fn", r0, c0, nrow(df), ncol(df))
   }
   sels <- of_type("select")
   if (isTRUE(columns) && length(sels)) {

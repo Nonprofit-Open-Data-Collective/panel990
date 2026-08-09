@@ -5,26 +5,55 @@
 \alias{add_meta}
 \alias{set_policy}
 \alias{add_function}
-\title{Metadata, policies, and archived functions on a sample frame}
+\alias{add_view}
+\alias{add_refresh}
+\title{Metadata, policies, and rule sugar for a sample frame}
 \usage{
 add_meta(sfw, ...)
 
 set_policy(sfw, ...)
 
 add_function(sfw, name, value = NULL, fn = NULL)
+
+add_view(sfw, name, rows, cols = NULL, value = NULL, fun = "length")
+
+add_refresh(
+  sfw,
+  name,
+  fn = NULL,
+  action = NULL,
+  cols = NULL,
+  by = NULL,
+  value = NULL,
+  into = NULL,
+  fun = NULL
+)
 }
 \arguments{
 \item{sfw}{A sample frame.}
 
 \item{...}{Named metadata (\code{add_meta}) or named policies (\code{set_policy}).}
 
-\item{name}{Function rule name (\code{add_function}).}
+\item{name}{Rule name.}
 
-\item{value, fn}{A function body string (\code{value}) or a function object (\code{fn}).}
+\item{value}{A function body string (\code{add_function}) or a view's value column
+(\code{add_view}).}
+
+\item{fn}{A function object (\code{add_function}/\code{add_refresh}).}
+
+\item{rows, cols}{A view's grouping column(s) (\code{add_view}); \code{cols} also names
+the columns for a \code{droplevels}/\code{factor} refresh.}
+
+\item{fun}{A view's aggregation, or the statistic for a \code{group_stat} refresh.}
+
+\item{action}{A built-in refresh: \code{"droplevels"}, \code{"factor"}, or
+\code{"group_stat"} (\code{add_refresh}).}
+
+\item{by, into}{Group column and output column for a \code{group_stat} refresh.}
 }
 \value{
 The updated sample frame.
 }
 \description{
-Metadata, policies, and archived functions on a sample frame
+Thin convenience wrappers over \code{\link[=add_rule]{add_rule()}} plus metadata/policy setters.
 }

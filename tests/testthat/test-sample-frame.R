@@ -107,6 +107,42 @@ test_that("check rules report without filtering; conform verifies", {
   expect_equal(res$rows_violating, 2L)
 })
 
+test_that("refresh droplevels prunes factor levels after row filters", {
+  df <- data.frame(EIN2 = c("A", "B", "C"), TAX_YEAR = 2020,
+                   grp = factor(c("x", "y", "z")), stringsAsFactors = FALSE)
+  sfw <- add_rule(create_sfw("t"), "keep", "subset", subset = c("A", "B"))
+  sfw <- add_refresh(sfw, "relevel", action = "droplevels")
+  out <- apply_sfw(df, sfw, verbose = FALSE)
+  expect_equal(nrow(out), 2L)
+  expect_setequal(levels(out$grp), c("x", "y"))     # z dropped
+})
+
+test_that("refresh group_stat recomputes on the surviving rows", {
+  df <- data.frame(EIN2 = c("A", "A", "B"), TAX_YEAR = c(2020, 2021, 2020),
+                   rev = c(10, 30, 50), keep = c(TRUE, TRUE, FALSE))
+  sfw <- add_rule(create_sfw("t"), "pos", "filter", column = "keep", op = "is_true")
+  sfw <- add_refresh(sfw, "avg", action = "group_stat", by = "EIN2",
+                     value = "rev", fun = "mean", into = "rev_mean")
+  out <- apply_sfw(df, sfw, verbose = FALSE)
+  expect_equal(nrow(out), 2L)                        # B dropped
+  expect_equal(unique(out$rev_mean), 20)             # mean of A's 10, 30
+})
+
+test_that("views compute crosstabs and tapply summaries", {
+  df <- data.frame(EIN2 = c("A", "B", "C", "D"), TAX_YEAR = 2020,
+                   state = c("GA", "GA", "FL", "FL"), rev = c(1, 2, 3, 4),
+                   stringsAsFactors = FALSE)
+  sfw <- add_view(create_sfw("t"), "by_state", rows = "state")
+  sfw <- add_view(sfw, "rev_by_state", rows = "state", value = "rev", fun = "sum")
+
+  vs <- views(df, sfw, verbose = FALSE)
+  expect_equal(as.integer(vs$by_state[c("GA", "FL")]), c(2L, 2L))
+  expect_equal(as.numeric(vs$rev_by_state[c("GA", "FL")]), c(3, 7))
+
+  out <- apply_sfw(df, sfw, verbose = FALSE)          # also attached by apply_sfw
+  expect_false(is.null(attr(out, "sfw_views")$by_state))
+})
+
 test_that("dedup rule collapses to one row per entity-year", {
   df <- data.frame(
     EIN2 = c("A", "A", "B"), TAX_YEAR = c(2020, 2020, 2020),

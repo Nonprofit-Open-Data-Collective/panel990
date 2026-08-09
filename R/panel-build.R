@@ -94,11 +94,12 @@ panelize <- function(
     attr(data, "bmf_diagnostics") <- NULL
   }
 
-  sfw_steps <- NULL; sfw_checks <- NULL
+  sfw_steps <- NULL; sfw_checks <- NULL; sfw_views <- NULL
   if (!is.null(sfw)) {
     data <- apply_sfw(data, sfw, verbose = verbose)
     sfw_steps <- attr(data, "sfw_steps")
     sfw_checks <- attr(data, "sfw_checks")
+    sfw_views <- attr(data, "sfw_views")
     for (a in c("sfw_steps", "sfw_checks", "sfw_views")) attr(data, a) <- NULL
   }
 
@@ -114,6 +115,7 @@ panelize <- function(
     sfw = sfw,
     sfw_steps = sfw_steps,
     sfw_checks = sfw_checks,
+    sfw_views = sfw_views,
     bmf_diagnostics = bmf_diagnostics
   ), class = "panel990")
 }
