@@ -691,3 +691,70 @@ summary.sfw <- function(object, ...) {
   }
   invisible(get_rules(object))
 }
+
+# ---- acquisition wiring (used by panelize) ----------------------------------
+
+# Intersection of every active entity restriction (subset rules + entity-key
+# `in` filters). A superset of the final id set, so pushing it to read-time
+# never drops a row apply_sfw() would keep.
+.sfw_entity_ids <- function(sfw, entity) {
+  sets <- list()
+  for (r in sfw$rules) {
+    if (!isTRUE(r$active)) next
+    if (identical(r$type, "subset"))
+      sets[[length(sets) + 1L]] <- as.character(r$ids)
+    else if (identical(r$type, "filter") && is.null(r$expr) &&
+             identical(r$column, entity) && identical(r$op, "in"))
+      sets[[length(sets) + 1L]] <- as.character(r$values)
+  }
+  if (!length(sets)) return(character(0))
+  Reduce(intersect, sets)
+}
+
+# Columns referenced by structured filter/check rules (so read-time column
+# selection never drops a field a later rule needs).
+.sfw_filter_cols <- function(sfw) {
+  cols <- character(0)
+  for (r in sfw$rules)
+    if (r$type %in% c("filter", "check") && isTRUE(r$active) && is.null(r$expr))
+      cols <- c(cols, r$column)
+  unique(cols)
+}
+
+# Variable names implied by the frame's select rules (a superset is fine for a
+# read-time projection; apply_sfw() does the precise column selection later).
+.sfw_select_vars <- function(sfw) {
+  sels <- Filter(function(r) identical(r$type, "select") && isTRUE(r$active),
+                 sfw$rules)
+  if (!length(sels)) return(character(0))
+  fc <- .field_concordance()
+  scope <- unique(unlist(lapply(sels, `[[`, "scope")))
+  tables <- unique(unlist(lapply(sels, `[[`, "tables")))
+  keep <- unique(unlist(lapply(sels, `[[`, "vars")))
+  form_vals <- c("both", "990", "990EZ", "all")
+  scope_vars <- if (!length(scope)) character(0) else if (all(scope %in% form_vals))
+    unique(unlist(lapply(scope, fields_in_scope), use.names = FALSE)) else
+      fc$variable_name[fc$variable_scope %in% toupper(scope)]
+  table_vars <- if (!length(tables)) character(0) else
+    fc$variable_name[fc$rdb_table %in% .sfw_expand_tables(tables, fc)]
+  unique(c(fc$variable_name[fc$variable_scope == "HD"], scope_vars, table_vars, keep))
+}
+
+# Translate a sample frame into read-stage acquisition inputs for panelize().
+.sfw_to_acquire <- function(sfw, columns_arg) {
+  entity <- .sfw_key(sfw, "entity")
+  keyvars <- c(entity, .sfw_key(sfw, "time"), .sfw_key(sfw, "unique_record"))
+  keys <- unique(c(keyvars[!is.na(keyvars)], .EFILE_FILING_KEYS))
+
+  ids <- .sfw_entity_ids(sfw, entity)
+  read_filters <- if (length(ids) && !is.na(entity))
+    stats::setNames(list(as.character(ids)), entity) else NULL
+
+  read_columns <- columns_arg
+  if (is.null(read_columns)) {
+    vars <- .sfw_select_vars(sfw)
+    if (length(vars))
+      read_columns <- unique(c(vars, .sfw_filter_cols(sfw), "RETURN_TYPE"))
+  }
+  list(keys = keys, read_columns = read_columns, read_filters = read_filters)
+}

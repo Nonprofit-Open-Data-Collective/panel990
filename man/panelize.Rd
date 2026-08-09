@@ -8,6 +8,8 @@ panelize(
   years,
   tables,
   source = data_source(),
+  sfw = NULL,
+  bmf = FALSE,
   path = "efdata",
   cache = c("retain", "temporary", "none"),
   backend = c("memory", "duckdb"),
@@ -29,6 +31,12 @@ panelize(
 
 \item{source}{Efile source configuration.}
 
+\item{sfw}{Optional \code{\link[=create_sfw]{create_sfw()}} sample frame governing the build.}
+
+\item{bmf}{Merge BMF fields after assembly: \code{FALSE} (default), \code{TRUE} (the
+NCCS master), or a BMF source (data frame, path, or URL) passed to
+\code{\link[=bmf_merge]{bmf_merge()}}.}
+
 \item{path}{Retained-cache directory.}
 
 \item{cache}{\code{"retain"}, \code{"temporary"}, or \code{"none"}. \code{"none"} is available
@@ -36,11 +44,11 @@ only with the DuckDB backend and scans source URLs virtually.}
 
 \item{backend}{\code{"memory"} or \code{"duckdb"}.}
 
-\item{filters}{Optional named value filters.}
+\item{filters}{Optional named value filters (merged with the frame's).}
 
 \item{columns}{Optional source fields to retain. Join keys are added.}
 
-\item{keys}{Explicit candidate filing keys.}
+\item{keys}{Explicit candidate filing keys (overridden by the frame's keys).}
 
 \item{include_many}{Join one-to-many and supplemental tables.}
 
@@ -55,9 +63,12 @@ only with the DuckDB backend and scans source URLs virtually.}
 \item{verbose}{Print progress.}
 }
 \value{
-An \code{panel990} with \code{data}, download/table/join manifests,
-cache paths, and source configuration.
+A \code{panel990} object with \code{data}, download/table/join manifests, and
+(when \code{sfw} is given) the applied frame plus its step/check manifests.
 }
 \description{
-Download, read, merge, and assemble a multi-year efile panel
+Acquires and assembles a panel. When a sample frame is supplied via \code{sfw}, it
+governs acquisition: keys come from the frame, its entity restriction is
+pushed down to read-time, its \code{select} rules project columns, and after
+assembly (and optional BMF join) its rules are applied via \code{\link[=apply_sfw]{apply_sfw()}}.
 }
