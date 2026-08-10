@@ -44,3 +44,31 @@
 #'   <https://github.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file>
 #' @seealso [concordance()], [fields_in_scope()]
 "field_concordance"
+
+#' Accounting-identity registry for IRS 990 financial fields
+#'
+#' The linear accounting identities that hold among 990 revenue fields (Part
+#' VIII) -- column splits, subtotals, net-of-expense lines, and the grand total.
+#' Each identity is a linear combination of fields that must equal zero; the
+#' registry is stored in long form and drives [accounting_check()] and
+#' [reconcile()].
+#'
+#' @format A data frame with one row per (identity, variable):
+#' \describe{
+#'   \item{identity}{Identity name, e.g. `rev_contributions_subtotal`.}
+#'   \item{section}{Financial section (currently `"revenue"`).}
+#'   \item{form_scope}{Form the identity applies to (`"PC"`, the full 990).}
+#'   \item{type}{`column`, `subtotal`, `net`, or `grand_total`.}
+#'   \item{description}{Human-readable statement of the identity.}
+#'   \item{variable}{An ef2 `variable_name` appearing in the identity.}
+#'   \item{coefficient}{Its coefficient (identity holds when the weighted sum is 0).}
+#' }
+#'
+#' @details
+#' A curated, high-confidence set of 21 revenue identities over 69 fields, built
+#' by `data-raw/build-accounting-identities.R` and validated against
+#' [field_concordance]. Designed to be extended to expenses (Part IX) and the
+#' balance sheet (Part X).
+#'
+#' @seealso [accounting_check()], [reconcile()]
+"accounting_identities"

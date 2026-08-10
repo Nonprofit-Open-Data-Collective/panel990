@@ -66,9 +66,16 @@ reference:
   - panel_impute
   - panel_smooth
 
+- title: Accounting consistency
+  desc: Check and reconcile 990 rows against accounting identities.
+  contents:
+  - accounting_check
+  - reconcile
+
 - title: Data
   contents:
   - field_concordance
+  - accounting_identities
 
 articles:
 - title: Getting started
