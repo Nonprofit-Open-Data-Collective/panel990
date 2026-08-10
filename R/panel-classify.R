@@ -103,18 +103,26 @@
 #' [panel_label()] to append the classification to rows and [panel_filter()] to
 #' select organizations.
 #'
-#' @param data A panel data frame.
+#' Given a [panel][as_panel] it also stores the classification as label rules on
+#' the frame, marks the labels current, and logs the step.
+#'
+#' @param x A panel data frame or a [panel][as_panel].
 #' @param time Name of the panel-time column.
 #' @param id Name of the panel-ID column.
 #' @param by_year Include the org-years-by-type breakdown. Default `TRUE`.
 #' @param print Print the summary. Default `TRUE`.
-#' @return Invisibly, a `panel_summary` object carrying the per-organization
-#'   classification as its `"classification"` attribute.
+#' @param ... Passed to methods.
+#' @return For a data frame, invisibly a `panel_summary` object carrying the
+#'   per-organization classification as its `"classification"` attribute; for a
+#'   panel, the panel with labels refreshed.
 #' @export
-panel_describe <- function(data, time = "TAX_YEAR", id = "EIN2",
-                           by_year = TRUE, print = TRUE) {
-  if (!is.data.frame(data)) stop("`data` must be a data.frame.")
-  data <- as.data.frame(data)
+panel_describe <- function(x, ...) UseMethod("panel_describe")
+
+#' @rdname panel_describe
+#' @export
+panel_describe.data.frame <- function(x, time = "TAX_YEAR", id = "EIN2",
+                                      by_year = TRUE, print = TRUE, ...) {
+  data <- as.data.frame(x)
   class_df <- .panel_classify(data, time, id)
   panel_years <- attr(class_df, "panel_years")
 
@@ -149,6 +157,19 @@ panel_describe <- function(data, time = "TAX_YEAR", id = "EIN2",
   attr(out, "classification") <- class_df
   if (isTRUE(print)) print(out)
   invisible(out)
+}
+
+#' @rdname panel_describe
+#' @export
+panel_describe.panel <- function(x, print = TRUE, ...) {
+  entity <- .panel_entity(x); time <- .panel_time(x)
+  before <- dim(x$data)
+  panel_describe.data.frame(x$data, time = time, id = entity, print = print)
+  x$sfw <- classify_panel(x$sfw, x$data)      # store panel_type/panel_spell labels
+  x$fresh <- TRUE
+  x$sfw <- .panel_receipt(x$sfw, "panel_describe", "classified panel",
+                          before, before)
+  invisible(x)
 }
 
 #' @export

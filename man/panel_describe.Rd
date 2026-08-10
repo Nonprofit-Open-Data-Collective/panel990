@@ -2,18 +2,27 @@
 % Please edit documentation in R/panel-classify.R
 \name{panel_describe}
 \alias{panel_describe}
+\alias{panel_describe.data.frame}
+\alias{panel_describe.panel}
 \title{Describe panel coverage and membership}
 \usage{
-panel_describe(
-  data,
+panel_describe(x, ...)
+
+\method{panel_describe}{data.frame}(
+  x,
   time = "TAX_YEAR",
   id = "EIN2",
   by_year = TRUE,
-  print = TRUE
+  print = TRUE,
+  ...
 )
+
+\method{panel_describe}{panel}(x, print = TRUE, ...)
 }
 \arguments{
-\item{data}{A panel data frame.}
+\item{x}{A panel data frame or a \link[=as_panel]{panel}.}
+
+\item{...}{Passed to methods.}
 
 \item{time}{Name of the panel-time column.}
 
@@ -24,8 +33,9 @@ panel_describe(
 \item{print}{Print the summary. Default \code{TRUE}.}
 }
 \value{
-Invisibly, a \code{panel_summary} object carrying the per-organization
-classification as its \code{"classification"} attribute.
+For a data frame, invisibly a \code{panel_summary} object carrying the
+per-organization classification as its \code{"classification"} attribute; for a
+panel, the panel with labels refreshed.
 }
 \description{
 Classifies each organization on two axes -- \code{panel_type} (boundary:
@@ -33,4 +43,8 @@ Classifies each organization on two axes -- \code{panel_type} (boundary:
 (continuity: \code{seamless}, \code{segmented}) -- and summarizes the panel. See
 \code{\link[=panel_label]{panel_label()}} to append the classification to rows and \code{\link[=panel_filter]{panel_filter()}} to
 select organizations.
+}
+\details{
+Given a \link[=as_panel]{panel} it also stores the classification as label rules on
+the frame, marks the labels current, and logs the step.
 }
