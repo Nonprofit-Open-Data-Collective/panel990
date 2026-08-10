@@ -8,6 +8,7 @@ panel_impute(
   data,
   classification = NULL,
   types = "persistent",
+  method = c("mean", "interpolate", "locf", "nocb"),
   max_gap_size = Inf,
   max_gap_count = Inf,
   vars = NULL,
@@ -25,6 +26,10 @@ panel_impute(
 (the panel-spanning type); only \code{segmented} organizations actually have
 interior years to fill.}
 
+\item{method}{Fill method: \code{"mean"} (average of the bracketing observations),
+\code{"interpolate"} (linear between them), \code{"locf"} (carry the prior value
+forward), or \code{"nocb"} (carry the next value backward).}
+
 \item{max_gap_size}{Maximum single gap length.}
 
 \item{max_gap_count}{Maximum number of gaps per ID.}
@@ -41,6 +46,8 @@ interior years to fill.}
 A panel with inserted rows identified by \code{imputed_row}.
 }
 \description{
-Inserts missing years within eligible observed ID spans. Numeric fields are
-filled with the mean of the nearest observations bracketing each gap.
+Inserts missing years within eligible observed ID spans and fills numeric
+fields from the nearest observations bracketing each gap. See
+\code{\link[=panel_complete]{panel_complete()}} for the researcher-facing wrapper that completes every
+segmented span.
 }

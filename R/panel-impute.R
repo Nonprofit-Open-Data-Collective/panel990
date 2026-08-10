@@ -1,13 +1,32 @@
+# Fill a single missing year between bracketing observations (yp, vp) and
+# (yf, vf), by method. Returns NA only when both endpoints are missing.
+.panel_fill <- function(method, ym, yp, yf, vp, vf) {
+  if (is.na(vp) && is.na(vf)) return(NA_real_)
+  switch(method,
+    mean        = mean(c(vp, vf), na.rm = TRUE),
+    interpolate = if (is.na(vp)) vf else if (is.na(vf)) vp else
+      vp + (vf - vp) * (ym - yp) / (yf - yp),
+    locf        = if (!is.na(vp)) vp else vf,
+    nocb        = if (!is.na(vf)) vf else vp,
+    stop("Unknown fill method: ", method)
+  )
+}
+
 #' Insert and fill missing panel years
 #'
-#' Inserts missing years within eligible observed ID spans. Numeric fields are
-#' filled with the mean of the nearest observations bracketing each gap.
+#' Inserts missing years within eligible observed ID spans and fills numeric
+#' fields from the nearest observations bracketing each gap. See
+#' [panel_complete()] for the researcher-facing wrapper that completes every
+#' segmented span.
 #'
 #' @param data A panel data frame.
 #' @param classification Optional classification from [panel_describe()].
 #' @param types Panel types eligible for imputation. Default `"persistent"`
 #'   (the panel-spanning type); only `segmented` organizations actually have
 #'   interior years to fill.
+#' @param method Fill method: `"mean"` (average of the bracketing observations),
+#'   `"interpolate"` (linear between them), `"locf"` (carry the prior value
+#'   forward), or `"nocb"` (carry the next value backward).
 #' @param max_gap_size Maximum single gap length.
 #' @param max_gap_count Maximum number of gaps per ID.
 #' @param vars Numeric variables to fill; `NULL` selects numeric non-key fields.
@@ -18,9 +37,11 @@
 #' @export
 panel_impute <- function(
     data, classification = NULL, types = "persistent",
+    method = c("mean", "interpolate", "locf", "nocb"),
     max_gap_size = Inf, max_gap_count = Inf, vars = NULL,
     time = "TAX_YEAR", id = "EIN2", as_integers = FALSE
 ) {
+  method <- match.arg(method)
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("ID column not found: ", id)
   if (!time %in% names(data)) stop("Time column not found: ", time)
@@ -79,8 +100,9 @@ panel_impute <- function(
       new[[id]] <- key
       new[[time]] <- missing_year
       for (variable in vars) {
-        endpoints <- c(prior[[variable]], following[[variable]])
-        value <- if (all(is.na(endpoints))) NA_real_ else mean(endpoints, na.rm = TRUE)
+        value <- .panel_fill(method, missing_year,
+                             prior[[time]], following[[time]],
+                             prior[[variable]], following[[variable]])
         if (as_integers && variable %in% integer_vars && !is.na(value))
           value <- as.integer(round(value))
         new[[variable]] <- value
