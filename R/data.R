@@ -47,16 +47,17 @@
 
 #' Accounting-identity registry for IRS 990 financial fields
 #'
-#' The linear accounting identities that hold among 990 revenue fields (Part
-#' VIII) -- column splits, subtotals, net-of-expense lines, and the grand total.
-#' Each identity is a linear combination of fields that must equal zero; the
-#' registry is stored in long form and drives [accounting_check()] and
-#' [reconcile()].
+#' The linear accounting identities that hold among 990 financial fields across
+#' the revenue (Part VIII), functional-expenses (Part IX), and balance-sheet
+#' (Part X) sections -- column splits, subtotals, net-of-expense lines, the
+#' revenue grand total, and the balance-sheet equation. Each identity is a
+#' linear combination of fields that must equal zero; the registry is stored in
+#' long form and drives [accounting_check()] and [reconcile()].
 #'
 #' @format A data frame with one row per (identity, variable):
 #' \describe{
 #'   \item{identity}{Identity name, e.g. `rev_contributions_subtotal`.}
-#'   \item{section}{Financial section (currently `"revenue"`).}
+#'   \item{section}{`"revenue"`, `"expenses"`, or `"balance_sheet"`.}
 #'   \item{form_scope}{Form the identity applies to (`"PC"`, the full 990).}
 #'   \item{type}{`column`, `subtotal`, `net`, or `grand_total`.}
 #'   \item{description}{Human-readable statement of the identity.}
@@ -65,10 +66,13 @@
 #' }
 #'
 #' @details
-#' A curated, high-confidence set of 21 revenue identities over 69 fields, built
-#' by `data-raw/build-accounting-identities.R` and validated against
-#' [field_concordance]. Designed to be extended to expenses (Part IX) and the
-#' balance sheet (Part X).
+#' A curated, high-confidence set of 58 identities over 214 fields (21 revenue,
+#' 32 expense, 5 balance-sheet), built by
+#' `data-raw/build-accounting-identities.R` and validated against
+#' [field_concordance]. Only identities whose structure is unambiguous from the
+#' ef2 naming are included; vertical sums that would require 1xm write-in detail
+#' (expense line 24) or that hit form-version variants (balance-sheet cash
+#' lines) are deliberately omitted.
 #'
 #' @seealso [accounting_check()], [reconcile()]
 "accounting_identities"

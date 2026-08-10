@@ -6,7 +6,7 @@
 \usage{
 accounting_check(
   data,
-  section = "revenue",
+  section = NULL,
   id = "EIN2",
   time = "TAX_YEAR",
   tol = 1,
@@ -16,7 +16,8 @@ accounting_check(
 \arguments{
 \item{data}{A data frame of 990 financial fields (e.g. a merged panel).}
 
-\item{section}{Identity sections to check. Default \code{"revenue"}; \code{NULL} for all.}
+\item{section}{Identity sections to check (\code{"revenue"}, \code{"expenses"},
+\code{"balance_sheet"}). \code{NULL} (default) checks all.}
 
 \item{id, time}{Identifier columns carried onto the report (if present).}
 

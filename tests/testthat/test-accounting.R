@@ -60,6 +60,38 @@ test_that("reconcile restores identities with minimal change, holding fixed", {
   expect_equal(attr(rec, "reconciled")$rows_adjusted, 1L)
 })
 
+test_that("expense column identities are checked and reconciled", {
+  row <- data.frame(
+    EIN2 = "A", TAX_YEAR = 2020,
+    F9_09_EXP_OCCUPANCY_PROG = 60, F9_09_EXP_OCCUPANCY_MGMT = 25,
+    F9_09_EXP_OCCUPANCY_FUNDR = 15, F9_09_EXP_OCCUPANCY_TOT = 100,
+    stringsAsFactors = FALSE)
+  expect_equal(nrow(accounting_check(row, section = "expenses")), 0L)
+
+  row$F9_09_EXP_OCCUPANCY_TOT <- 110                 # total overstated by 10
+  v <- accounting_check(row, section = "expenses")
+  expect_equal(v$identity, "exp_occupancy_columns")
+  expect_equal(v$residual, 10)
+
+  rec <- reconcile(row, section = "expenses",
+                   fixed = c("F9_09_EXP_OCCUPANCY_PROG", "F9_09_EXP_OCCUPANCY_MGMT",
+                             "F9_09_EXP_OCCUPANCY_FUNDR"))
+  expect_equal(rec$F9_09_EXP_OCCUPANCY_TOT, 100)     # only free var absorbs the gap
+})
+
+test_that("balance-sheet equation is checked (assets = liabilities + net assets)", {
+  row <- data.frame(
+    EIN2 = "A", TAX_YEAR = 2020,
+    F9_10_ASSET_TOT_EOY = 1000, F9_10_LIAB_TOT_EOY = 400,
+    F9_10_NAFB_TOT_EOY = 600, stringsAsFactors = FALSE)
+  expect_equal(nrow(accounting_check(row, section = "balance_sheet")), 0L)
+
+  row$F9_10_NAFB_TOT_EOY <- 550                      # doesn't balance
+  v <- accounting_check(row, section = "balance_sheet")
+  expect_equal(v$identity, "bs_balance_eoy")
+  expect_equal(v$residual, 50)
+})
+
 test_that("accounting_check evaluates only complete identities across a panel", {
   panel <- rbind(make_revenue_row(), transform(make_revenue_row(),
                  EIN2 = "B", F9_08_REV_OTH_GAMING_NET_TOT = 99))  # B breaks gaming

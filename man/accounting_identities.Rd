@@ -8,7 +8,7 @@
 A data frame with one row per (identity, variable):
 \describe{
 \item{identity}{Identity name, e.g. \code{rev_contributions_subtotal}.}
-\item{section}{Financial section (currently \code{"revenue"}).}
+\item{section}{\code{"revenue"}, \code{"expenses"}, or \code{"balance_sheet"}.}
 \item{form_scope}{Form the identity applies to (\code{"PC"}, the full 990).}
 \item{type}{\code{column}, \code{subtotal}, \code{net}, or \code{grand_total}.}
 \item{description}{Human-readable statement of the identity.}
@@ -20,17 +20,21 @@ A data frame with one row per (identity, variable):
 accounting_identities
 }
 \description{
-The linear accounting identities that hold among 990 revenue fields (Part
-VIII) -- column splits, subtotals, net-of-expense lines, and the grand total.
-Each identity is a linear combination of fields that must equal zero; the
-registry is stored in long form and drives \code{\link[=accounting_check]{accounting_check()}} and
-\code{\link[=reconcile]{reconcile()}}.
+The linear accounting identities that hold among 990 financial fields across
+the revenue (Part VIII), functional-expenses (Part IX), and balance-sheet
+(Part X) sections -- column splits, subtotals, net-of-expense lines, the
+revenue grand total, and the balance-sheet equation. Each identity is a
+linear combination of fields that must equal zero; the registry is stored in
+long form and drives \code{\link[=accounting_check]{accounting_check()}} and \code{\link[=reconcile]{reconcile()}}.
 }
 \details{
-A curated, high-confidence set of 21 revenue identities over 69 fields, built
-by \code{data-raw/build-accounting-identities.R} and validated against
-\link{field_concordance}. Designed to be extended to expenses (Part IX) and the
-balance sheet (Part X).
+A curated, high-confidence set of 58 identities over 214 fields (21 revenue,
+32 expense, 5 balance-sheet), built by
+\code{data-raw/build-accounting-identities.R} and validated against
+\link{field_concordance}. Only identities whose structure is unambiguous from the
+ef2 naming are included; vertical sums that would require 1xm write-in detail
+(expense line 24) or that hit form-version variants (balance-sheet cash
+lines) are deliberately omitted.
 }
 \seealso{
 \code{\link[=accounting_check]{accounting_check()}}, \code{\link[=reconcile]{reconcile()}}

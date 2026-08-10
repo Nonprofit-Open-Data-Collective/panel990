@@ -6,7 +6,7 @@
 \usage{
 reconcile(
   data,
-  section = "revenue",
+  section = NULL,
   fixed = NULL,
   weights = NULL,
   rows = NULL,
@@ -17,7 +17,7 @@ reconcile(
 \arguments{
 \item{data}{A data frame of 990 financial fields.}
 
-\item{section}{Identity sections to enforce. Default \code{"revenue"}.}
+\item{section}{Identity sections to enforce. \code{NULL} (default) uses all.}
 
 \item{fixed}{Character vector of columns to hold fixed (e.g. reported totals).}
 

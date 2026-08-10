@@ -37,7 +37,8 @@
 #' be zero.
 #'
 #' @param data A data frame of 990 financial fields (e.g. a merged panel).
-#' @param section Identity sections to check. Default `"revenue"`; `NULL` for all.
+#' @param section Identity sections to check (`"revenue"`, `"expenses"`,
+#'   `"balance_sheet"`). `NULL` (default) checks all.
 #' @param id,time Identifier columns carried onto the report (if present).
 #' @param tol Absolute tolerance for calling a residual a violation.
 #' @param violations_only Return only the rows that violate an identity
@@ -46,7 +47,7 @@
 #'   `identity`, `residual`, and `ok`.
 #' @seealso [reconcile()], [accounting_identities].
 #' @export
-accounting_check <- function(data, section = "revenue", id = "EIN2",
+accounting_check <- function(data, section = NULL, id = "EIN2",
                              time = "TAX_YEAR", tol = 1, violations_only = TRUE) {
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   reg <- .acct_registry(section, names(data))
@@ -79,7 +80,7 @@ accounting_check <- function(data, section = "revenue", id = "EIN2",
 #' relevant fields are reconciled.
 #'
 #' @param data A data frame of 990 financial fields.
-#' @param section Identity sections to enforce. Default `"revenue"`.
+#' @param section Identity sections to enforce. `NULL` (default) uses all.
 #' @param fixed Character vector of columns to hold fixed (e.g. reported totals).
 #' @param weights Optional named vector of per-variable weights (default equal).
 #' @param rows Rows to reconcile: a logical/integer index. Default is rows where
@@ -89,7 +90,7 @@ accounting_check <- function(data, section = "revenue", id = "EIN2",
 #'   many rows were adjusted and how many were skipped for missing values.
 #' @seealso [accounting_check()], [panel_complete()].
 #' @export
-reconcile <- function(data, section = "revenue", fixed = NULL, weights = NULL,
+reconcile <- function(data, section = NULL, fixed = NULL, weights = NULL,
                       rows = NULL, id = "EIN2", time = "TAX_YEAR") {
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   reg <- .acct_registry(section, names(data))
