@@ -1,0 +1,95 @@
+---
+title: "Filling gaps without breaking the books"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Filling gaps without breaking the books}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+When you complete a panel's gaps with [panel_complete()], do the filled rows
+still obey the accounting identities (a total equals the sum of its parts)? This
+tutorial shows when they do, when they don't, and the one-step fix.
+
+We use a small panel: organization `A` skips 2021, with a filler `F` keeping
+2021 in the window. The fields are the four columns of one revenue line
+(total = related + unrelated + excluded).
+
+```{r}
+ivars <- c("F9_08_REV_OTH_INVEST_INCOME_RLTD", "F9_08_REV_OTH_INVEST_INCOME_UBIZ",
+           "F9_08_REV_OTH_INVEST_INCOME_EXCL", "F9_08_REV_OTH_INVEST_INCOME_TOT")
+
+panel <- data.frame(
+  EIN2 = c("A", "A", "F", "F", "F"),
+  TAX_YEAR = c(2020, 2022, 2020, 2021, 2022),
+  F9_08_REV_OTH_INVEST_INCOME_RLTD = c(10, 11, 1, 1, 1),
+  F9_08_REV_OTH_INVEST_INCOME_UBIZ = c( 5,  6, 1, 1, 1),
+  F9_08_REV_OTH_INVEST_INCOME_EXCL = c(35, 36, 1, 1, 1),
+  F9_08_REV_OTH_INVEST_INCOME_TOT  = c(50, 53, 3, 3, 3)   # 10+5+35=50, 11+6+36=53
+)
+```
+
+## The good news: linear filling preserves identities
+
+`A`'s bracketing years both balance. Filling 2021 by interpolation is a linear
+blend of two balanced rows, so the filled row balances too:
+
+```{r}
+done <- panel_complete(panel, vars = ivars)
+a2021 <- done[done$EIN2 == "A" & done$TAX_YEAR == 2021, ]
+a2021[, ivars]                                   # 10.5 + 5.5 + 35.5 = 51.5
+accounting_check(a2021)                          # no violations
+```
+
+So most of the time you get consistent rows for free -- interpolation, mean,
+and carry-forward are all affine, and an affine blend of balanced vectors is
+balanced.
+
+## The catch: a bad bracket (or rounding) propagates
+
+Now suppose `A`'s 2022 **total** is a filer error -- 60 instead of 50 -- while
+its components are unchanged:
+
+```{r}
+bad <- panel
+bad$F9_08_REV_OTH_INVEST_INCOME_TOT[bad$EIN2 == "A" & bad$TAX_YEAR == 2022] <- 60
+
+done_bad <- panel_complete(bad, vars = ivars)
+accounting_check(done_bad[done_bad$EIN2 == "A" & done_bad$TAX_YEAR == 2021, ])
+```
+
+The interpolated 2021 row inherits the imbalance: its total is now 5 more than
+its components. (Rounding via `as_integers = TRUE` can break identities the same
+way, since each cell is rounded independently.)
+
+## The fix: reconcile while completing
+
+Pass `reconcile = TRUE` and `panel_complete()` snaps the newly filled rows back
+onto the identities with the least change -- in one step:
+
+```{r}
+fixed <- panel_complete(bad, vars = ivars, reconcile = TRUE)
+a2021_fixed <- fixed[fixed$EIN2 == "A" & fixed$TAX_YEAR == 2021, ]
+a2021_fixed[, ivars]
+accounting_check(a2021_fixed)                    # balanced
+```
+
+The imputed row is now consistent, and only imputed rows are touched -- `A`'s
+reported (if erroneous) 2022 row is left exactly as filed:
+
+```{r}
+fixed$F9_08_REV_OTH_INVEST_INCOME_TOT[fixed$EIN2 == "A" & fixed$TAX_YEAR == 2022]
+```
+
+Reconciliation runs on every identity whose fields are present, so a real panel
+with revenue, expense, and balance-sheet columns is reconciled across all of
+them at once. Use `reconcile_fixed =` to hold particular columns and
+`reconcile_section =` to restrict which identities apply. See the *Accounting
+consistency* article for the identity registry and how `reconcile()` chooses the
+least-change adjustment.
+```
