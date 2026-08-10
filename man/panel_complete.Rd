@@ -14,7 +14,10 @@ panel_complete(
   time = "TAX_YEAR",
   id = "EIN2",
   as_integers = FALSE,
-  classification = NULL
+  classification = NULL,
+  reconcile = FALSE,
+  reconcile_fixed = NULL,
+  reconcile_section = NULL
 )
 }
 \arguments{
@@ -38,6 +41,15 @@ organization.}
 \item{as_integers}{Round filled values for originally integer fields.}
 
 \item{classification}{Optional classification from \code{\link[=panel_describe]{panel_describe()}}.}
+
+\item{reconcile}{If \code{TRUE}, snap the newly filled rows to the accounting
+identities with \code{\link[=reconcile]{reconcile()}} after imputation. Filling a whole row
+preserves linear identities, but rounding (\code{as_integers}) or an inconsistent
+bracketing observation can leave an imputed row off-balance; this corrects
+it with the least change.}
+
+\item{reconcile_fixed, reconcile_section}{Passed to \code{\link[=reconcile]{reconcile()}} when
+\code{reconcile = TRUE} (columns to hold fixed; identity sections to enforce).}
 }
 \value{
 The panel with interior gaps filled; inserted rows carry
@@ -57,5 +69,5 @@ holes, it does not extrapolate to the panel edges. Inserted rows are flagged
 with \code{imputed_row}.
 }
 \seealso{
-\code{\link[=panel_impute]{panel_impute()}}, \code{\link[=panel_describe]{panel_describe()}}.
+\code{\link[=panel_impute]{panel_impute()}}, \code{\link[=panel_describe]{panel_describe()}}, \code{\link[=reconcile]{reconcile()}}.
 }

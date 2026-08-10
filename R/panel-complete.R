@@ -23,9 +23,16 @@
 #' @param id Panel-ID column.
 #' @param as_integers Round filled values for originally integer fields.
 #' @param classification Optional classification from [panel_describe()].
+#' @param reconcile If `TRUE`, snap the newly filled rows to the accounting
+#'   identities with [reconcile()] after imputation. Filling a whole row
+#'   preserves linear identities, but rounding (`as_integers`) or an inconsistent
+#'   bracketing observation can leave an imputed row off-balance; this corrects
+#'   it with the least change.
+#' @param reconcile_fixed,reconcile_section Passed to [reconcile()] when
+#'   `reconcile = TRUE` (columns to hold fixed; identity sections to enforce).
 #' @return The panel with interior gaps filled; inserted rows carry
 #'   `imputed_row = TRUE`.
-#' @seealso [panel_impute()], [panel_describe()].
+#' @seealso [panel_impute()], [panel_describe()], [reconcile()].
 #' @export
 panel_complete <- function(
     data,
@@ -33,12 +40,20 @@ panel_complete <- function(
     types = c("persistent", "entrant", "exit", "transient"),
     max_gap_size = Inf, max_gap_count = Inf, vars = NULL,
     time = "TAX_YEAR", id = "EIN2", as_integers = FALSE,
-    classification = NULL
+    classification = NULL,
+    reconcile = FALSE, reconcile_fixed = NULL, reconcile_section = NULL
 ) {
   method <- match.arg(method)
-  panel_impute(
+  out <- panel_impute(
     data, classification = classification, types = types, method = method,
     max_gap_size = max_gap_size, max_gap_count = max_gap_count, vars = vars,
     time = time, id = id, as_integers = as_integers
   )
+  # `reconcile` here is the logical flag; the reconcile() call resolves to the
+  # function (R distinguishes function-call position from a value binding). It
+  # targets the imputed rows by default (via the `imputed_row` column).
+  if (isTRUE(reconcile))
+    out <- reconcile(out, section = reconcile_section, fixed = reconcile_fixed,
+                     id = id, time = time)
+  out
 }

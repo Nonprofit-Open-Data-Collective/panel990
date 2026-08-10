@@ -28,6 +28,34 @@ test_that("fill methods differ (mean vs interpolate vs locf vs nocb)", {
   expect_equal(pick("nocb"), c(30, 30))
 })
 
+test_that("panel_complete(reconcile=TRUE) makes the filled rows balance", {
+  ivars <- c("F9_08_REV_OTH_INVEST_INCOME_RLTD", "F9_08_REV_OTH_INVEST_INCOME_UBIZ",
+             "F9_08_REV_OTH_INVEST_INCOME_EXCL", "F9_08_REV_OTH_INVEST_INCOME_TOT")
+  # A: 2020 balances (10+5+35=50); 2022's total is a filer error (60, not 50).
+  # F keeps 2021 a panel year. Interpolating A's 2021 inherits the imbalance.
+  df <- data.frame(
+    EIN2 = c("A", "A", "F", "F", "F"),
+    TAX_YEAR = c(2020, 2022, 2020, 2021, 2022),
+    F9_08_REV_OTH_INVEST_INCOME_RLTD = c(10, 10, 1, 1, 1),
+    F9_08_REV_OTH_INVEST_INCOME_UBIZ = c(5, 5, 1, 1, 1),
+    F9_08_REV_OTH_INVEST_INCOME_EXCL = c(35, 35, 1, 1, 1),
+    F9_08_REV_OTH_INVEST_INCOME_TOT  = c(50, 60, 3, 3, 3),
+    stringsAsFactors = FALSE
+  )
+
+  plain <- panel_complete(df, vars = ivars)
+  a21 <- plain[plain$EIN2 == "A" & plain$TAX_YEAR == 2021, ]
+  expect_equal(nrow(accounting_check(a21)), 1L)          # off-balance (residual 5)
+
+  fixed <- panel_complete(df, vars = ivars, reconcile = TRUE)
+  a21r <- fixed[fixed$EIN2 == "A" & fixed$TAX_YEAR == 2021, ]
+  expect_equal(nrow(accounting_check(a21r)), 0L)         # reconciled
+  expect_false(a21r$F9_08_REV_OTH_INVEST_INCOME_TOT == 55)   # value adjusted
+  # observed (filer-error) row is left untouched
+  obs <- fixed$F9_08_REV_OTH_INVEST_INCOME_TOT[fixed$EIN2 == "A" & fixed$TAX_YEAR == 2022]
+  expect_equal(obs, 60)
+})
+
 test_that("panel_complete fills non-persistent segmented spans; panel_impute does not", {
   df <- data.frame(
     EIN2 = c("A", "A", "C", "C", "F", "F", "F", "F"),
