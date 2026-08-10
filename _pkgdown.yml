@@ -61,6 +61,7 @@ reference:
   - panel_describe
   - panel_label
   - panel_filter
+  - panel_balance
   - panel_complete
   - panel_impute
   - panel_smooth
