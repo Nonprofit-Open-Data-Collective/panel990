@@ -14,6 +14,11 @@
 #' @export
 panel_label <- function(data, time = "TAX_YEAR", id = "EIN2",
                         classification = NULL) {
+  if (is_panel(data)) {
+    a <- as.list(environment()); a[c("data", "id", "time")] <- NULL
+    return(do.call(.panel_apply,
+      c(list(data, panel_label, "panel_label"), list(stale = FALSE), a)))
+  }
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("ID column not found: ", id)
   data <- as.data.frame(data)

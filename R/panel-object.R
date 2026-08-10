@@ -130,3 +130,52 @@ manifest <- function(x) {
   k <- if (is_panel(x)) .sfw_key(x$sfw, "time") else NA_character_
   if (is.na(k)) default else k
 }
+
+# A compact "detail" string for a receipt, from a verb's captured arguments.
+.panel_detail <- function(args) {
+  drop <- c("id", "time", "year", "classification", "verbose", "print")
+  args <- args[setdiff(names(args), drop)]
+  args <- args[!vapply(args, is.null, logical(1L))]
+  if (!length(args)) return("")
+  paste(vapply(names(args), function(n) {
+    v <- args[[n]]
+    if (is.function(v)) paste0(n, "=fn")
+    else if (is.data.frame(v)) paste0(n, "=<df>")
+    else paste0(n, "=", paste(utils::head(as.character(v), 3L), collapse = ","))
+  }, character(1L)), collapse = "; ")
+}
+
+# Apply a data-frame verb `fn` to a panel: inject the frame's keys, run the
+# verb on the data, optionally stale the labels, and log a receipt. Used by the
+# mechanical verbs (impute/smooth/complete/balance/label/deduplicate) whose
+# panel behavior is uniform; verbs with custom logic (describe/filter) use S3.
+.panel_apply <- function(p, fn, step, ..., stale = FALSE,
+                         id_arg = "id", time_arg = "time") {
+  args <- list(...)
+  if (!is.null(id_arg))   args[[id_arg]]   <- .panel_entity(p)
+  if (!is.null(time_arg)) args[[time_arg]] <- .panel_time(p)
+  before <- dim(p$data)
+  p$data <- do.call(fn, c(list(p$data), args))
+  if (isTRUE(stale)) p$fresh <- FALSE
+  p$sfw <- .panel_receipt(p$sfw, step, .panel_detail(args), before, dim(p$data))
+  invisible(p)
+}
+
+#' Refresh panel-membership labels
+#'
+#' Re-classifies a panel after row-changing steps (imputation, deduplication) so
+#' the `panel_type`/`panel_spell` labels are current -- without filtering. On a
+#' bare data frame it appends fresh labels via [panel_label()].
+#'
+#' @param x A [panel][as_panel] or a data frame.
+#' @return The panel with labels refreshed (or the labeled data frame).
+#' @seealso [panel_describe()], [panel_filter()].
+#' @export
+panel_update <- function(x) {
+  if (!is_panel(x)) return(panel_label(x))
+  before <- dim(x$data)
+  x$sfw <- classify_panel(x$sfw, x$data)
+  x$fresh <- TRUE
+  x$sfw <- .panel_receipt(x$sfw, "panel_update", "refreshed labels", before, before)
+  invisible(x)
+}

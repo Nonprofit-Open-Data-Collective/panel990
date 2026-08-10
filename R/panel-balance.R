@@ -29,6 +29,11 @@
 panel_balance <- function(data, years = NULL,
                           strategy = c("window", "max_rectangle"),
                           min_years = 2L, id = "EIN2", time = "TAX_YEAR") {
+  if (is_panel(data)) {
+    a <- as.list(environment()); a[c("data", "id", "time")] <- NULL
+    return(do.call(.panel_apply,
+      c(list(data, panel_balance, "panel_balance"), list(stale = TRUE), a)))
+  }
   strategy <- match.arg(strategy)
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("ID column not found: ", id)

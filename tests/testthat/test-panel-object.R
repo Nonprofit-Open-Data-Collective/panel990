@@ -46,6 +46,35 @@ test_that("assume_fresh skips the refresh", {
   expect_equal(sum(manifest(p)$step == "panel_describe"), 1L)
 })
 
+test_that("mechanical verbs pipe through a panel, log, and stale labels", {
+  df <- data.frame(EIN2 = c("A", "A", "F", "F", "F"),
+                   TAX_YEAR = c(2020, 2022, 2020, 2021, 2022),
+                   rev = c(0, 30, 1, 1, 1), stringsAsFactors = FALSE)
+  p <- panel_describe(as_panel(df), print = FALSE)
+  expect_true(p$fresh)
+
+  p2 <- panel_impute(p, vars = "rev")            # inserts A/2021
+  expect_true(is_panel(p2))
+  expect_false(p2$fresh)                          # imputation staled the labels
+  expect_true("panel_impute" %in% manifest(p2)$step)
+  expect_equal(nrow(as.data.frame(p2)), nrow(df) + 1L)
+
+  p3 <- panel_update(p2)                          # refresh labels
+  expect_true(p3$fresh)
+  expect_true("panel_update" %in% manifest(p3)$step)
+})
+
+test_that("panel_deduplicate works on a panel and via the deduplicate alias", {
+  df <- data.frame(EIN2 = c("A", "A", "B"), TAX_YEAR = 2020,
+                   RETURN_TIME_STAMP = c("2021-01-01", "2021-06-01", "2021-01-01"),
+                   v = 1:3, stringsAsFactors = FALSE)
+  p <- panel_deduplicate(as_panel(df), verbose = FALSE)
+  expect_equal(nrow(as.data.frame(p)), 2L)
+  expect_true("panel_deduplicate" %in% manifest(p)$step)
+  expect_false(p$fresh)                           # dedup staled labels
+  expect_equal(nrow(deduplicate(df, verbose = FALSE)), 2L)   # alias, data frame
+})
+
 test_that("the data-frame API is unchanged (backward compatible)", {
   df <- make_panel_obj_fixture()
   s <- panel_describe(df, time = "TAX_YEAR", id = "EIN2", print = FALSE)

@@ -43,6 +43,11 @@ panel_complete <- function(
     classification = NULL,
     reconcile = FALSE, reconcile_fixed = NULL, reconcile_section = NULL
 ) {
+  if (is_panel(data)) {
+    a <- as.list(environment()); a[c("data", "id", "time")] <- NULL
+    return(do.call(.panel_apply,
+      c(list(data, panel_complete, "panel_complete"), list(stale = TRUE), a)))
+  }
   method <- match.arg(method)
   out <- panel_impute(
     data, classification = classification, types = types, method = method,
