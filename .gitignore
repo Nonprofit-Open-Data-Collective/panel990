@@ -1,6 +1,7 @@
 # R build / check artifacts
 /doc/
 /Meta/
+/docs/
 inst/doc/
 *.Rproj.user
 .Rhistory

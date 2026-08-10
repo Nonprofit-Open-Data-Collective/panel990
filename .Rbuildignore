@@ -1,3 +1,8 @@
 ^LICENSE\.md$
 ^\.git$
 ^data-raw$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^\.gitignore$

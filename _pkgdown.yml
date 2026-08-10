@@ -1,0 +1,77 @@
+url: ~
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Sample frame
+  desc: >
+    Define a reusable specification of keys and typed rules, then apply it to,
+    or validate it against, any data frame.
+  contents:
+  - create_sfw
+  - add_key
+  - get_keys
+  - add_rule
+  - update_rule
+  - remove_rule
+  - get_rules
+  - add_meta
+  - set_policy
+  - add_function
+  - add_view
+  - add_refresh
+  - classify_panel
+  - apply_sfw
+  - apply_check
+  - views
+  - conform
+
+- title: Acquire & assemble
+  desc: Download, read, merge, and stack efile tables into a panel.
+  contents:
+  - panelize
+  - data_source
+  - table_catalog
+  - resolve_tables
+  - download_tables
+  - read_tables
+  - merge_tables
+
+- title: Organization traits (BMF)
+  desc: Attach NCCS Business Master File fields by EIN.
+  contents:
+  - bmf_merge
+  - bmf_retrieve
+  - bmf_prepare
+  - bmf_url
+  - bmf_vars
+
+- title: Normalize & clean
+  desc: Form-aware normalization of source encodings and record deduplication.
+  contents:
+  - concordance
+  - normalize
+  - fields_in_scope
+  - deduplicate
+
+- title: Panel analysis
+  desc: Classify, label, filter, impute, and smooth panels over time.
+  contents:
+  - panel_describe
+  - panel_label
+  - panel_filter
+  - panel_impute
+  - panel_smooth
+
+- title: Data
+  contents:
+  - field_concordance
+
+articles:
+- title: Getting started
+  navbar: ~
+  contents:
+  - downloading-tables
+  - sampling-framework
+  - panels-and-slices
