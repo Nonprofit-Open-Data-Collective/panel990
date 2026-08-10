@@ -1,0 +1,85 @@
+---
+title: "Imputing missing years"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Imputing missing years}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+`panel_impute()` is the low-level engine that inserts a panel's missing
+*interior* years and fills their numeric fields from the observations that
+bracket each gap. (For the researcher-facing "just complete every span" verb,
+see `panel_complete()` in *Completing panel spans*.)
+
+A year can only be inserted if it is part of the panel, so our toy data has a
+filler organization `F` observed every year, and one organization `A` that
+skips the middle:
+
+```{r}
+df <- data.frame(
+  EIN2     = c("A", "A", "F", "F", "F", "F"),
+  TAX_YEAR = c(2018, 2021, 2018, 2019, 2020, 2021),
+  revenue  = c(0, 30, 5, 5, 5, 5)
+)
+```
+
+`A` spans 2018--2021 but is missing 2019 and 2020 -- `persistent` on the
+boundary axis, `segmented` on the spell axis:
+
+```{r}
+attr(panel_describe(df, print = FALSE), "classification")[, c("EIN2", "panel_type", "panel_spell")]
+```
+
+## Fill methods
+
+The gap between `A`'s 2018 value (0) and 2021 value (30) can be filled four
+ways. Compare them on the two missing years:
+
+```{r}
+fill <- function(m) {
+  out <- panel_impute(df, vars = "revenue", method = m)
+  out$revenue[out$EIN2 == "A" & out$TAX_YEAR %in% c(2019, 2020)]
+}
+data.frame(
+  year        = c(2019, 2020),
+  mean        = fill("mean"),        # flat average of the brackets
+  interpolate = fill("interpolate"), # linear between the brackets
+  locf        = fill("locf"),        # last observation carried forward
+  nocb        = fill("nocb")         # next observation carried backward
+)
+```
+
+`mean` (the default here) puts the same average in every hole; `interpolate`
+draws a straight line; `locf` holds the prior value; `nocb` pulls the next value
+back. Imputation never extends past an organization's own span, and a hole stays
+`NA` only when *both* brackets are missing.
+
+## Which organizations are eligible
+
+By default only `persistent` organizations (those that span the window) are
+imputed, and every gap is filled:
+
+```{r}
+out <- panel_impute(df, vars = "revenue")     # method = "mean", types = "persistent"
+out[out$EIN2 == "A", c("TAX_YEAR", "revenue", "imputed_row")]
+```
+
+Inserted rows are flagged with `imputed_row`, so you can always tell filled
+values from reported ones. Gap-size and gap-count limits skip anything too wide
+to trust:
+
+```{r}
+# refuse to fill a gap longer than one year
+nrow(panel_impute(df, vars = "revenue", max_gap_size = 1))   # A's 2-year gap is left alone
+nrow(df)
+```
+
+Other controls: `vars` chooses which numeric fields to fill (all numeric
+non-key fields by default), `types` widens eligibility to other boundary types,
+and `as_integers` rounds filled values for originally integer columns.

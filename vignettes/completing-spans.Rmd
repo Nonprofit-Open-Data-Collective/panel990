@@ -1,0 +1,66 @@
+---
+title: "Completing panel spans"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Completing panel spans}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+`panel_complete()` turns every `segmented` organization into a `seamless` one:
+it fills the interior gaps so each organization is observed continuously across
+its own span. It is the friendly wrapper over `panel_impute()` -- it fills gaps
+for **all** boundary types (not just panel-spanning ones) and interpolates by
+default.
+
+A toy panel with two different kinds of gap (and a filler `F` so the middle
+years belong to the panel):
+
+```{r}
+df <- data.frame(
+  EIN2     = c("A", "A", "C", "C", "F", "F", "F", "F"),
+  TAX_YEAR = c(2018, 2021, 2019, 2021, 2018, 2019, 2020, 2021),
+  revenue  = c(0, 30, 100, 200, 5, 5, 5, 5)
+)
+attr(panel_describe(df, print = FALSE), "classification")[, c("EIN2", "panel_type", "panel_spell")]
+```
+
+`A` spans the window with a two-year hole (`persistent` + `segmented`); `C`
+enters in 2019 and skips 2020 (`entrant` + `segmented`).
+
+## Complete every span
+
+```{r}
+done <- panel_complete(df, vars = "revenue")     # method = "interpolate", all types
+done[done$imputed_row, c("EIN2", "TAX_YEAR", "revenue")]
+```
+
+Both organizations are now gap-free: `A` gets an interpolated 10 and 20 across
+2019--2020, and `C` gets 150 in 2020. Re-describing confirms every span is
+`seamless`:
+
+```{r}
+attr(panel_describe(done, print = FALSE), "classification")[, c("EIN2", "panel_type", "panel_spell")]
+```
+
+## The difference from `panel_impute()`
+
+`panel_impute()` defaults to filling only `persistent` organizations, so the
+`entrant` `C` would be left with its hole:
+
+```{r}
+imp <- panel_impute(df, vars = "revenue")        # default types = "persistent"
+any(imp$EIN2 == "C" & imp$imputed_row)           # C is NOT filled
+```
+
+`panel_complete()` is the same engine with researcher-friendly defaults: fill
+*everyone's* interior gaps, and interpolate rather than average. Choose a
+different rule with `method = "mean" | "locf" | "nocb"` (see *Imputing missing
+years*), and remember that completion only fills *interior* gaps -- it never
+extrapolates past an organization's first or last observed year. To reach the
+panel edges instead, trim to a rectangle with `panel_balance()`.

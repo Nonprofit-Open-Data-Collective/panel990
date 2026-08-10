@@ -72,8 +72,15 @@ reference:
 
 articles:
 - title: Getting started
-  navbar: ~
+  navbar: Getting started
   contents:
   - downloading-tables
   - sampling-framework
   - panels-and-slices
+- title: Cleaning panels
+  navbar: Cleaning panels
+  contents:
+  - imputing-gaps
+  - smoothing-panels
+  - completing-spans
+  - balancing-panels
