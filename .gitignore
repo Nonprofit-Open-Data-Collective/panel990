@@ -1,0 +1,11 @@
+# R build / check artifacts
+/doc/
+/Meta/
+inst/doc/
+*.Rproj.user
+.Rhistory
+.RData
+.Rproj
+..Rcheck/
+*.tar.gz
+efdata/

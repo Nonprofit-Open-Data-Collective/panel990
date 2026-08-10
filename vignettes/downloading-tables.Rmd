@@ -1,0 +1,124 @@
+---
+title: "1. Downloading and assembling efile tables"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{1. Downloading and assembling efile tables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+`panel990` retrieves IRS 990 efile tables from the NCCS S3 bucket, merges the
+tables that describe a filing, and stacks years into one panel. This tutorial
+specifies everything with direct argument values -- no sample frame yet.
+
+> The download chunks below are shown but **not executed** in this vignette;
+> they require network access to the NCCS bucket. Run them in a live session.
+
+## Table abbreviations
+
+The efile data is split into ~125 tables, each corresponding to a section of the
+990. `panel990` ships short aliases for the most common ones. Preview them with
+`table_catalog()`:
+
+```{r}
+table_catalog()
+```
+
+- **alias** -- the short token you pass to `tables=` (e.g. `"P08"`).
+- **table** -- the canonical file name it resolves to.
+- **cardinality** -- `1x1` is one row per filing (safe to merge side-by-side);
+  `1xm` is one-to-many (kept separate unless you opt in).
+
+You are not limited to the aliases: any literal table name (for a schedule or a
+newly published table) is accepted as-is. `resolve_tables()` shows how a request
+resolves:
+
+```{r}
+resolve_tables(c("P00", "P08", "SB-P01-T00-CONTRIBUTORS"))
+```
+
+## The data source
+
+`data_source()` configures where files come from. The default points at the
+NCCS bucket, so you rarely change it; pass a local directory to read from disk.
+
+```{r}
+src <- data_source()
+src$root
+```
+
+## Downloading two tables for two years
+
+`download_tables()` fetches (or reuses) the CSVs. Give it the years and tables
+directly:
+
+```{r, eval = FALSE}
+dl <- download_tables(
+  years  = 2019:2020,
+  tables = c("P00", "P08"),     # header + revenue
+  cache  = "retain",            # keep files in `path`; use "temporary" to discard
+  path   = "efdata"
+)
+dl$manifest   # one row per table-year: status, bytes, path
+```
+
+Every table-year is recorded in a manifest, so you can see exactly what was
+downloaded, reused, or failed.
+
+## Read, merge, and stack
+
+Reading turns the CSVs into data frames; merging joins the tables *within* a
+year on the filing keys; stacking binds the years together.
+
+```{r, eval = FALSE}
+rd <- read_tables(dl)                 # optionally columns=, filters=
+mg <- merge_tables(rd)                # join P00 + P08 per year by filing keys
+```
+
+`merge_tables()` joins the `1x1` tables side-by-side (header fields next to
+revenue fields, one row per filing) and reports each join in a manifest. The
+years are then stacked into a single data frame.
+
+### The one-shot form
+
+`panelize()` runs download -> read -> merge -> stack in a single call and
+returns a `panel990` object:
+
+```{r, eval = FALSE}
+p <- panelize(2019:2020, c("P00", "P08"))
+p
+#> <panel990>
+#>   Rows: ...  Columns: ...
+#>   Years: 2019, 2020
+df <- as.data.frame(p)
+```
+
+Two tables, two years: the package downloads four files, merges the two tables
+in each year, and stacks 2019 on top of 2020.
+
+## Adding BMF fields, then filtering by state
+
+Geography, NTEE, and organization type are **not** on the 990 itself -- they
+live in the Business Master File (BMF). To filter by state you first join the
+BMF, then subset. `bmf_merge()` downloads and attaches the native BMF fields by
+`EIN2`:
+
+```{r, eval = FALSE}
+df <- bmf_merge(df)                   # appends geo_state_abbr, subsection_code, ntee_*, ...
+bmf_vars()                            # the fields it adds by default
+```
+
+Now the state column exists, so a plain base-R subset works:
+
+```{r, eval = FALSE}
+ga <- df[df$geo_state_abbr == "GA", ]
+```
+
+That is the whole manual pipeline: pick tables and years, download, merge,
+stack, attach the BMF, and filter. The next tutorial shows how a **sample
+frame** captures these same choices as a reusable, self-documenting object.

@@ -1,0 +1,126 @@
+---
+title: "2. The sampling framework"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{2. The sampling framework}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+The first tutorial specified tables, years, and filters by hand. A **sample
+frame** (`sfw`) captures those same choices as a single reusable object -- a
+registry of *keys* and typed *rules* that you can apply to any data frame,
+check against, and hand to `panelize()` to govern a build.
+
+## Build a frame
+
+A frame is just a set of rules. Friendly arguments to `create_sfw()` are
+convenience filters that lower into rules:
+
+```{r}
+sfw <- create_sfw(
+  "housing 2024",
+  state       = "GA",     # -> filter on geo_state_abbr
+  filter_501c = "3",      # -> filter on subsection_code (501(c)(3))
+  years       = 2019:2021 # -> filter on TAX_YEAR
+)
+sfw
+```
+
+Entity (`EIN2`) and time (`TAX_YEAR`) keys are registered by default. Add the
+filing-level key so deduplication and joins know a unique record:
+
+```{r}
+sfw <- add_key(sfw, "filing", "unique_record", "OBJECTID")
+get_keys(sfw)
+```
+
+## Structured rules
+
+Beyond the sugar, `add_rule()` adds any rule directly. Filters are
+**structured** -- a column, an operator, and values -- which keeps them
+inspectable and portable:
+
+```{r}
+sfw <- add_rule(sfw, "revenue positive", "filter",
+                column = "F9_01_REV_TOT_CY", op = ">", values = 0)
+get_rules(sfw)
+```
+
+`op` may be `in`, `not_in`, `==`, `!=`, `>`, `>=`, `<`, `<=`, `between`,
+`is_true`, `is_false`; for an arbitrary predicate use `expr = "..."`.
+
+## Apply the frame
+
+`apply_sfw()` runs the rules on a data frame. Here is a tiny stand-in for a
+BMF-merged panel:
+
+```{r}
+df <- data.frame(
+  EIN2             = c("EIN-11-1111111", "EIN-22-2222222", "EIN-33-3333333"),
+  TAX_YEAR         = 2020,
+  geo_state_abbr   = c("GA", "GA", "FL"),
+  subsection_code  = c("3", "4", "3"),
+  F9_01_REV_TOT_CY = c(500000, 0, 250000),
+  stringsAsFactors = FALSE
+)
+
+out <- apply_sfw(df, sfw, verbose = FALSE)
+out
+```
+
+Only the Georgia 501(c)(3) with positive revenue survives. Every step is
+recorded as a manifest attribute -- a reproducible record of what each rule
+removed:
+
+```{r}
+attr(out, "sfw_steps")
+```
+
+`conform()` answers the inverse question -- does a data frame already satisfy
+the frame? -- without changing it:
+
+```{r}
+conform(df, sfw, verbose = FALSE)$rows_violating
+```
+
+## Prefiltering before merges makes it faster
+
+When you hand the frame to `panelize()`, it governs the build:
+
+```{r, eval = FALSE}
+p <- panelize(2019:2021, c("P00", "P01", "P08"), sfw = sfw, bmf = TRUE)
+```
+
+Two restrictions are applied **before** the expensive table merges, so the
+package does far less work on a large panel:
+
+- **Years** -- only the requested years' files are downloaded.
+- **Entities** -- if the frame restricts to a set of organizations, that set is
+  pushed down to *read time*. Because `EIN2` is present in every efile table,
+  only those organizations' rows are ever read, and only they are carried into
+  the merges.
+
+Trait filters (state, 501(c) type, NTEE) live in the BMF, so they resolve
+*after* the BMF merge. To turn a trait restriction into a read-time prefilter,
+resolve it to an organization set from the BMF first, then add it as a `subset`
+rule:
+
+```{r, eval = FALSE}
+bmf   <- bmf_retrieve()                                   # the NCCS master
+ga_c3 <- bmf$EIN2[bmf$geo_state_abbr == "GA" &
+                    bmf$subsection_code == "3"]
+
+sfw <- add_rule(sfw, "GA 501c3 cohort", "subset", subset = ga_c3)
+p   <- panelize(2019:2021, c("P00", "P01", "P08"), sfw = sfw)
+```
+
+Now `panelize()` reads only those organizations before merging tables and
+stacking years -- the trait filter has become a fast pushdown. The remaining
+rules still apply after assembly as the source of truth, and the whole pipeline
+is documented in the resulting panel's step manifest.
