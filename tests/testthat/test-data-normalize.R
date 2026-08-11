@@ -34,6 +34,40 @@ test_that("checkbox blanks normalize to false only within scope", {
   expect_identical(out$checkbox, c(FALSE, TRUE, NA))
 })
 
+test_that("unrecognized checkbox values warn and are captured in the audit", {
+  data <- data.frame(
+    RETURN_TYPE = c("990", "990", "990", "990", "990EZ"),
+    checkbox = c("X", "", "maybe", "2", "huh"),
+    stringsAsFactors = FALSE
+  )
+  rules <- concordance("checkbox", "implicit_false", forms = "990")
+
+  expect_warning(out <- normalize(data, rules),
+                 "unrecognized categor.*maybe")
+
+  # Recognized values still coerce; unrecognized in-scope -> NA.
+  expect_identical(out$checkbox[1:2], c(TRUE, FALSE))
+  expect_true(all(is.na(out$checkbox[3:4])))
+  # Out-of-scope row (990EZ) is untouched by the warning path and stays NA.
+  expect_true(is.na(out$checkbox[5]))
+
+  audit <- attr(out, "normalization_audit")
+  expect_equal(audit$unrecognized_count, 2L)          # "maybe" and "2", in scope
+  expect_equal(audit$unrecognized_values, "2|maybe")  # sorted unique, "|"-joined
+})
+
+test_that("clean checkbox fields report zero unrecognized values", {
+  data <- data.frame(RETURN_TYPE = c("990", "990"),
+                     checkbox = c("Y", "n"), stringsAsFactors = FALSE)
+  rules <- concordance("checkbox", "implicit_false", forms = "990")
+
+  expect_silent(out <- normalize(data, rules))
+  expect_identical(out$checkbox, c(TRUE, FALSE))
+  audit <- attr(out, "normalization_audit")
+  expect_equal(audit$unrecognized_count, 0L)
+  expect_true(is.na(audit$unrecognized_values))
+})
+
 test_that("literal missing rules do not alter source values", {
   data <- data.frame(
     RETURN_TYPE = c("990", "990EZ"),

@@ -33,6 +33,14 @@ Interprets blank values according to a concordance. Applicable financial
 blanks can become zero and applicable checkbox blanks can become \code{FALSE}.
 A rule is never applied to a filing whose form is outside the field's scope.
 
+Checkbox values are matched case- and whitespace-insensitively against the
+accepted vocabulary (\code{X}/\code{TRUE}/\code{T}/\code{1}/\code{Y}/\code{YES} -> \code{TRUE};
+\code{FALSE}/\code{F}/\code{0}/\code{N}/\code{NO} -> \code{FALSE}; blank -> \code{FALSE}). An in-scope, non-blank
+value outside that set is coerced to \code{NA}, but first raises a \strong{warning}
+naming the field, the number of affected rows, and the unique offending
+values -- an early signal of an upstream parsing problem. The same counts are
+recorded in the audit's \code{unrecognized_count} / \code{unrecognized_values} columns.
+
 This function does not perform statistical normalization and does not impute
 missing panel years.
 }
