@@ -52,8 +52,10 @@ reference:
   contents:
   - concordance
   - normalize
+  - panel_normalize
+  - financial_fields
   - fields_in_scope
-  - deduplicate
+  - panel_deduplicate
 
 - title: Panel analysis
   desc: Classify, label, filter, impute, and smooth panels over time.
