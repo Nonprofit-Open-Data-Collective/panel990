@@ -32,14 +32,21 @@
 #' @param amended Amended-return flag column; use `NULL` to disable.
 #' @param timestamp Filing timestamp column.
 #' @param verbose Print a summary.
-#' @return A data frame with at most one row per ID-year.
+#' @return A data frame with at most one row per ID-year (or the panel, given a
+#'   [panel][as_panel]). `deduplicate()` is a deprecated alias.
 #' @export
-deduplicate <- function(
+panel_deduplicate <- function(
     data, id = "EIN2", year = "TAX_YEAR",
     group = "RETURN_GROUP_X", partial = "RETURN_PARTIAL_X",
     amended = "RETURN_AMENDED_X", timestamp = "RETURN_TIME_STAMP",
     verbose = TRUE
 ) {
+  if (is_panel(data)) {
+    a <- as.list(environment()); a[c("data", "id", "year")] <- NULL
+    return(do.call(.panel_apply,
+      c(list(data, panel_deduplicate, "panel_deduplicate"),
+        list(stale = TRUE, time_arg = "year"), a)))
+  }
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("ID column not found: ", id)
   if (!year %in% names(data)) stop("Year column not found: ", year)
@@ -67,3 +74,7 @@ deduplicate <- function(
   if (verbose) message("Deduplication complete: ", n, " -> ", nrow(out), " row(s).")
   out
 }
+
+#' @rdname panel_deduplicate
+#' @export
+deduplicate <- panel_deduplicate

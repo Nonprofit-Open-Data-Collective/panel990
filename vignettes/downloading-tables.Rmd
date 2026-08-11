@@ -87,14 +87,15 @@ years are then stacked into a single data frame.
 ### The one-shot form
 
 `panelize()` runs download -> read -> merge -> stack in a single call and
-returns a `panel990` object:
+returns a `panel` object. The filing keys (`EIN2` / `TAX_YEAR` / `OBJECTID`)
+are assigned automatically:
 
 ```{r, eval = FALSE}
-p <- panelize(2019:2020, c("P00", "P08"))
+p <- panelize(tables = c("P00", "P08"), years = 2019:2020)
 p
-#> <panel990>
-#>   Rows: ...  Columns: ...
-#>   Years: 2019, 2020
+#> <panel>  ... rows x ... cols  years 2019-2020
+#>   sample frame: panel[P00,P08 | 2019-2020]  (0 rules, ... log entries)
+#>   panel labels: stale / not computed
 df <- as.data.frame(p)
 ```
 

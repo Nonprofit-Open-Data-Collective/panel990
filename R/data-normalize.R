@@ -5,6 +5,14 @@
 #' blanks can become zero and applicable checkbox blanks can become `FALSE`.
 #' A rule is never applied to a filing whose form is outside the field's scope.
 #'
+#' Checkbox values are matched case- and whitespace-insensitively against the
+#' accepted vocabulary (`X`/`TRUE`/`T`/`1`/`Y`/`YES` -> `TRUE`;
+#' `FALSE`/`F`/`0`/`N`/`NO` -> `FALSE`; blank -> `FALSE`). An in-scope, non-blank
+#' value outside that set is coerced to `NA`, but first raises a **warning**
+#' naming the field, the number of affected rows, and the unique offending
+#' values -- an early signal of an upstream parsing problem. The same counts are
+#' recorded in the audit's `unrecognized_count` / `unrecognized_values` columns.
+#'
 #' This function does not perform statistical normalization and does not impute
 #' missing panel years.
 #'
@@ -39,12 +47,15 @@ normalize <- function(
   audit_rows <- vector("list", nrow(concordance))
 
   is_blank <- function(x) is.na(x) | trimws(as.character(x)) == ""
+  # Accepted checkbox vocabulary (compared case- and whitespace-insensitively).
+  checkbox_true  <- c("X", "TRUE", "T", "1", "Y", "YES")
+  checkbox_false <- c("FALSE", "F", "0", "N", "NO")
   as_checkbox <- function(x, applicable) {
     raw <- toupper(trimws(as.character(x)))
     value <- rep(NA, length(raw))
     value[applicable & (is.na(raw) | raw == "")] <- FALSE
-    value[applicable & raw %in% c("X", "TRUE", "T", "1", "Y", "YES")] <- TRUE
-    value[applicable & raw %in% c("FALSE", "F", "0", "N", "NO")] <- FALSE
+    value[applicable & raw %in% checkbox_true]  <- TRUE
+    value[applicable & raw %in% checkbox_false] <- FALSE
     value
   }
 
@@ -62,6 +73,8 @@ normalize <- function(
     changed <- 0L
     applicable_blanks <- 0L
     out_of_scope_blanks <- 0L
+    unrecognized_count <- 0L
+    unrecognized_values <- NA_character_
 
     if (present) {
       blank <- is_blank(out[[field]])
@@ -74,6 +87,30 @@ normalize <- function(
         changed <- sum(change)
       } else if (rule == "implicit_false") {
         before_blank <- blank & applicable
+
+        # Flag in-scope, non-blank values outside the accepted T/F vocabulary
+        # before coercion. These become NA and often signal an upstream parsing
+        # error (e.g. a shifted column or a stray delimiter), so warn loudly and
+        # record the offending values in the audit.
+        raw <- toupper(trimws(as.character(out[[field]])))
+        unrec <- applicable & !is_blank(out[[field]]) &
+          !(raw %in% c(checkbox_true, checkbox_false))
+        unrecognized_count <- sum(unrec)
+        if (unrecognized_count > 0L) {
+          unrec_vals <- sort(unique(trimws(as.character(out[[field]])[unrec])))
+          unrecognized_values <- paste(unrec_vals, collapse = "|")
+          shown <- paste(utils::head(unrec_vals, 10L), collapse = ", ")
+          if (length(unrec_vals) > 10L)
+            shown <- paste0(shown, ", +", length(unrec_vals) - 10L, " more")
+          warning(sprintf(
+            paste0("normalize(): checkbox field '%s' has %d value(s) in %d ",
+                   "unrecognized categor%s outside the accepted T/F set ",
+                   "(%s); set to NA. This may indicate an upstream parsing error."),
+            field, unrecognized_count, length(unrec_vals),
+            if (length(unrec_vals) == 1L) "y" else "ies", shown),
+            call. = FALSE)
+        }
+
         out[[field]] <- as_checkbox(out[[field]], applicable)
         changed <- sum(before_blank)
       }
@@ -87,6 +124,8 @@ normalize <- function(
       applicable_blanks = applicable_blanks,
       values_normalized = changed,
       out_of_scope_blanks = out_of_scope_blanks,
+      unrecognized_count = unrecognized_count,
+      unrecognized_values = unrecognized_values,
       stringsAsFactors = FALSE
     )
   }

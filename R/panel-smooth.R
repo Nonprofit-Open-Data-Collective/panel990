@@ -13,6 +13,11 @@ panel_smooth <- function(
     data, vars, window = 3, weights = c("equal", "half", "decay"),
     time = "TAX_YEAR", id = "EIN2", verbose = TRUE
 ) {
+  if (is_panel(data)) {
+    a <- as.list(environment()); a[c("data", "id", "time")] <- NULL
+    return(do.call(.panel_apply,
+      c(list(data, panel_smooth, "panel_smooth"), list(stale = FALSE), a)))
+  }
   weights <- match.arg(weights)
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("`id` column not found: ", id)

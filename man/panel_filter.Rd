@@ -2,20 +2,36 @@
 % Please edit documentation in R/panel-filter.R
 \name{panel_filter}
 \alias{panel_filter}
+\alias{panel_filter.data.frame}
+\alias{panel_filter.panel}
 \title{Select panel organizations by membership type}
 \usage{
-panel_filter(
-  data,
+panel_filter(x, ...)
+
+\method{panel_filter}{data.frame}(
+  x,
   panel_type = NULL,
   spell = NULL,
   min_obs = NULL,
   classification = NULL,
   time = "TAX_YEAR",
-  id = "EIN2"
+  id = "EIN2",
+  ...
+)
+
+\method{panel_filter}{panel}(
+  x,
+  panel_type = NULL,
+  spell = NULL,
+  min_obs = NULL,
+  assume_fresh = FALSE,
+  ...
 )
 }
 \arguments{
-\item{data}{A panel data frame.}
+\item{x}{A panel data frame or a \link[=as_panel]{panel}.}
+
+\item{...}{Passed to methods.}
 
 \item{panel_type}{Panel types to keep (\code{persistent}, \code{entrant}, \code{exit},
 \code{transient}, \code{empty}). \code{NULL} keeps all types.}
@@ -27,19 +43,27 @@ panel_filter(
 applies no minimum.}
 
 \item{classification}{Optional precomputed classification (from
-\code{\link[=panel_describe]{panel_describe()}}); computed from \code{data} when \code{NULL}.}
+\code{\link[=panel_describe]{panel_describe()}}); computed from \code{x} when \code{NULL}.}
 
 \item{time}{Name of the panel-time column.}
 
 \item{id}{Name of the panel-ID column.}
+
+\item{assume_fresh}{For a panel, skip the label-freshness check. Default
+\code{FALSE}.}
 }
 \value{
-The rows of \code{data} for the selected organizations.
+For a data frame, the selected rows; for a panel, the panel.
 }
 \description{
 Keeps the rows of organizations whose panel classification matches the given
 criteria. The classification is computed from \code{data} automatically unless a
 precomputed one is supplied.
+}
+\details{
+Given a \link[=as_panel]{panel}, the labels are refreshed first if they are stale
+(unless \code{assume_fresh = TRUE}), the selection is recorded as a rule, the step
+is logged, and the panel is returned.
 }
 \seealso{
 \code{\link[=panel_describe]{panel_describe()}}, \code{\link[=panel_label]{panel_label()}}.

@@ -41,6 +41,11 @@ panel_impute <- function(
     max_gap_size = Inf, max_gap_count = Inf, vars = NULL,
     time = "TAX_YEAR", id = "EIN2", as_integers = FALSE
 ) {
+  if (is_panel(data)) {
+    a <- as.list(environment()); a[c("data", "id", "time")] <- NULL
+    return(do.call(.panel_apply,
+      c(list(data, panel_impute, "panel_impute"), list(stale = TRUE), a)))
+  }
   method <- match.arg(method)
   if (!is.data.frame(data)) stop("`data` must be a data.frame.")
   if (!id %in% names(data)) stop("ID column not found: ", id)

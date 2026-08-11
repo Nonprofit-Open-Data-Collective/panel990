@@ -815,6 +815,16 @@ summary.sfw <- function(object, ...) {
   unique(c(fc$variable_name[fc$variable_scope == "HD"], scope_vars, table_vars, keep))
 }
 
+# Does the frame reference any BMF *trait* field? Drives bmf="auto". The join
+# key (EIN2) is in bmf_vars() but is not a trait, so it is excluded.
+.sfw_references_bmf <- function(sfw) {
+  traits <- setdiff(bmf_vars(), c("EIN2", .sfw_key(sfw, "entity")))
+  cols <- unlist(lapply(sfw$rules, function(r)
+    if (r$type %in% c("filter", "check", "select")) c(r$column, r$vars) else NULL),
+    use.names = FALSE)
+  any(cols %in% traits)
+}
+
 # Translate a sample frame into read-stage acquisition inputs for panelize().
 .sfw_to_acquire <- function(sfw, columns_arg) {
   entity <- .sfw_key(sfw, "entity")
