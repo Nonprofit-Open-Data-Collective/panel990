@@ -1,8 +1,10 @@
 # R build / check artifacts
 /doc/
 /Meta/
-/docs/
 inst/doc/
+# NOTE: /docs/ is intentionally tracked -- GitHub Pages serves the pkgdown site
+# from the main branch's docs/ folder. Rebuild with pkgdown::build_site() and
+# commit docs/ whenever the site changes.
 *.Rproj.user
 .Rhistory
 .RData
