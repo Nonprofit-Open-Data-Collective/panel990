@@ -4,6 +4,26 @@ test_that("table resolution supports aliases and arbitrary literal names", {
   expect_equal(out$table[1], "F9-P00-T00-HEADER")
   expect_equal(out$cardinality, c("1x1", "1x1", "1xm"))
   expect_equal(out$is_alias, c(TRUE, FALSE, FALSE))
+  # The literal SD table is in the canonical catalog; the CUSTOM one is not.
+  expect_equal(out$known, c(TRUE, TRUE, FALSE))
+})
+
+test_that("table_catalog lists the canonical set and filters by cardinality", {
+  full <- table_catalog()
+  expect_true(nrow(full) > 100L)
+  expect_true(all(c("table", "alias", "cardinality") %in% names(full)))
+  expect_true("F9-P08-T00-REVENUE" %in% full$table)
+  # Aliases are attached where defined and NA otherwise.
+  expect_equal(full$alias[full$table == "F9-P08-T00-REVENUE"], "P08")
+  expect_true(is.na(full$alias[full$table == "F9-P02-T00-SIGNATURE"]))
+  # Every canonical table resolves to a real alias or literal.
+  expect_true(all(table_catalog("supplemental")$cardinality == "supplemental"))
+  expect_true(all(table_catalog("1x1")$cardinality == "1x1"))
+  expect_equal(
+    nrow(table_catalog("1x1")) + nrow(table_catalog("1xm")) +
+      nrow(table_catalog("supplemental")),
+    nrow(full)
+  )
 })
 
 make_download_source <- function() {

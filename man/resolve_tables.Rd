@@ -12,7 +12,8 @@ resolve_tables(tables, source = data_source())
 \item{source}{An \code{\link[=data_source]{data_source()}} configuration.}
 }
 \value{
-A data frame containing request, table, alias status, and cardinality.
+A data frame containing request, table, alias status, cardinality, and
+whether the resolved name is in the canonical \code{\link[=table_catalog]{table_catalog()}}.
 }
 \description{
 Any non-empty literal table name is accepted, allowing newly published and

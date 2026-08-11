@@ -2,13 +2,22 @@
 % Please edit documentation in R/source.R
 \name{table_catalog}
 \alias{table_catalog}
-\title{Return the built-in efile table aliases}
+\title{Catalog of canonical efile tables}
 \usage{
-table_catalog()
+table_catalog(cardinality = c("all", "1x1", "1xm", "supplemental"))
+}
+\arguments{
+\item{cardinality}{Filter to \code{"all"} (default), \code{"1x1"}, \code{"1xm"}, or
+\code{"supplemental"}.}
 }
 \value{
-A data frame with alias, canonical table, and cardinality.
+A data frame with columns \code{table}, \code{alias} (NA when none), and
+\code{cardinality}, one row per canonical table.
 }
 \description{
-Return the built-in efile table aliases
+Returns the full reference set of NCCS efile tables (Form 990/990EZ core and
+Schedules A-R), each with its join cardinality and short alias where one is
+defined. Cardinality is derived from the table's T-number: \verb{1x1} (one row per
+filing, T00), \verb{1xm} (repeating rows, T01-T98), or \code{supplemental} (free-text,
+T99).
 }
