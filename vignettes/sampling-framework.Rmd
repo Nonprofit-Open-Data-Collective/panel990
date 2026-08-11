@@ -94,7 +94,7 @@ conform(df, sfw, verbose = FALSE)$rows_violating
 When you hand the frame to `panelize()`, it governs the build:
 
 ```{r, eval = FALSE}
-p <- panelize(2019:2021, c("P00", "P01", "P08"), sfw = sfw, bmf = TRUE)
+p <- panelize(sfw = sfw, tables = c("P00", "P01", "P08"), years = 2019:2021, bmf = TRUE)
 ```
 
 Two restrictions are applied **before** the expensive table merges, so the
@@ -117,7 +117,7 @@ ga_c3 <- bmf$EIN2[bmf$geo_state_abbr == "GA" &
                     bmf$subsection_code == "3"]
 
 sfw <- add_rule(sfw, "GA 501c3 cohort", "subset", subset = ga_c3)
-p   <- panelize(2019:2021, c("P00", "P01", "P08"), sfw = sfw)
+p   <- panelize(sfw = sfw, tables = c("P00", "P01", "P08"), years = 2019:2021)
 ```
 
 Now `panelize()` reads only those organizations before merging tables and

@@ -17,7 +17,7 @@ its observations sit in the panel window*, so you can slice out entrants, exits,
 or a balanced set.
 
 In a real project you would start from a download -- for example
-`panelize(2016:2022, c("P00", "P01"), bmf = TRUE)` -- but the classification
+`panelize(tables = c("P00", "P01"), years = 2016:2022, bmf = TRUE)` -- but the classification
 works on any data frame with an id and a year, so this tutorial uses a small
 in-memory panel.
 

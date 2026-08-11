@@ -70,8 +70,15 @@ panelize <- function(
   if (cache == "none" && backend != "duckdb")
     stop("`cache = 'none'` requires `backend = 'duckdb'`.")
 
-  # keys come from the schema; an empty frame is created when none is supplied
-  if (is.null(sfw)) sfw <- create_sfw("panel", record = "OBJECTID")
+  # keys come from the schema; when no frame is supplied we create a default one
+  # (entity EIN2 / time TAX_YEAR from create_sfw(), record OBJECTID) and name it
+  # after the tables and year range so the manifest is self-describing.
+  if (is.null(sfw)) {
+    tbl_lab <- if (length(tables) <= 6L) paste(tables, collapse = ",")
+               else paste0(length(tables), " tables")
+    yr_lab  <- if (length(years)) paste0(min(years), "-", max(years)) else "no years"
+    sfw <- create_sfw(sprintf("panel[%s | %s]", tbl_lab, yr_lab), record = "OBJECTID")
+  }
   else {
     .sfw_check(sfw)
     if (is.na(.sfw_key(sfw, "record")))
