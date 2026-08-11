@@ -1,6 +1,6 @@
 test_that("cache none is restricted to DuckDB", {
   expect_error(
-    panelize(2022, "P00", cache = "none", backend = "memory"),
+    panelize(tables = "P00", years = 2022, cache = "none", backend = "memory"),
     "requires"
   )
 })
@@ -29,7 +29,7 @@ test_that("DuckDB and memory backends agree on local fixtures", {
   on.exit(unlink(c(root, memory_cache, duck_cache), recursive = TRUE), add = TRUE)
   args <- list(
     years = 2021:2022, tables = c("P00", "P01"), source = data_source(root),
-    keys = c("EIN2", "OBJECTID", "TAX_YEAR"), verbose = FALSE
+    verbose = FALSE
   )
   memory <- do.call(panelize, c(args, list(path = memory_cache, backend = "memory")))
   duck <- do.call(panelize, c(args, list(path = duck_cache, backend = "duckdb")))
@@ -44,7 +44,7 @@ test_that("DuckDB dependency error is actionable", {
   root <- make_duckdb_source()
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
   expect_error(
-    panelize(2021, "P00", source = data_source(root),
+    panelize(tables = "P00", years = 2021, source = data_source(root),
                 backend = "duckdb", cache = "none", verbose = FALSE),
     "requires.*DBI.*duckdb"
   )

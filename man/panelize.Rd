@@ -2,20 +2,19 @@
 % Please edit documentation in R/panel-build.R
 \name{panelize}
 \alias{panelize}
-\title{Download, read, merge, and assemble a multi-year efile panel}
+\title{Download, filter, merge, append BMF, and stack a panel}
 \usage{
 panelize(
-  years,
-  tables,
-  source = data_source(),
   sfw = NULL,
-  bmf = FALSE,
-  path = "efdata",
+  tables,
+  years,
+  source = data_source(),
+  bmf = "auto",
+  backend = "memory",
   cache = c("retain", "temporary", "none"),
-  backend = c("memory", "duckdb"),
+  path = "efdata",
   filters = NULL,
   columns = NULL,
-  keys = .EFILE_FILING_KEYS,
   include_many = FALSE,
   collision = c("error", "prefix"),
   overwrite = FALSE,
@@ -25,30 +24,28 @@ panelize(
 )
 }
 \arguments{
-\item{years}{Tax years.}
+\item{sfw}{Optional \code{\link[=create_sfw]{create_sfw()}} sample frame governing the build. Filters
+prefilter reads and merges; \code{select} rules project columns.}
 
 \item{tables}{Aliases or literal table names.}
 
+\item{years}{Tax years.}
+
 \item{source}{Efile source configuration.}
 
-\item{sfw}{Optional \code{\link[=create_sfw]{create_sfw()}} sample frame governing the build.}
+\item{bmf}{Append BMF fields: \code{"auto"} (default -- attach when the frame
+references a BMF field), \code{FALSE}, \code{TRUE} (the NCCS master), or a BMF source
+(data frame, path, or URL).}
 
-\item{bmf}{Merge BMF fields after assembly: \code{FALSE} (default), \code{TRUE} (the
-NCCS master), or a BMF source (data frame, path, or URL) passed to
-\code{\link[=bmf_merge]{bmf_merge()}}.}
+\item{backend}{\code{"memory"} (default) or \code{"duckdb"} (\code{"db"} is accepted).}
+
+\item{cache}{\code{"retain"}, \code{"temporary"}, or \code{"none"} (DuckDB-only virtual scan).}
 
 \item{path}{Retained-cache directory.}
 
-\item{cache}{\code{"retain"}, \code{"temporary"}, or \code{"none"}. \code{"none"} is available
-only with the DuckDB backend and scans source URLs virtually.}
-
-\item{backend}{\code{"memory"} or \code{"duckdb"}.}
-
 \item{filters}{Optional named value filters (merged with the frame's).}
 
-\item{columns}{Optional source fields to retain. Join keys are added.}
-
-\item{keys}{Explicit candidate filing keys (overridden by the frame's keys).}
+\item{columns}{Optional source fields to retain (union with the frame's).}
 
 \item{include_many}{Join one-to-many and supplemental tables.}
 
@@ -63,12 +60,19 @@ only with the DuckDB backend and scans source URLs virtually.}
 \item{verbose}{Print progress.}
 }
 \value{
-A \code{panel990} object with \code{data}, download/table/join manifests, and
-(when \code{sfw} is given) the applied frame plus its step/check manifests.
+A \code{panel} (see \code{\link[=as_panel]{as_panel()}}) whose \code{data} is the stacked frame, whose
+\code{sfw} carries the rules and provenance log (\code{\link[=manifest]{manifest()}}), plus
+download/table/join manifests and BMF diagnostics.
 }
 \description{
-Acquires and assembles a panel. When a sample frame is supplied via \code{sfw}, it
-governs acquisition: keys come from the frame, its entity restriction is
-pushed down to read-time, its \code{select} rules project columns, and after
-assembly (and optional BMF join) its rules are applied via \code{\link[=apply_sfw]{apply_sfw()}}.
+The workhorse acquisition recipe: resolve tables and years, download (or
+virtually scan) the CSVs, project columns and push the sample frame's entity
+restriction down to read-time, merge the tables within each year, stack the
+years, optionally append BMF organization traits, then apply the frame's
+rules. Returns a \link[=as_panel]{panel} bundling the data with the frame and a
+provenance log.
+}
+\details{
+Keys are set automatically from the efile schema (entity \code{EIN2}, time
+\code{TAX_YEAR}, record \code{OBJECTID}).
 }

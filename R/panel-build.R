@@ -20,58 +20,68 @@
   out
 }
 
-#' Download, read, merge, and assemble a multi-year efile panel
+#' Download, filter, merge, append BMF, and stack a panel
 #'
-#' Acquires and assembles a panel. When a sample frame is supplied via `sfw`, it
-#' governs acquisition: keys come from the frame, its entity restriction is
-#' pushed down to read-time, its `select` rules project columns, and after
-#' assembly (and optional BMF join) its rules are applied via [apply_sfw()].
+#' The workhorse acquisition recipe: resolve tables and years, download (or
+#' virtually scan) the CSVs, project columns and push the sample frame's entity
+#' restriction down to read-time, merge the tables within each year, stack the
+#' years, optionally append BMF organization traits, then apply the frame's
+#' rules. Returns a [panel][as_panel] bundling the data with the frame and a
+#' provenance log.
 #'
-#' @param years Tax years.
+#' Keys are set automatically from the efile schema (entity `EIN2`, time
+#' `TAX_YEAR`, record `OBJECTID`).
+#'
+#' @param sfw Optional [create_sfw()] sample frame governing the build. Filters
+#'   prefilter reads and merges; `select` rules project columns.
 #' @param tables Aliases or literal table names.
+#' @param years Tax years.
 #' @param source Efile source configuration.
-#' @param sfw Optional [create_sfw()] sample frame governing the build.
-#' @param bmf Merge BMF fields after assembly: `FALSE` (default), `TRUE` (the
-#'   NCCS master), or a BMF source (data frame, path, or URL) passed to
-#'   [bmf_merge()].
+#' @param bmf Append BMF fields: `"auto"` (default -- attach when the frame
+#'   references a BMF field), `FALSE`, `TRUE` (the NCCS master), or a BMF source
+#'   (data frame, path, or URL).
+#' @param backend `"memory"` (default) or `"duckdb"` (`"db"` is accepted).
+#' @param cache `"retain"`, `"temporary"`, or `"none"` (DuckDB-only virtual scan).
 #' @param path Retained-cache directory.
-#' @param cache `"retain"`, `"temporary"`, or `"none"`. `"none"` is available
-#'   only with the DuckDB backend and scans source URLs virtually.
-#' @param backend `"memory"` or `"duckdb"`.
 #' @param filters Optional named value filters (merged with the frame's).
-#' @param columns Optional source fields to retain. Join keys are added.
-#' @param keys Explicit candidate filing keys (overridden by the frame's keys).
+#' @param columns Optional source fields to retain (union with the frame's).
 #' @param include_many Join one-to-many and supplemental tables.
 #' @param collision Non-key collision policy.
 #' @param overwrite Replace cached files.
 #' @param retry_max Download attempts.
 #' @param timeout Download timeout.
 #' @param verbose Print progress.
-#' @return A `panel990` object with `data`, download/table/join manifests, and
-#'   (when `sfw` is given) the applied frame plus its step/check manifests.
+#' @return A `panel` (see [as_panel()]) whose `data` is the stacked frame, whose
+#'   `sfw` carries the rules and provenance log ([manifest()]), plus
+#'   download/table/join manifests and BMF diagnostics.
 #' @export
 panelize <- function(
-    years, tables, source = data_source(), sfw = NULL, bmf = FALSE,
-    path = "efdata",
-    cache = c("retain", "temporary", "none"), backend = c("memory", "duckdb"),
-    filters = NULL, columns = NULL,
-    keys = .EFILE_FILING_KEYS, include_many = FALSE,
+    sfw = NULL, tables, years, source = data_source(),
+    bmf = "auto", backend = "memory",
+    cache = c("retain", "temporary", "none"), path = "efdata",
+    filters = NULL, columns = NULL, include_many = FALSE,
     collision = c("error", "prefix"), overwrite = FALSE,
     retry_max = 3L, timeout = 300, verbose = TRUE
 ) {
   cache <- match.arg(cache)
-  backend <- match.arg(backend)
   collision <- match.arg(collision)
+  if (identical(backend, "db")) backend <- "duckdb"
+  backend <- match.arg(backend, c("memory", "duckdb"))
   if (cache == "none" && backend != "duckdb")
     stop("`cache = 'none'` requires `backend = 'duckdb'`.")
 
-  if (!is.null(sfw)) {
+  # keys come from the schema; an empty frame is created when none is supplied
+  if (is.null(sfw)) sfw <- create_sfw("panel", record = "OBJECTID")
+  else {
     .sfw_check(sfw)
-    acq <- .sfw_to_acquire(sfw, columns)
-    keys <- acq$keys
-    if (is.null(columns)) columns <- acq$read_columns
-    filters <- .efile_merge_filters(filters, acq$read_filters)
+    if (is.na(.sfw_key(sfw, "record")))
+      sfw <- add_key(sfw, "record", "unique_record", "OBJECTID")
   }
+
+  acq <- .sfw_to_acquire(sfw, columns)
+  keys <- acq$keys
+  if (is.null(columns)) columns <- acq$read_columns
+  filters <- .efile_merge_filters(filters, acq$read_filters)
 
   downloads <- if (cache == "none")
     .efile_virtual_download(years, tables, source) else
@@ -85,50 +95,39 @@ panelize <- function(
                         collision = collision)
   if (!length(merged$years)) stop("No table-year data were available for the panel.")
   data <- .efile_bind_rows(merged$years)
+  sfw <- .panel_receipt(sfw, "panelize",
+                        paste0(length(tables), " tables x ",
+                               length(unique(years)), " years"),
+                        c(NA, NA), dim(data))
 
   bmf_diagnostics <- NULL
-  if (!isFALSE(bmf)) {
-    bmf_source <- if (isTRUE(bmf)) .EFILE_BMF_URL else bmf
+  do_bmf <- if (identical(bmf, "auto")) .sfw_references_bmf(sfw) else !isFALSE(bmf)
+  if (isTRUE(do_bmf)) {
+    bmf_source <- if (isTRUE(bmf) || identical(bmf, "auto")) .EFILE_BMF_URL else bmf
+    before <- dim(data)
     data <- bmf_merge(data, source = bmf_source, verbose = verbose)
     bmf_diagnostics <- attr(data, "bmf_diagnostics")
     attr(data, "bmf_diagnostics") <- NULL
+    sfw <- .panel_receipt(sfw, "bmf_merge", "append BMF fields", before, dim(data))
   }
 
-  sfw_steps <- NULL; sfw_checks <- NULL; sfw_views <- NULL
-  if (!is.null(sfw)) {
-    data <- apply_sfw(data, sfw, verbose = verbose)
-    sfw_steps <- attr(data, "sfw_steps")
-    sfw_checks <- attr(data, "sfw_checks")
-    sfw_views <- attr(data, "sfw_views")
-    for (a in c("sfw_steps", "sfw_checks", "sfw_views")) attr(data, a) <- NULL
-  }
+  before <- dim(data)
+  data <- apply_sfw(data, sfw, verbose = verbose)
+  steps <- attr(data, "sfw_steps")
+  sfw_checks <- attr(data, "sfw_checks"); sfw_views <- attr(data, "sfw_views")
+  for (a in c("sfw_steps", "sfw_checks", "sfw_views")) attr(data, a) <- NULL
+  if (!is.null(steps)) for (i in seq_len(nrow(steps)))
+    sfw <- .panel_receipt(sfw, steps$step[[i]], steps$criteria[[i]],
+                          c(steps$rows_before[[i]], steps$cols_before[[i]]),
+                          c(steps$rows_after[[i]], steps$cols_after[[i]]))
 
   structure(list(
-    data = data,
+    data = data, sfw = sfw, fresh = FALSE,
     download_manifest = downloads$manifest,
     table_manifest = merged$table_manifest,
     join_manifest = merged$join_manifest,
-    cache_path = downloads$cache_path,
-    log_file = downloads$log_file,
-    source = source,
-    backend = backend,
-    sfw = sfw,
-    sfw_steps = sfw_steps,
-    sfw_checks = sfw_checks,
-    sfw_views = sfw_views,
-    bmf_diagnostics = bmf_diagnostics
-  ), class = "panel990")
-}
-
-#' @export
-as.data.frame.panel990 <- function(x, ...) x$data
-
-#' @export
-print.panel990 <- function(x, ...) {
-  cat("<panel990>\n")
-  cat("  Rows:", nrow(x$data), " Columns:", ncol(x$data), "\n")
-  cat("  Years:", paste(sort(unique(x$data$TAX_YEAR)), collapse = ", "), "\n")
-  if (!is.null(x$sfw)) cat("  Sample frame:", x$sfw$meta$name,
-                           "(", length(x$sfw$rules), "rules )\n")
-  invisible(x)
+    sfw_checks = sfw_checks, sfw_views = sfw_views,
+    bmf_diagnostics = bmf_diagnostics,
+    source = source, backend = backend
+  ), class = "panel")
 }

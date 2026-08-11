@@ -17,7 +17,7 @@ make_sfw_panel_source <- function() {
   root
 }
 
-test_that("panelize pushes the entity restriction to read-time and applies rules", {
+test_that("panelize returns a panel, pushes down the entity, and applies rules", {
   root <- make_sfw_panel_source(); cache <- tempfile("sfw-cache-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
 
@@ -25,19 +25,17 @@ test_that("panelize pushes the entity restriction to read-time and applies rules
   sfw <- add_rule(sfw, "recent", "filter", column = "revenue", op = ">=",
                   values = 2121)
 
-  res <- panelize(2020:2021, c("P00", "P01"), source = data_source(root),
-                  sfw = sfw, path = cache, verbose = FALSE)
+  res <- panelize(sfw, tables = c("P00", "P01"), years = 2020:2021,
+                  source = data_source(root), path = cache, verbose = FALSE)
 
-  expect_s3_class(res, "panel990")
-  # entity pushdown: only EIN-12 rows were ever read
+  expect_s3_class(res, "panel")
   keep <- res$table_manifest$status %in% c("downloaded", "reused")
-  expect_true(all(res$table_manifest$rows_selected[keep] == 1L))
-  # post-assembly filter kept only the 2021 row (revenue 2121)
-  expect_equal(nrow(res$data), 1L)
+  expect_true(all(res$table_manifest$rows_selected[keep] == 1L))  # entity pushdown
+  expect_equal(nrow(as.data.frame(res)), 1L)                      # revenue filter
   expect_equal(res$data$EIN2, "EIN-12-3456789")
   expect_equal(res$data$TAX_YEAR, 2021)
-  expect_false(is.null(res$sfw))
-  expect_false(is.null(res$sfw_steps))
+  expect_s3_class(sample_frame(res), "sfw")
+  expect_true(nrow(manifest(res)) > 0)                            # provenance logged
 })
 
 test_that("panelize applies a BMF trait filter after a BMF merge", {
@@ -49,20 +47,20 @@ test_that("panelize applies a BMF trait filter after a BMF merge", {
   sfw <- create_sfw("ga study", state = "GA")
 
   res <- suppressWarnings(panelize(
-    2020:2021, c("P00", "P01"), source = data_source(root),
-    sfw = sfw, bmf = bmf, path = cache, verbose = FALSE))
+    sfw, tables = c("P00", "P01"), years = 2020:2021,
+    source = data_source(root), bmf = bmf, path = cache, verbose = FALSE))
 
-  expect_setequal(unique(res$data$EIN2), "EIN-12-3456789")   # only the GA org
+  expect_setequal(unique(res$data$EIN2), "EIN-12-3456789")
   expect_true("geo_state_abbr" %in% names(res$data))
   expect_false(is.null(res$bmf_diagnostics))
 })
 
-test_that("panelize still works without a sample frame", {
+test_that("panelize works without a sample frame (auto keys/frame)", {
   root <- make_sfw_panel_source(); cache <- tempfile("sfw-cache3-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
-  res <- panelize(2020:2021, c("P00", "P01"), source = data_source(root),
-                  path = cache, keys = c("EIN2", "OBJECTID", "TAX_YEAR"),
-                  verbose = FALSE)
+  res <- panelize(tables = c("P00", "P01"), years = 2020:2021,
+                  source = data_source(root), path = cache, verbose = FALSE)
+  expect_s3_class(res, "panel")
   expect_equal(nrow(res$data), 4L)
-  expect_null(res$sfw)
+  expect_s3_class(sample_frame(res), "sfw")          # a default frame is created
 })

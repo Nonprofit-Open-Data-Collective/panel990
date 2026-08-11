@@ -71,10 +71,10 @@ test_that("multi-year panel aligns schemas and exposes manifests", {
   cache <- tempfile("panel-cache-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
   result <- panelize(
-    2021:2022, c("P00", "P01"), source = data_source(root), path = cache,
-    keys = c("EIN2", "OBJECTID", "TAX_YEAR"), verbose = FALSE
+    tables = c("P00", "P01"), years = 2021:2022, source = data_source(root),
+    path = cache, verbose = FALSE
   )
-  expect_s3_class(result, "panel990")
+  expect_s3_class(result, "panel")
   expect_equal(nrow(result$data), 4L)
   expect_setequal(unique(result$data$TAX_YEAR), 2021:2022)
   expect_equal(nrow(result$download_manifest), 4L)

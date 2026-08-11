@@ -27,6 +27,15 @@ reference:
   - views
   - conform
 
+- title: The panel object
+  desc: Bundle data with its sample frame; extract and report provenance.
+  contents:
+  - as_panel
+  - is_panel
+  - panel_data
+  - sample_frame
+  - manifest
+
 - title: Acquire & assemble
   desc: Download, read, merge, and stack efile tables into a panel.
   contents:
@@ -61,6 +70,7 @@ reference:
   desc: Classify, label, filter, impute, and smooth panels over time.
   contents:
   - panel_describe
+  - panel_update
   - panel_label
   - panel_filter
   - panel_balance
