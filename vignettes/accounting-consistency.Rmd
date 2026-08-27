@@ -70,8 +70,12 @@ The check names the broken identities and the exact gap: contributions short by
 ## Reconciling
 
 `reconcile()` adjusts the values as little as possible (weighted least squares)
-to satisfy the identities. Because the org **reported** its totals, we hold
-those fixed and let the imputed components move:
+to satisfy the identities:
+
+![Independently smoothed revenue components no longer sum to total revenue; reconcile() restores the identity](figures/panel-reconcile.svg){width=100%}
+
+Because the org **reported** its totals, we hold those fixed and let the
+imputed components move:
 
 ```{r}
 imputed <- c("F9_08_REV_CONTR_GOVT_GRANT", "F9_08_REV_CONTR_OTH",

@@ -55,6 +55,11 @@ get_rules(sfw)
 `op` may be `in`, `not_in`, `==`, `!=`, `>`, `>=`, `<`, `<=`, `between`,
 `is_true`, `is_false`; for an arbitrary predicate use `expr = "..."`.
 
+Most rules are filters: each one names a column, an operator, and the values it
+tolerates — which is to say, each one names exactly the rows it removes:
+
+![Four filter rules drawn as colored strips over a tall data frame, each strip covering the rows that rule removes](figures/sfw-rules.svg){width=100%}
+
 ## Apply the frame
 
 `apply_sfw()` runs the rules on a data frame. Here is a tiny stand-in for a
@@ -81,6 +86,11 @@ removed:
 ```{r}
 attr(out, "sfw_steps")
 ```
+
+The manifest is the frame's audit trail: one row per rule, recording how many
+rows each one removed on its way to the final panel:
+
+![The sfw_steps manifest as a ledger: each rule's rows in, rows removed, and rows out, with a shrinking bar showing what dropped](figures/sfw-manifest.svg){width=100%}
 
 `conform()` answers the inverse question -- does a data frame already satisfy
 the frame? -- without changing it:
@@ -119,6 +129,8 @@ ga_c3 <- bmf$EIN2[bmf$geo_state_abbr == "GA" &
 sfw <- add_rule(sfw, "GA 501c3 cohort", "subset", subset = ga_c3)
 p   <- panelize(sfw = sfw, tables = c("P00", "P01", "P08"), years = 2019:2021)
 ```
+
+![Two large tables prefiltered down to slim cohort tables before the merge; the full-size merge risks exhausting RAM](figures/sfw-prefilter.svg){width=100%}
 
 Now `panelize()` reads only those organizations before merging tables and
 stacking years -- the trait filter has become a fast pushdown. The remaining

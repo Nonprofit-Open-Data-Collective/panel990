@@ -121,6 +121,31 @@ df <- as.data.frame(panel)
 manifest(panel)          # every step: rows in/out, rules applied
 ```
 
+### How `panelize()` assembles the panel
+
+That one call in step 1 does three things. First, **within each year it merges
+the five tables into one wide row per filing**. Each table holds one part of
+the 990 form and carries the same filing keys — `EIN2` (organization),
+`TAX_YEAR` (year), and `OBJECTID` (one id per filed return). The join is a
+full outer join, so a filing missing from one part keeps its row (with `NA`s)
+instead of being dropped.
+
+![Merging the five core tables within one year](man/figures/merge-tables.svg)
+
+Second, **the merged per-year tables are stacked into one long panel**. The
+per-year frames share a harmonized column layout, so they append into a single
+table with one row per organization-year:
+
+![Stacking merged years into a long panel](man/figures/stack-years.svg)
+
+Third, **`bmf = TRUE` appends organization traits from the NCCS Business
+Master File**. The BMF holds one row per organization — time-invariant traits
+like name, NTEE code, subsection, and geography — left-joined on `EIN2` and
+broadcast to every year that organization appears. Filings without a BMF match
+are kept, with the BMF columns set to `NA`.
+
+![Attaching organization traits with the BMF](man/figures/bmf-merge.svg)
+
 Want the raw tables instead of a normalized panel? `download_tables()`,
 `read_tables()`, and `merge_tables()` expose each stage of `panelize()`. Want a
 reusable specification? `create_sfw()` builds a **sample frame** of keys and

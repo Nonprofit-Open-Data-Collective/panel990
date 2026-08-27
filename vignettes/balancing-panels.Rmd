@@ -17,6 +17,8 @@ in which every retained organization is observed in every retained year. It is
 the complement of `panel_complete()`: completion *fills* gaps to reach a full
 rectangle, balancing *drops* organizations and years to reach one.
 
+![panel_balance() trimming a mixed panel to its largest fully observed block of organizations and years](figures/panel-balance.svg){width=100%}
+
 ```{r}
 df <- data.frame(
   EIN2     = c(rep("A", 4), rep("B", 4), rep("C", 3), rep("D", 2)),

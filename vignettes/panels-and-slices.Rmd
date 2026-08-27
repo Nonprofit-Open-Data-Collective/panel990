@@ -40,6 +40,8 @@ Classification has **two independent axes**:
 - **`panel_spell`** (continuity): `seamless` (consecutive years) or `segmented`
   (interior gaps).
 
+![The eight panel membership patterns: panel_type crossed with panel_spell](figures/panel-types.svg){width=100%}
+
 ```{r}
 panel_describe(panel, time = "TAX_YEAR", id = "EIN2")
 ```
@@ -53,6 +55,8 @@ Organization A spans 2018--2022 with no gaps (`persistent` + `seamless` -- the
 
 `panel_filter()` returns the rows of the organizations that match. It
 classifies internally, so you just name what you want:
+
+![panel_filter() selecting persistent organizations and entrants out of a mixed panel](figures/panel-filter.svg){width=100%}
 
 ```{r}
 # new entrants

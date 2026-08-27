@@ -23,14 +23,58 @@ specifies everything with direct argument values -- no sample frame yet.
 
 The efile data is split into ~125 tables, each corresponding to a section of the
 990. `panel990` ships short aliases for the most common ones. Preview them with
-`table_catalog()`:
+`table_catalog()`; below, the catalog is joined with the bundled
+`field_concordance` to add a readable name and the number of documented fields
+per table:
 
-```{r}
-table_catalog()
+```{r, eval = FALSE}
+table_catalog()      # columns: table, alias, cardinality
+```
+
+```{r, echo = FALSE}
+cat990 <- table_catalog()
+cat990$alias[is.na(cat990$alias)] <- ""
+
+# readable name from the table token
+nice_name <- function(x) {
+  nm <- tolower(gsub("[-_]+", " ", sub("^[A-Z0-9]+-(P[0-9]+-)?T[0-9]+-", "", x)))
+  subs <- c("\\both\\b" = "other", "\\bfrgn\\b" = "foreign",
+            "\\brltd\\b" = "related", "\\bbldg\\b" = "building",
+            "\\bequip\\b" = "equipment", "\\bacts\\b" = "activities",
+            "\\bindiv\\b" = "individuals", "\\bgovts\\b" = "governments",
+            "\\bmisc\\b" = "miscellaneous", "\\bconserv\\b" = "conservation",
+            "\\bhist\\b" = "historical", "\\bdir trust key\\b" =
+              "directors, trustees, key employees",
+            "\\birs\\b" = "IRS", "\\bus\\b" = "U.S.", "\\bez\\b" = "(EZ)",
+            "\\bhce\\b" = "HCE", "\\bfap\\b" = "FAP")
+  for (p in names(subs)) nm <- gsub(p, subs[[p]], nm)
+  paste0(toupper(substring(nm, 1, 1)), substring(nm, 2))
+}
+# section label and concordance field counts
+form <- ifelse(startsWith(cat990$table, "F9"), "Form 990",
+               paste("Schedule", substring(cat990$table, 2, 2)))
+part <- suppressWarnings(as.integer(sub("^..-P([0-9]+).*", "\\1", cat990$table)))
+n_fields <- table(field_concordance$rdb_table)[cat990$table]
+n_fields[is.na(n_fields)] <- 0
+
+knitr::kable(
+  data.frame(
+    alias       = cat990$alias,
+    table       = cat990$table,
+    name        = nice_name(cat990$table),
+    section     = ifelse(is.na(part) | part == 0, form,
+                         paste0(form, ", Part ", part)),
+    fields      = as.integer(n_fields),
+    cardinality = cat990$cardinality
+  ),
+  row.names = FALSE
+)
 ```
 
 - **alias** -- the short token you pass to `tables=` (e.g. `"P08"`).
 - **table** -- the canonical file name it resolves to.
+- **fields** -- how many variables the bundled `field_concordance` documents
+  for the table.
 - **cardinality** -- `1x1` is one row per filing (safe to merge side-by-side);
   `1xm` is one-to-many (kept separate unless you opt in).
 
@@ -81,8 +125,13 @@ mg <- merge_tables(rd)                # join P00 + P08 per year by filing keys
 ```
 
 `merge_tables()` joins the `1x1` tables side-by-side (header fields next to
-revenue fields, one row per filing) and reports each join in a manifest. The
-years are then stacked into a single data frame.
+revenue fields, one row per filing) and reports each join in a manifest:
+
+![Five core 990 tables joined on the filing keys into one wide row per filing](figures/merge-tables.svg){width=100%}
+
+The years are then stacked into a single data frame:
+
+![Merged per-year tables stacked into one long panel with one row per organization-year](figures/stack-years.svg){width=100%}
 
 ### The one-shot form
 
@@ -113,6 +162,8 @@ BMF, then subset. `bmf_merge()` downloads and attaches the native BMF fields by
 df <- bmf_merge(df)                   # appends geo_state_abbr, subsection_code, ntee_*, ...
 bmf_vars()                            # the fields it adds by default
 ```
+
+![BMF organization traits appended to the right of the 990 panel by a left join on EIN2](figures/bmf-merge.svg){width=100%}
 
 Now the state column exists, so a plain base-R subset works:
 

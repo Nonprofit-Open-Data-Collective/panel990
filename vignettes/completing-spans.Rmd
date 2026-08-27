@@ -18,6 +18,8 @@ its own span. It is the friendly wrapper over `panel_impute()` -- it fills gaps
 for **all** boundary types (not just panel-spanning ones) and interpolates by
 default.
 
+![panel_impute() filling interior gaps, shown as a table with missing cells and as trend plots with imputed points](figures/panel-impute.svg){width=100%}
+
 A toy panel with two different kinds of gap (and a filler `F` so the middle
 years belong to the panel):
 

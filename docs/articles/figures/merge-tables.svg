@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1180" height="560" fill="white"/>
+<text x="590.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Merging the Five Core Tables Within One Year</text>
+<text x="590.0" y="74.0" font-size="15.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">merge_tables(): full outer join on the filing keys  •  one wide row per filing</text>
+<rect x="40.0" y="92.0" width="150.0" height="26.0" rx="13.0" fill="#F2F3F5" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="115.0" y="110.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR = 2019</text>
+<polygon points="107.0,132.0 309.0,132.0 309.0,160.0 208.0,166.0 107.0,160.0" fill="#1B2A5B"/>
+<text x="208.0" y="150.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">P00 · HEADER</text>
+<rect x="107.0" y="172.0" width="52.0" height="20.0" rx="0.0" fill="#DADDE4"/>
+<text x="133.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<rect x="159.0" y="172.0" width="150.0" height="20.0" rx="0.0" fill="#EDEFF3"/>
+<text x="234.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ORG_NAME_L1</text>
+<rect x="107.0" y="194.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="133.0" y="212.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="159.0" y="194.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="234.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Acme Arts</text>
+<rect x="107.0" y="222.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="133.0" y="240.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="159.0" y="222.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="234.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Bay Clinic</text>
+<rect x="107.0" y="250.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="133.0" y="268.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="159.0" y="250.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="234.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Casa Verde</text>
+<line x1="208.0" y1="284.0" x2="208.0" y2="318.0" stroke="#9AA3B2" stroke-width="2.0" stroke-linecap="butt"/>
+<polygon points="208.0,322.0 214.4,309.2 201.6,309.2" fill="#9AA3B2"/>
+<polygon points="315.0,132.0 517.0,132.0 517.0,160.0 416.0,166.0 315.0,160.0" fill="#00A99D"/>
+<text x="416.0" y="150.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">P01 · SUMMARY</text>
+<rect x="315.0" y="172.0" width="52.0" height="20.0" rx="0.0" fill="#DADDE4"/>
+<text x="341.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<rect x="367.0" y="172.0" width="150.0" height="20.0" rx="0.0" fill="#EDEFF3"/>
+<text x="442.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV_TOT_CY</text>
+<rect x="315.0" y="194.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="341.0" y="212.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="367.0" y="194.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="442.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">152</text>
+<rect x="315.0" y="222.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="341.0" y="240.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="367.0" y="222.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="442.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">305</text>
+<rect x="315.0" y="250.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="341.0" y="268.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="367.0" y="250.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="442.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">88</text>
+<line x1="416.0" y1="284.0" x2="416.0" y2="318.0" stroke="#9AA3B2" stroke-width="2.0" stroke-linecap="butt"/>
+<polygon points="416.0,322.0 422.4,309.2 409.6,309.2" fill="#9AA3B2"/>
+<polygon points="523.0,132.0 725.0,132.0 725.0,160.0 624.0,166.0 523.0,160.0" fill="#5BAE2E"/>
+<text x="624.0" y="150.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">P08 · REVENUE</text>
+<rect x="523.0" y="172.0" width="52.0" height="20.0" rx="0.0" fill="#DADDE4"/>
+<text x="549.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<rect x="575.0" y="172.0" width="150.0" height="20.0" rx="0.0" fill="#EDEFF3"/>
+<text x="650.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV_CONTR</text>
+<rect x="523.0" y="194.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="549.0" y="212.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="575.0" y="194.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="650.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">90</text>
+<rect x="523.0" y="222.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="549.0" y="240.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="575.0" y="222.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="650.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">120</text>
+<rect x="523.0" y="250.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="549.0" y="268.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="575.0" y="250.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="650.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">30</text>
+<line x1="624.0" y1="284.0" x2="624.0" y2="318.0" stroke="#9AA3B2" stroke-width="2.0" stroke-linecap="butt"/>
+<polygon points="624.0,322.0 630.4,309.2 617.6,309.2" fill="#9AA3B2"/>
+<polygon points="731.0,132.0 933.0,132.0 933.0,160.0 832.0,166.0 731.0,160.0" fill="#E9A800"/>
+<text x="832.0" y="150.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">P09 · EXPENSES</text>
+<rect x="731.0" y="172.0" width="52.0" height="20.0" rx="0.0" fill="#DADDE4"/>
+<text x="757.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<rect x="783.0" y="172.0" width="150.0" height="20.0" rx="0.0" fill="#EDEFF3"/>
+<text x="858.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EXP_TOT</text>
+<rect x="731.0" y="194.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="757.0" y="212.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="783.0" y="194.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="858.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">140</text>
+<rect x="731.0" y="222.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="757.0" y="240.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="783.0" y="222.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="858.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">290</text>
+<rect x="731.0" y="250.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="757.0" y="268.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="783.0" y="250.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="858.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">75</text>
+<line x1="832.0" y1="284.0" x2="832.0" y2="318.0" stroke="#9AA3B2" stroke-width="2.0" stroke-linecap="butt"/>
+<polygon points="832.0,322.0 838.4,309.2 825.6,309.2" fill="#9AA3B2"/>
+<polygon points="939.0,132.0 1141.0,132.0 1141.0,160.0 1040.0,166.0 939.0,160.0" fill="#6B6EC6"/>
+<text x="1040.0" y="150.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">P10 · BALANCE</text>
+<rect x="939.0" y="172.0" width="52.0" height="20.0" rx="0.0" fill="#DADDE4"/>
+<text x="965.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<rect x="991.0" y="172.0" width="150.0" height="20.0" rx="0.0" fill="#EDEFF3"/>
+<text x="1066.0" y="186.0" font-size="10.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET_EOY</text>
+<rect x="939.0" y="194.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="965.0" y="212.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="991.0" y="194.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1066.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">610</text>
+<rect x="939.0" y="222.0" width="52.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="965.0" y="240.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="991.0" y="222.0" width="150.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1066.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">940</text>
+<line x1="1040.0" y1="256.0" x2="1040.0" y2="318.0" stroke="#9AA3B2" stroke-width="2.0" stroke-linecap="butt"/>
+<polygon points="1040.0,322.0 1046.4,309.2 1033.6,309.2" fill="#9AA3B2"/>
+<polygon points="40.0,332.0 100.0,332.0 100.0,360.0 70.0,366.0 40.0,360.0" fill="#9AA3B2"/>
+<text x="70.0" y="350.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<polygon points="107.0,332.0 309.0,332.0 309.0,360.0 208.0,366.0 107.0,360.0" fill="#1B2A5B"/>
+<text x="208.0" y="350.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">ORG_NAME_L1</text>
+<polygon points="315.0,332.0 517.0,332.0 517.0,360.0 416.0,366.0 315.0,360.0" fill="#00A99D"/>
+<text x="416.0" y="350.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">REV_TOT_CY</text>
+<polygon points="523.0,332.0 725.0,332.0 725.0,360.0 624.0,366.0 523.0,360.0" fill="#5BAE2E"/>
+<text x="624.0" y="350.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">REV_CONTR</text>
+<polygon points="731.0,332.0 933.0,332.0 933.0,360.0 832.0,366.0 731.0,360.0" fill="#E9A800"/>
+<text x="832.0" y="350.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EXP_TOT</text>
+<polygon points="939.0,332.0 1141.0,332.0 1141.0,360.0 1040.0,366.0 939.0,360.0" fill="#6B6EC6"/>
+<text x="1040.0" y="350.3" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">ASSET_EOY</text>
+<rect x="40.0" y="372.0" width="60.0" height="26.0" rx="5.0" fill="#F2F3F5"/>
+<text x="70.0" y="390.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="107.0" y="372.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="208.0" y="390.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Acme Arts</text>
+<rect x="315.0" y="372.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="416.0" y="390.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">152</text>
+<rect x="523.0" y="372.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="624.0" y="390.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">90</text>
+<rect x="731.0" y="372.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="832.0" y="390.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">140</text>
+<rect x="939.0" y="372.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1040.0" y="390.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">610</text>
+<rect x="40.0" y="402.0" width="60.0" height="26.0" rx="5.0" fill="#F2F3F5"/>
+<text x="70.0" y="420.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="107.0" y="402.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="208.0" y="420.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Bay Clinic</text>
+<rect x="315.0" y="402.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="416.0" y="420.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">305</text>
+<rect x="523.0" y="402.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="624.0" y="420.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">120</text>
+<rect x="731.0" y="402.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="832.0" y="420.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">290</text>
+<rect x="939.0" y="402.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1040.0" y="420.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">940</text>
+<rect x="40.0" y="432.0" width="60.0" height="26.0" rx="5.0" fill="#F2F3F5"/>
+<text x="70.0" y="450.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="107.0" y="432.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="208.0" y="450.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Casa Verde</text>
+<rect x="315.0" y="432.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="416.0" y="450.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">88</text>
+<rect x="523.0" y="432.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="624.0" y="450.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">30</text>
+<rect x="731.0" y="432.0" width="202.0" height="26.0" rx="5.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="832.0" y="450.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">75</text>
+<rect x="939.0" y="432.0" width="202.0" height="26.0" rx="5.0" fill="#F7F8FA" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1040.0" y="450.0" font-size="12.5" fill="#B6BCC9" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">NA</text>
+<text x="590.0" y="488.0" font-size="12.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">the join is a full outer join — C filed no balance-sheet part, so its row is kept with the P10 fields set to NA</text>
+<text x="590.0" y="510.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">every table carries the same filing keys:  EIN2 (org)  ×  TAX_YEAR (year)  ×  OBJECTID (filed return)</text>
+</svg>

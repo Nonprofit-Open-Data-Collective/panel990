@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="530" viewBox="0 0 1120 530" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1120" height="530" fill="white"/>
+<text x="560.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Searching for a Balanced Panel</text>
+<text x="560.0" y="74.0" font-size="15.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">panel_balance(strategy = "max_rectangle") — the year window maximizing complete orgs × years coverage</text>
+<text x="275.0" y="122.0" font-size="13.0" fill="#8A93A6" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">mixed panel — 8 orgs × 7 years</text>
+<text x="142.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2018</text>
+<text x="194.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<text x="246.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<text x="298.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<text x="350.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<text x="402.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2023</text>
+<text x="454.0" y="144.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2024</text>
+<rect x="220.0" y="150.0" width="104.0" height="276.0" rx="0.0" fill="#EAF6EC"/>
+<rect x="70.0" y="153.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="173.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<circle cx="142.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="194.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="246.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="298.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="350.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="402.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="454.0" cy="169.0" r="8.5" fill="#5BAE2E"/>
+<rect x="70.0" y="187.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="207.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<circle cx="142.0" cy="203.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="194.0" cy="203.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="246.0" cy="203.0" r="8.5" fill="#0E87BE"/>
+<circle cx="298.0" cy="203.0" r="8.5" fill="#0E87BE"/>
+<circle cx="350.0" cy="203.0" r="8.5" fill="#0E87BE"/>
+<circle cx="402.0" cy="203.0" r="8.5" fill="#0E87BE"/>
+<circle cx="454.0" cy="203.0" r="8.5" fill="#0E87BE"/>
+<rect x="70.0" y="221.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="241.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">D</text>
+<circle cx="142.0" cy="237.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="194.0" cy="237.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="246.0" cy="237.0" r="8.5" fill="#0E87BE"/>
+<circle cx="298.0" cy="237.0" r="8.5" fill="#0E87BE"/>
+<circle cx="350.0" cy="237.0" r="8.5" fill="white" stroke="#D64545" stroke-width="1.6" stroke-dasharray="3,2.6"/>
+<circle cx="402.0" cy="237.0" r="8.5" fill="#0E87BE"/>
+<circle cx="454.0" cy="237.0" r="8.5" fill="#0E87BE"/>
+<rect x="70.0" y="255.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="275.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">E</text>
+<circle cx="142.0" cy="271.0" r="8.5" fill="#E9A800"/>
+<circle cx="194.0" cy="271.0" r="8.5" fill="#E9A800"/>
+<circle cx="246.0" cy="271.0" r="8.5" fill="#E9A800"/>
+<circle cx="298.0" cy="271.0" r="8.5" fill="#E9A800"/>
+<circle cx="350.0" cy="271.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="402.0" cy="271.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="454.0" cy="271.0" r="2.0" fill="#D8DBE2"/>
+<rect x="70.0" y="289.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="309.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">F</text>
+<circle cx="142.0" cy="305.0" r="8.5" fill="#E9A800"/>
+<circle cx="194.0" cy="305.0" r="8.5" fill="white" stroke="#D64545" stroke-width="1.6" stroke-dasharray="3,2.6"/>
+<circle cx="246.0" cy="305.0" r="8.5" fill="#E9A800"/>
+<circle cx="298.0" cy="305.0" r="8.5" fill="#E9A800"/>
+<circle cx="350.0" cy="305.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="402.0" cy="305.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="454.0" cy="305.0" r="2.0" fill="#D8DBE2"/>
+<rect x="70.0" y="323.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="343.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">G</text>
+<circle cx="142.0" cy="339.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="194.0" cy="339.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="246.0" cy="339.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="298.0" cy="339.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="350.0" cy="339.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="402.0" cy="339.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="454.0" cy="339.0" r="2.0" fill="#D8DBE2"/>
+<rect x="70.0" y="357.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="377.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<circle cx="142.0" cy="373.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="194.0" cy="373.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="246.0" cy="373.0" r="8.5" fill="white" stroke="#D64545" stroke-width="1.6" stroke-dasharray="3,2.6"/>
+<circle cx="298.0" cy="373.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="350.0" cy="373.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="402.0" cy="373.0" r="8.5" fill="white" stroke="#D64545" stroke-width="1.6" stroke-dasharray="3,2.6"/>
+<circle cx="454.0" cy="373.0" r="8.5" fill="#5BAE2E"/>
+<text x="492.0" y="377.0" font-size="11.0" fill="#D64545" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">✗ missing 2020</text>
+<rect x="70.0" y="391.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="90.0" y="411.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">H</text>
+<circle cx="142.0" cy="407.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="194.0" cy="407.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="246.0" cy="407.0" r="8.5" fill="white" stroke="#D64545" stroke-width="1.6" stroke-dasharray="3,2.6"/>
+<circle cx="298.0" cy="407.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="350.0" cy="407.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="402.0" cy="407.0" r="2.0" fill="#D8DBE2"/>
+<circle cx="454.0" cy="407.0" r="2.0" fill="#D8DBE2"/>
+<text x="492.0" y="411.0" font-size="11.0" fill="#D64545" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">✗ missing 2020</text>
+<rect x="220.0" y="150.0" width="104.0" height="206.0" rx="8.0" fill="none" stroke="#2E9E44" stroke-width="3.0"/>
+<line x1="590.0" y1="288.0" x2="832.0" y2="288.0" stroke="#1B2A5B" stroke-width="2.6" stroke-linecap="butt"/>
+<polygon points="838.0,288.0 823.6,280.8 823.6,295.2" fill="#1B2A5B"/>
+<text x="714.0" y="276.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">trim to the block</text>
+<rect x="858.0" y="180.0" width="170.0" height="22.0" rx="6.0" fill="#2E9E44"/>
+<text x="943.0" y="195.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">balanced block</text>
+<text x="935.0" y="220.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<text x="997.0" y="220.0" font-size="11.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<rect x="858.0" y="229.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="878.0" y="249.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<circle cx="935.0" cy="245.0" r="8.5" fill="#5BAE2E"/>
+<circle cx="997.0" cy="245.0" r="8.5" fill="#5BAE2E"/>
+<rect x="858.0" y="263.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="878.0" y="283.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<circle cx="935.0" cy="279.0" r="8.5" fill="#0E87BE"/>
+<circle cx="997.0" cy="279.0" r="8.5" fill="#0E87BE"/>
+<rect x="858.0" y="297.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="878.0" y="317.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">D</text>
+<circle cx="935.0" cy="313.0" r="8.5" fill="#0E87BE"/>
+<circle cx="997.0" cy="313.0" r="8.5" fill="#0E87BE"/>
+<rect x="858.0" y="331.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="878.0" y="351.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">E</text>
+<circle cx="935.0" cy="347.0" r="8.5" fill="#E9A800"/>
+<circle cx="997.0" cy="347.0" r="8.5" fill="#E9A800"/>
+<rect x="858.0" y="365.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="878.0" y="385.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">F</text>
+<circle cx="935.0" cy="381.0" r="8.5" fill="#E9A800"/>
+<circle cx="997.0" cy="381.0" r="8.5" fill="#E9A800"/>
+<rect x="858.0" y="399.0" width="40.0" height="30.0" rx="5.0" fill="#F2F3F5"/>
+<text x="878.0" y="419.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">G</text>
+<circle cx="935.0" cy="415.0" r="8.5" fill="#6B6EC6"/>
+<circle cx="997.0" cy="415.0" r="8.5" fill="#6B6EC6"/>
+<rect x="850.0" y="224.0" width="186.0" height="212.0" rx="8.0" fill="none" stroke="#2E9E44" stroke-width="1.6"/>
+<text x="943.0" y="456.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">6 orgs × 2 years = 12 org-years</text>
+<text x="315.0" y="448.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">every kept org is observed in every kept year — orgs missing a year inside the window are dropped</text>
+<text x="560.0" y="480.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">to balance by pattern instead:  panel_filter(panel_type = "persistent", spell = "seamless")  keeps orgs spanning the full window (A only)</text>
+</svg>

@@ -35,6 +35,8 @@ year in the window counts:
 - **`half`** -- the focal year gets half the weight, the neighbours share the other half.
 - **`decay`** -- weight falls by half per year of distance (`0.5^distance`).
 
+![panel_smooth() applied with different window and weights settings, compared against the raw series](figures/panel-smooth.svg){width=100%}
+
 ```{r}
 w <- function(wt) panel_smooth(df, "revenue", window = 3, weights = wt,
                                verbose = FALSE)$revenue

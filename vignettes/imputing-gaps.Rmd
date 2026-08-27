@@ -17,6 +17,8 @@ library(panel990)
 bracket each gap. (For the researcher-facing "just complete every span" verb,
 see `panel_complete()` in *Completing panel spans*.)
 
+![panel_impute() filling interior gaps, shown as a table with missing cells and as trend plots with imputed points](figures/panel-impute.svg){width=100%}
+
 A year can only be inserted if it is part of the panel, so our toy data has a
 filler organization `F` observed every year, and one organization `A` that
 skips the middle:

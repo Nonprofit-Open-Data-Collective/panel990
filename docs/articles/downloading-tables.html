@@ -29,12 +29,13 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html">Getting started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/downloading-tables.html">1. Downloading and assembling efile tables</a></li>
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">3. Panels and panel slices</a></li>
@@ -46,6 +47,8 @@
     <li><a class="dropdown-item" href="../articles/balancing-panels.html">Balancing a panel</a></li>
     <li><a class="dropdown-item" href="../articles/accounting-consistency.html">Accounting consistency</a></li>
     <li><a class="dropdown-item" href="../articles/consistent-gap-filling.html">Filling gaps without breaking the books</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
 </li>
       </ul>
@@ -75,154 +78,1087 @@
 
     
     
-<p><code>panel990</code> retrieves IRS 990 efile tables from the NCCS S3 bucket, merges the tables that describe a filing, and stacks years into one panel. This tutorial specifies everything with direct argument values – no sample frame yet.</p>
+<p><code>panel990</code> retrieves IRS 990 efile tables from the NCCS S3
+bucket, merges the tables that describe a filing, and stacks years into
+one panel. This tutorial specifies everything with direct argument
+values – no sample frame yet.</p>
 <blockquote>
-<p>The download chunks below are shown but <strong>not executed</strong> in this vignette; they require network access to the NCCS bucket. Run them in a live session.</p>
+<p>The download chunks below are shown but <strong>not executed</strong>
+in this vignette; they require network access to the NCCS bucket. Run
+them in a live session.</p>
 </blockquote>
 <div class="section level2">
 <h2 id="table-abbreviations">Table abbreviations<a class="anchor" aria-label="anchor" href="#table-abbreviations"></a>
 </h2>
-<p>The efile data is split into ~125 tables, each corresponding to a section of the 990. <code>panel990</code> ships short aliases for the most common ones. Preview them with <code><a href="../reference/table_catalog.html">table_catalog()</a></code>:</p>
+<p>The efile data is split into ~125 tables, each corresponding to a
+section of the 990. <code>panel990</code> ships short aliases for the
+most common ones. Preview them with <code><a href="../reference/table_catalog.html">table_catalog()</a></code>; below,
+the catalog is joined with the bundled <code>field_concordance</code> to
+add a readable name and the number of documented fields per table:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/table_catalog.html">table_catalog</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                              table alias  cardinality</span></span>
-<span><span class="co">#&gt; 1                                F9-P00-T00-HEADER   P00          1x1</span></span>
-<span><span class="co">#&gt; 2                               F9-P01-T00-SUMMARY   P01          1x1</span></span>
-<span><span class="co">#&gt; 3                            F9-P01-T00-SUMMARY-EZ  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 4                             F9-P02-T00-SIGNATURE  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 5                               F9-P03-T00-MISSION  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 6                           F9-P03-T00-PROGRAM-ONE  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 7                         F9-P03-T00-PROGRAM-THREE  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 8                           F9-P03-T00-PROGRAM-TWO  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 9                              F9-P03-T00-PROGRAMS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 10                       F9-P03-T01-PROGRAMS-OTHER  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 11                          F9-P03-T02-PROGRAMS-EZ  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 12                   F9-P04-T00-REQUIRED-SCHEDULES  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 13                F9-P04-T00-REQUIRED-SCHEDULES-EZ  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 14                     F9-P05-T00-OTHER-IRS-FILING  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 15                           F9-P06-T00-GOVERNANCE  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 16                        F9-P06-T00-GOVERNANCE-EZ  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 17                        F9-P07-T00-DIR-TRUST-KEY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 18                         F9-P07-T01-COMPENSATION  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 19                  F9-P07-T01-COMPENSATION-HCE-EZ  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 20                          F9-P07-T02-CONTRACTORS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 21                              F9-P08-T00-REVENUE   P08          1x1</span></span>
-<span><span class="co">#&gt; 22                     F9-P08-T01-REVENUE-PROGRAMS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 23                         F9-P08-T02-REVENUE-MISC  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 24                             F9-P09-T00-EXPENSES   P09          1x1</span></span>
-<span><span class="co">#&gt; 25                       F9-P09-T01-EXPENSES-OTHER  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 26                        F9-P10-T00-BALANCE-SHEET   P10          1x1</span></span>
-<span><span class="co">#&gt; 27                               F9-P11-T00-ASSETS   P11          1x1</span></span>
-<span><span class="co">#&gt; 28                  F9-P12-T00-FINANCIAL-REPORTING   P12          1x1</span></span>
-<span><span class="co">#&gt; 29                               SA-P00-T00-HEADER  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 30                SA-P01-T00-PUBLIC-CHARITY-STATUS   A01          1x1</span></span>
-<span><span class="co">#&gt; 31                SA-P01-T01-PUBLIC-CHARITY-STATUS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 32                 SA-P02-T00-SUPPORT_SCHEDULE_170  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 33                 SA-P03-T00-SUPPORT_SCHEDULE_509  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 34                         SA-P04-T00-SUPPORT-ORGS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 35                         SA-P05-T00-SUPPORT-ORGS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 36                    SA-P06-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 37                         SB-P01-T01-CONTRIBUTORS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 38                                SC-P01-T00-LOBBY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 39                  SC-P01-T01-POLITICAL-ORGS-INFO  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 40                                SC-P02-T00-LOBBY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 41                                SC-P03-T00-LOBBY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 42                    SC-P04-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 43         SD-P01-T00-ORGS-DONOR-ADVISED-FUNDS-OTH  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 44                    SD-P02-T00-CONSERV-EASEMENTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 45   SD-P03-T00-ORGS-COLLECT-ART-HIST-TREASURE-OTH  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 46        SD-P04-T00-ESCROW-CUSTODIAL-ARRANGEMENTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 47                            SD-P05-T00-ENDOWMENT  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 48                      SD-P06-T00-LAND-BLDG-EQUIP  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 49               SD-P07-T00-INVESTMENTS-SECURITIES  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 50          SD-P07-T01-INVESTMENTS-OTH-DERIVATIVES  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 51               SD-P07-T01-INVESTMENTS-OTH-EQUITY  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 52           SD-P07-T01-INVESTMENTS-OTH-SECURITIES  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 53                SD-P08-T00-INVESTMENTS-PROG-RLTD  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 54                SD-P08-T01-INVESTMENTS-PROG-RLTD  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 55                           SD-P09-T00-OTH-ASSETS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 56                           SD-P09-T01-OTH-ASSETS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 57                      SD-P10-T00-OTH-LIABILITIES  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 58                      SD-P10-T01-OTH-LIABILITIES  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 59               SD-P11-T00-RECONCILIATION-REVENUE  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 60              SD-P12-T00-RECONCILIATION-EXPENSES  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 61                    SD-P13-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 62             SD-P99-T00-RECONCILIATION-NETASSETS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 63                              SE-P01-T00-SCHOOLS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 64                    SE-P02-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 65                            SF-P01-T00-FRGN-ACTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 66                  SF-P01-T01-FRGN-ACTS-BY-REGION  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 67                      SF-P02-T00-FRGN-ORG-GRANTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 68                      SF-P02-T01-FRGN-ORG-GRANTS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 69                    SF-P03-T01-FRGN-INDIV-GRANTS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 70                       SF-P04-T00-FRGN-INTERESTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 71                     SF-P05-T99-EXPLANATION-TEXT  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 72                      SF-P99-T00-FRGN-ORG-GRANTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 73                     SG-P01-T00-FUNDRAISING-ACTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 74                     SG-P01-T01-FUNDRAISERS-INFO  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 75                   SG-P02-T00-FUNDRAISING-EVENTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 76                   SG-P02-T01-FUNDRAISING-EVENTS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 77                               SG-P03-T00-GAMING  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 78                    SG-P04-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 79         SH-P01-T00-FAP-COMMUNITY-BENEFIT-POLICY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 80         SH-P02-T00-FAP-COMMUNITY-BENEFIT-POLICY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 81         SH-P03-T00-FAP-COMMUNITY-BENEFIT-POLICY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 82               SH-P04-T01-COMPANY-JOINT-VENTURES  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 83         SH-P05-T00-FAP-COMMUNITY-BENEFIT-POLICY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 84                    SH-P05-T01-HOSPITAL-FACILITY  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 85                SH-P05-T02-NON-HOSPITAL-FACILITY  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 86                    SH-P05-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 87                    SH-P06-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 88         SH-P99-T00-FAP-COMMUNITY-BENEFIT-POLICY  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 89                          SI-P01-T00-GRANTS-INFO  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 90                 SI-P02-T00-GRANTS-US-ORGS-GOVTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 91                 SI-P02-T01-GRANTS-US-ORGS-GOVTS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 92                      SI-P03-T01-GRANTS-US-INDIV  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 93                    SI-P04-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 94                 SI-P99-T00-GRANTS-US-ORGS-GOVTS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 95                         SJ-P01-T00-COMPENSATION  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 96                     SJ-P02-T01-COMPENSATION-DTK  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 97                    SJ-P03-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 98                          SK-P01-T01-BOND-ISSUES  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 99                        SK-P02-T01-BOND-PROCEEDS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 100                SK-P03-T01-BOND-PRIVATE-BIZ-USE  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 101                      SK-P04-T01-BOND-ARBITRAGE  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 102            SK-P05-T01-PROCEDURE-CORRECTIVE-ACT  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 103                   SK-P06-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 104              SL-P01-T00-EXCESS-BENEFIT-TRANSAC  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 105              SL-P01-T01-EXCESS-BENEFIT-TRANSAC  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 106               SL-P02-T00-LOANS-INTERESTED-PERS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 107               SL-P02-T01-LOANS-INTERESTED-PERS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 108              SL-P03-T01-GRANTS-INTERESTED-PERS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 109         SL-P04-T01-BIZ-TRANSAC-INTERESTED-PERS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 110                   SL-P05-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 111               SM-P01-T00-NONCASH-CONTRIBUTIONS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 112               SM-P01-T01-NONCASH-CONTRIBUTIONS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 113                   SM-P02-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 114 SN-P01-T00-LIQUIDATION-TERMINATION-DISSOLUTION  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 115 SN-P01-T01-LIQUIDATION-TERMINATION-DISSOLUTION  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 116               SN-P02-T00-DISPOSITION-OF-ASSETS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 117               SN-P02-T01-DISPOSITION-OF-ASSETS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 118                   SN-P03-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 119 SN-P99-T00-LIQUIDATION-TERMINATION-DISSOLUTION  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 120                       SO-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span>
-<span><span class="co">#&gt; 121             SR-P01-T01-ID-DISREGARDED-ENTITIES  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 122            SR-P02-T01-ID-RLTD-TAX-EXEMPED-ORGS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 123    SR-P03-T01-ID-RLTD-ORGS-TAXABLE-PARTNERSHIP  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 124    SR-P04-T01-ID-RLTD-ORGS-TAXABLE-CORPORATION  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 125              SR-P05-T00-TRANSACTIONS-RLTD-ORGS  &lt;NA&gt;          1x1</span></span>
-<span><span class="co">#&gt; 126              SR-P05-T01-TRANSACTIONS-RLTD-ORGS  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 127     SR-P06-T01-UNRLTD-ORGS-TAXABLE-PARTNERSHIP  &lt;NA&gt;          1xm</span></span>
-<span><span class="co">#&gt; 128                   SR-P07-T99-SUPPLEMENTAL-INFO  &lt;NA&gt; supplemental</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/table_catalog.html">table_catalog</a></span><span class="op">(</span><span class="op">)</span>      <span class="co"># columns: table, alias, cardinality</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="4%">
+<col width="34%">
+<col width="31%">
+<col width="14%">
+<col width="5%">
+<col width="9%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">alias</th>
+<th align="left">table</th>
+<th align="left">name</th>
+<th align="left">section</th>
+<th align="right">fields</th>
+<th align="left">cardinality</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">P00</td>
+<td align="left">F9-P00-T00-HEADER</td>
+<td align="left">Header</td>
+<td align="left">Form 990</td>
+<td align="right">74</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left">P01</td>
+<td align="left">F9-P01-T00-SUMMARY</td>
+<td align="left">Summary</td>
+<td align="left">Form 990, Part 1</td>
+<td align="right">41</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P01-T00-SUMMARY-EZ</td>
+<td align="left">Summary (EZ)</td>
+<td align="left">Form 990, Part 1</td>
+<td align="right">2</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P02-T00-SIGNATURE</td>
+<td align="left">Signature</td>
+<td align="left">Form 990, Part 2</td>
+<td align="right">24</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P03-T00-MISSION</td>
+<td align="left">Mission</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">3</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P03-T00-PROGRAM-ONE</td>
+<td align="left">Program one</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">5</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P03-T00-PROGRAM-THREE</td>
+<td align="left">Program three</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">0</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P03-T00-PROGRAM-TWO</td>
+<td align="left">Program two</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">0</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P03-T00-PROGRAMS</td>
+<td align="left">Programs</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">5</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P03-T01-PROGRAMS-OTHER</td>
+<td align="left">Programs other</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">0</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P03-T02-PROGRAMS-EZ</td>
+<td align="left">Programs (EZ)</td>
+<td align="left">Form 990, Part 3</td>
+<td align="right">1</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P04-T00-REQUIRED-SCHEDULES</td>
+<td align="left">Required schedules</td>
+<td align="left">Form 990, Part 4</td>
+<td align="right">55</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P04-T00-REQUIRED-SCHEDULES-EZ</td>
+<td align="left">Required schedules (EZ)</td>
+<td align="left">Form 990, Part 4</td>
+<td align="right">3</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P05-T00-OTHER-IRS-FILING</td>
+<td align="left">Other IRS filing</td>
+<td align="left">Form 990, Part 5</td>
+<td align="right">40</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P06-T00-GOVERNANCE</td>
+<td align="left">Governance</td>
+<td align="left">Form 990, Part 6</td>
+<td align="right">40</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P06-T00-GOVERNANCE-EZ</td>
+<td align="left">Governance (EZ)</td>
+<td align="left">Form 990, Part 6</td>
+<td align="right">8</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P07-T00-DIR-TRUST-KEY</td>
+<td align="left">Directors, trustees, key employees</td>
+<td align="left">Form 990, Part 7</td>
+<td align="right">15</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P07-T01-COMPENSATION</td>
+<td align="left">Compensation</td>
+<td align="left">Form 990, Part 7</td>
+<td align="right">26</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P07-T01-COMPENSATION-HCE-EZ</td>
+<td align="left">Compensation HCE (EZ)</td>
+<td align="left">Form 990, Part 7</td>
+<td align="right">13</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P07-T02-CONTRACTORS</td>
+<td align="left">Contractors</td>
+<td align="left">Form 990, Part 7</td>
+<td align="right">12</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left">P08</td>
+<td align="left">F9-P08-T00-REVENUE</td>
+<td align="left">Revenue</td>
+<td align="left">Form 990, Part 8</td>
+<td align="right">78</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">F9-P08-T01-REVENUE-PROGRAMS</td>
+<td align="left">Revenue programs</td>
+<td align="left">Form 990, Part 8</td>
+<td align="right">6</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P08-T02-REVENUE-MISC</td>
+<td align="left">Revenue miscellaneous</td>
+<td align="left">Form 990, Part 8</td>
+<td align="right">6</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left">P09</td>
+<td align="left">F9-P09-T00-EXPENSES</td>
+<td align="left">Expenses</td>
+<td align="left">Form 990, Part 9</td>
+<td align="right">123</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">F9-P09-T01-EXPENSES-OTHER</td>
+<td align="left">Expenses other</td>
+<td align="left">Form 990, Part 9</td>
+<td align="right">5</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left">P10</td>
+<td align="left">F9-P10-T00-BALANCE-SHEET</td>
+<td align="left">Balance sheet</td>
+<td align="left">Form 990, Part 10</td>
+<td align="right">81</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left">P11</td>
+<td align="left">F9-P11-T00-ASSETS</td>
+<td align="left">Assets</td>
+<td align="left">Form 990, Part 11</td>
+<td align="right">7</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left">P12</td>
+<td align="left">F9-P12-T00-FINANCIAL-REPORTING</td>
+<td align="left">Financial reporting</td>
+<td align="left">Form 990, Part 12</td>
+<td align="right">16</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SA-P00-T00-HEADER</td>
+<td align="left">Header</td>
+<td align="left">Schedule A</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left">A01</td>
+<td align="left">SA-P01-T00-PUBLIC-CHARITY-STATUS</td>
+<td align="left">Public charity status</td>
+<td align="left">Schedule A, Part 1</td>
+<td align="right">29</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SA-P01-T01-PUBLIC-CHARITY-STATUS</td>
+<td align="left">Public charity status</td>
+<td align="left">Schedule A, Part 1</td>
+<td align="right">9</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SA-P02-T00-SUPPORT_SCHEDULE_170</td>
+<td align="left">Support schedule 170</td>
+<td align="left">Schedule A, Part 2</td>
+<td align="right">60</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SA-P03-T00-SUPPORT_SCHEDULE_509</td>
+<td align="left">Support schedule 509</td>
+<td align="left">Schedule A, Part 3</td>
+<td align="right">105</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SA-P04-T00-SUPPORT-ORGS</td>
+<td align="left">Support orgs</td>
+<td align="left">Schedule A, Part 4</td>
+<td align="right">35</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SA-P05-T00-SUPPORT-ORGS</td>
+<td align="left">Support orgs</td>
+<td align="left">Schedule A, Part 5</td>
+<td align="right">79</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SA-P06-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule A, Part 6</td>
+<td align="right">2</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SB-P01-T01-CONTRIBUTORS</td>
+<td align="left">Contributors</td>
+<td align="left">Schedule B, Part 1</td>
+<td align="right">8</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SC-P01-T00-LOBBY</td>
+<td align="left">Lobby</td>
+<td align="left">Schedule C, Part 1</td>
+<td align="right">10</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SC-P01-T01-POLITICAL-ORGS-INFO</td>
+<td align="left">Political orgs info</td>
+<td align="left">Schedule C, Part 1</td>
+<td align="right">11</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SC-P02-T00-LOBBY</td>
+<td align="left">Lobby</td>
+<td align="left">Schedule C, Part 2</td>
+<td align="right">65</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SC-P03-T00-LOBBY</td>
+<td align="left">Lobby</td>
+<td align="left">Schedule C, Part 3</td>
+<td align="right">10</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SC-P04-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule C, Part 4</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P01-T00-ORGS-DONOR-ADVISED-FUNDS-OTH</td>
+<td align="left">Orgs donor advised funds other</td>
+<td align="left">Schedule D, Part 1</td>
+<td align="right">10</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P02-T00-CONSERV-EASEMENTS</td>
+<td align="left">Conservation easements</td>
+<td align="left">Schedule D, Part 2</td>
+<td align="right">15</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P03-T00-ORGS-COLLECT-ART-HIST-TREASURE-OTH</td>
+<td align="left">Orgs collect art historical treasure other</td>
+<td align="left">Schedule D, Part 3</td>
+<td align="right">11</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P04-T00-ESCROW-CUSTODIAL-ARRANGEMENTS</td>
+<td align="left">Escrow custodial arrangements</td>
+<td align="left">Schedule D, Part 4</td>
+<td align="right">7</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P05-T00-ENDOWMENT</td>
+<td align="left">Endowment</td>
+<td align="left">Schedule D, Part 5</td>
+<td align="right">41</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P06-T00-LAND-BLDG-EQUIP</td>
+<td align="left">Land building equipment</td>
+<td align="left">Schedule D, Part 6</td>
+<td align="right">20</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P07-T00-INVESTMENTS-SECURITIES</td>
+<td align="left">Investments securities</td>
+<td align="left">Schedule D, Part 7</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P07-T01-INVESTMENTS-OTH-DERIVATIVES</td>
+<td align="left">Investments other derivatives</td>
+<td align="left">Schedule D, Part 7</td>
+<td align="right">2</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P07-T01-INVESTMENTS-OTH-EQUITY</td>
+<td align="left">Investments other equity</td>
+<td align="left">Schedule D, Part 7</td>
+<td align="right">2</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P07-T01-INVESTMENTS-OTH-SECURITIES</td>
+<td align="left">Investments other securities</td>
+<td align="left">Schedule D, Part 7</td>
+<td align="right">3</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P08-T00-INVESTMENTS-PROG-RLTD</td>
+<td align="left">Investments prog related</td>
+<td align="left">Schedule D, Part 8</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P08-T01-INVESTMENTS-PROG-RLTD</td>
+<td align="left">Investments prog related</td>
+<td align="left">Schedule D, Part 8</td>
+<td align="right">3</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P09-T00-OTH-ASSETS</td>
+<td align="left">Other assets</td>
+<td align="left">Schedule D, Part 9</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P09-T01-OTH-ASSETS</td>
+<td align="left">Other assets</td>
+<td align="left">Schedule D, Part 9</td>
+<td align="right">2</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P10-T00-OTH-LIABILITIES</td>
+<td align="left">Other liabilities</td>
+<td align="left">Schedule D, Part 10</td>
+<td align="right">3</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P10-T01-OTH-LIABILITIES</td>
+<td align="left">Other liabilities</td>
+<td align="left">Schedule D, Part 10</td>
+<td align="right">2</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P11-T00-RECONCILIATION-REVENUE</td>
+<td align="left">Reconciliation revenue</td>
+<td align="left">Schedule D, Part 11</td>
+<td align="right">11</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P12-T00-RECONCILIATION-EXPENSES</td>
+<td align="left">Reconciliation expenses</td>
+<td align="left">Schedule D, Part 12</td>
+<td align="right">11</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SD-P13-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule D, Part 13</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SD-P99-T00-RECONCILIATION-NETASSETS</td>
+<td align="left">Reconciliation netassets</td>
+<td align="left">Schedule D, Part 99</td>
+<td align="right">10</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SE-P01-T00-SCHOOLS</td>
+<td align="left">Schools</td>
+<td align="left">Schedule E, Part 1</td>
+<td align="right">23</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SE-P02-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule E, Part 2</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SF-P01-T00-FRGN-ACTS</td>
+<td align="left">Foreign activities</td>
+<td align="left">Schedule F, Part 1</td>
+<td align="right">10</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SF-P01-T01-FRGN-ACTS-BY-REGION</td>
+<td align="left">Foreign activities by region</td>
+<td align="left">Schedule F, Part 1</td>
+<td align="right">6</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SF-P02-T00-FRGN-ORG-GRANTS</td>
+<td align="left">Foreign org grants</td>
+<td align="left">Schedule F, Part 2</td>
+<td align="right">2</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SF-P02-T01-FRGN-ORG-GRANTS</td>
+<td align="left">Foreign org grants</td>
+<td align="left">Schedule F, Part 2</td>
+<td align="right">7</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SF-P03-T01-FRGN-INDIV-GRANTS</td>
+<td align="left">Foreign individuals grants</td>
+<td align="left">Schedule F, Part 3</td>
+<td align="right">8</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SF-P04-T00-FRGN-INTERESTS</td>
+<td align="left">Foreign interests</td>
+<td align="left">Schedule F, Part 4</td>
+<td align="right">6</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SF-P05-T99-EXPLANATION-TEXT</td>
+<td align="left">Explanation text</td>
+<td align="left">Schedule F, Part 5</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SF-P99-T00-FRGN-ORG-GRANTS</td>
+<td align="left">Foreign org grants</td>
+<td align="left">Schedule F, Part 99</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SG-P01-T00-FUNDRAISING-ACTS</td>
+<td align="left">Fundraising activities</td>
+<td align="left">Schedule G, Part 1</td>
+<td align="right">12</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SG-P01-T01-FUNDRAISERS-INFO</td>
+<td align="left">Fundraisers info</td>
+<td align="left">Schedule G, Part 1</td>
+<td align="right">14</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SG-P02-T00-FUNDRAISING-EVENTS</td>
+<td align="left">Fundraising events</td>
+<td align="left">Schedule G, Part 2</td>
+<td align="right">11</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SG-P02-T01-FUNDRAISING-EVENTS</td>
+<td align="left">Fundraising events</td>
+<td align="left">Schedule G, Part 2</td>
+<td align="right">30</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SG-P03-T00-GAMING</td>
+<td align="left">Gaming</td>
+<td align="left">Schedule G, Part 3</td>
+<td align="right">68</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SG-P04-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule G, Part 4</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SH-P01-T00-FAP-COMMUNITY-BENEFIT-POLICY</td>
+<td align="left">FAP community benefit policy</td>
+<td align="left">Schedule H, Part 1</td>
+<td align="right">91</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SH-P02-T00-FAP-COMMUNITY-BENEFIT-POLICY</td>
+<td align="left">FAP community benefit policy</td>
+<td align="left">Schedule H, Part 2</td>
+<td align="right">60</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SH-P03-T00-FAP-COMMUNITY-BENEFIT-POLICY</td>
+<td align="left">FAP community benefit policy</td>
+<td align="left">Schedule H, Part 3</td>
+<td align="right">11</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SH-P04-T01-COMPANY-JOINT-VENTURES</td>
+<td align="left">Company joint ventures</td>
+<td align="left">Schedule H, Part 4</td>
+<td align="right">6</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SH-P05-T00-FAP-COMMUNITY-BENEFIT-POLICY</td>
+<td align="left">FAP community benefit policy</td>
+<td align="left">Schedule H, Part 5</td>
+<td align="right">88</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SH-P05-T01-HOSPITAL-FACILITY</td>
+<td align="left">Hospital facility</td>
+<td align="left">Schedule H, Part 5</td>
+<td align="right">23</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SH-P05-T02-NON-HOSPITAL-FACILITY</td>
+<td align="left">Non hospital facility</td>
+<td align="left">Schedule H, Part 5</td>
+<td align="right">8</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SH-P05-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule H, Part 5</td>
+<td align="right">3</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SH-P06-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule H, Part 6</td>
+<td align="right">20</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SH-P99-T00-FAP-COMMUNITY-BENEFIT-POLICY</td>
+<td align="left">FAP community benefit policy</td>
+<td align="left">Schedule H, Part 99</td>
+<td align="right">48</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SI-P01-T00-GRANTS-INFO</td>
+<td align="left">Grants info</td>
+<td align="left">Schedule I, Part 1</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SI-P02-T00-GRANTS-US-ORGS-GOVTS</td>
+<td align="left">Grants U.S. orgs governments</td>
+<td align="left">Schedule I, Part 2</td>
+<td align="right">2</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SI-P02-T01-GRANTS-US-ORGS-GOVTS</td>
+<td align="left">Grants U.S. orgs governments</td>
+<td align="left">Schedule I, Part 2</td>
+<td align="right">15</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SI-P03-T01-GRANTS-US-INDIV</td>
+<td align="left">Grants U.S. individuals</td>
+<td align="left">Schedule I, Part 3</td>
+<td align="right">6</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SI-P04-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule I, Part 4</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SI-P99-T00-GRANTS-US-ORGS-GOVTS</td>
+<td align="left">Grants U.S. orgs governments</td>
+<td align="left">Schedule I, Part 99</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SJ-P01-T00-COMPENSATION</td>
+<td align="left">Compensation</td>
+<td align="left">Schedule J, Part 1</td>
+<td align="right">26</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SJ-P02-T01-COMPENSATION-DTK</td>
+<td align="left">Compensation dtk</td>
+<td align="left">Schedule J, Part 2</td>
+<td align="right">18</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SJ-P03-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule J, Part 3</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SK-P01-T01-BOND-ISSUES</td>
+<td align="left">Bond issues</td>
+<td align="left">Schedule K, Part 1</td>
+<td align="right">11</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SK-P02-T01-BOND-PROCEEDS</td>
+<td align="left">Bond proceeds</td>
+<td align="left">Schedule K, Part 2</td>
+<td align="right">18</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SK-P03-T01-BOND-PRIVATE-BIZ-USE</td>
+<td align="left">Bond private biz use</td>
+<td align="left">Schedule K, Part 3</td>
+<td align="right">17</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SK-P04-T01-BOND-ARBITRAGE</td>
+<td align="left">Bond arbitrage</td>
+<td align="left">Schedule K, Part 4</td>
+<td align="right">19</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SK-P05-T01-PROCEDURE-CORRECTIVE-ACT</td>
+<td align="left">Procedure corrective act</td>
+<td align="left">Schedule K, Part 5</td>
+<td align="right">2</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SK-P06-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule K, Part 6</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SL-P01-T00-EXCESS-BENEFIT-TRANSAC</td>
+<td align="left">Excess benefit transac</td>
+<td align="left">Schedule L, Part 1</td>
+<td align="right">2</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SL-P01-T01-EXCESS-BENEFIT-TRANSAC</td>
+<td align="left">Excess benefit transac</td>
+<td align="left">Schedule L, Part 1</td>
+<td align="right">6</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SL-P02-T00-LOANS-INTERESTED-PERS</td>
+<td align="left">Loans interested pers</td>
+<td align="left">Schedule L, Part 2</td>
+<td align="right">1</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SL-P02-T01-LOANS-INTERESTED-PERS</td>
+<td align="left">Loans interested pers</td>
+<td align="left">Schedule L, Part 2</td>
+<td align="right">12</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SL-P03-T01-GRANTS-INTERESTED-PERS</td>
+<td align="left">Grants interested pers</td>
+<td align="left">Schedule L, Part 3</td>
+<td align="right">7</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SL-P04-T01-BIZ-TRANSAC-INTERESTED-PERS</td>
+<td align="left">Biz transac interested pers</td>
+<td align="left">Schedule L, Part 4</td>
+<td align="right">7</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SL-P05-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule L, Part 5</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SM-P01-T00-NONCASH-CONTRIBUTIONS</td>
+<td align="left">Noncash contributions</td>
+<td align="left">Schedule M, Part 1</td>
+<td align="right">98</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SM-P01-T01-NONCASH-CONTRIBUTIONS</td>
+<td align="left">Noncash contributions</td>
+<td align="left">Schedule M, Part 1</td>
+<td align="right">5</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SM-P02-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule M, Part 2</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SN-P01-T00-LIQUIDATION-TERMINATION-DISSOLUTION</td>
+<td align="left">Liquidation termination dissolution</td>
+<td align="left">Schedule N, Part 1</td>
+<td align="right">10</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SN-P01-T01-LIQUIDATION-TERMINATION-DISSOLUTION</td>
+<td align="left">Liquidation termination dissolution</td>
+<td align="left">Schedule N, Part 1</td>
+<td align="right">15</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SN-P02-T00-DISPOSITION-OF-ASSETS</td>
+<td align="left">Disposition of assets</td>
+<td align="left">Schedule N, Part 2</td>
+<td align="right">4</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SN-P02-T01-DISPOSITION-OF-ASSETS</td>
+<td align="left">Disposition of assets</td>
+<td align="left">Schedule N, Part 2</td>
+<td align="right">15</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SN-P03-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule N, Part 3</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SN-P99-T00-LIQUIDATION-TERMINATION-DISSOLUTION</td>
+<td align="left">Liquidation termination dissolution</td>
+<td align="left">Schedule N, Part 99</td>
+<td align="right">2</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SO-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule O</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SR-P01-T01-ID-DISREGARDED-ENTITIES</td>
+<td align="left">Id disregarded entities</td>
+<td align="left">Schedule R, Part 1</td>
+<td align="right">17</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SR-P02-T01-ID-RLTD-TAX-EXEMPED-ORGS</td>
+<td align="left">Id related tax exemped orgs</td>
+<td align="left">Schedule R, Part 2</td>
+<td align="right">18</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SR-P03-T01-ID-RLTD-ORGS-TAXABLE-PARTNERSHIP</td>
+<td align="left">Id related orgs taxable partnership</td>
+<td align="left">Schedule R, Part 3</td>
+<td align="right">22</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SR-P04-T01-ID-RLTD-ORGS-TAXABLE-CORPORATION</td>
+<td align="left">Id related orgs taxable corporation</td>
+<td align="left">Schedule R, Part 4</td>
+<td align="right">20</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SR-P05-T00-TRANSACTIONS-RLTD-ORGS</td>
+<td align="left">Transactions related orgs</td>
+<td align="left">Schedule R, Part 5</td>
+<td align="right">19</td>
+<td align="left">1x1</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SR-P05-T01-TRANSACTIONS-RLTD-ORGS</td>
+<td align="left">Transactions related orgs</td>
+<td align="left">Schedule R, Part 5</td>
+<td align="right">5</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">SR-P06-T01-UNRLTD-ORGS-TAXABLE-PARTNERSHIP</td>
+<td align="left">Unrltd orgs taxable partnership</td>
+<td align="left">Schedule R, Part 6</td>
+<td align="right">20</td>
+<td align="left">1xm</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">SR-P07-T99-SUPPLEMENTAL-INFO</td>
+<td align="left">Supplemental info</td>
+<td align="left">Schedule R, Part 7</td>
+<td align="right">4</td>
+<td align="left">supplemental</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>
-<strong>alias</strong> – the short token you pass to <code>tables=</code> (e.g. <code>"P08"</code>).</li>
+<strong>alias</strong> – the short token you pass to
+<code>tables=</code> (e.g. <code>"P08"</code>).</li>
 <li>
-<strong>table</strong> – the canonical file name it resolves to.</li>
+<strong>table</strong> – the canonical file name it resolves
+to.</li>
 <li>
-<strong>cardinality</strong> – <code>1x1</code> is one row per filing (safe to merge side-by-side); <code>1xm</code> is one-to-many (kept separate unless you opt in).</li>
+<strong>fields</strong> – how many variables the bundled
+<code>field_concordance</code> documents for the table.</li>
+<li>
+<strong>cardinality</strong> – <code>1x1</code> is one row per
+filing (safe to merge side-by-side); <code>1xm</code> is one-to-many
+(kept separate unless you opt in).</li>
 </ul>
-<p>You are not limited to the aliases: any literal table name (for a schedule or a newly published table) is accepted as-is. <code><a href="../reference/resolve_tables.html">resolve_tables()</a></code> shows how a request resolves:</p>
+<p>You are not limited to the aliases: any literal table name (for a
+schedule or a newly published table) is accepted as-is.
+<code><a href="../reference/resolve_tables.html">resolve_tables()</a></code> shows how a request resolves:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/resolve_tables.html">resolve_tables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P08"</span>, <span class="st">"SB-P01-T00-CONTRIBUTORS"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                         request                   table</span></span>
@@ -237,7 +1173,9 @@
 <div class="section level2">
 <h2 id="the-data-source">The data source<a class="anchor" aria-label="anchor" href="#the-data-source"></a>
 </h2>
-<p><code><a href="../reference/data_source.html">data_source()</a></code> configures where files come from. The default points at the NCCS bucket, so you rarely change it; pass a local directory to read from disk.</p>
+<p><code><a href="../reference/data_source.html">data_source()</a></code> configures where files come from. The
+default points at the NCCS bucket, so you rarely change it; pass a local
+directory to read from disk.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/data_source.html">data_source</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">src</span><span class="op">$</span><span class="va">root</span></span>
@@ -246,7 +1184,8 @@
 <div class="section level2">
 <h2 id="downloading-two-tables-for-two-years">Downloading two tables for two years<a class="anchor" aria-label="anchor" href="#downloading-two-tables-for-two-years"></a>
 </h2>
-<p><code><a href="../reference/download_tables.html">download_tables()</a></code> fetches (or reuses) the CSVs. Give it the years and tables directly:</p>
+<p><code><a href="../reference/download_tables.html">download_tables()</a></code> fetches (or reuses) the CSVs. Give it
+the years and tables directly:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/download_tables.html">download_tables</a></span><span class="op">(</span></span>
 <span>  years  <span class="op">=</span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2020</span>,</span>
@@ -255,20 +1194,37 @@
 <span>  path   <span class="op">=</span> <span class="st">"efdata"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">dl</span><span class="op">$</span><span class="va">manifest</span>   <span class="co"># one row per table-year: status, bytes, path</span></span></code></pre></div>
-<p>Every table-year is recorded in a manifest, so you can see exactly what was downloaded, reused, or failed.</p>
+<p>Every table-year is recorded in a manifest, so you can see exactly
+what was downloaded, reused, or failed.</p>
 </div>
 <div class="section level2">
 <h2 id="read-merge-and-stack">Read, merge, and stack<a class="anchor" aria-label="anchor" href="#read-merge-and-stack"></a>
 </h2>
-<p>Reading turns the CSVs into data frames; merging joins the tables <em>within</em> a year on the filing keys; stacking binds the years together.</p>
+<p>Reading turns the CSVs into data frames; merging joins the tables
+<em>within</em> a year on the filing keys; stacking binds the years
+together.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_tables.html">read_tables</a></span><span class="op">(</span><span class="va">dl</span><span class="op">)</span>                 <span class="co"># optionally columns=, filters=</span></span>
 <span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_tables.html">merge_tables</a></span><span class="op">(</span><span class="va">rd</span><span class="op">)</span>                <span class="co"># join P00 + P08 per year by filing keys</span></span></code></pre></div>
-<p><code><a href="../reference/merge_tables.html">merge_tables()</a></code> joins the <code>1x1</code> tables side-by-side (header fields next to revenue fields, one row per filing) and reports each join in a manifest. The years are then stacked into a single data frame.</p>
+<p><code><a href="../reference/merge_tables.html">merge_tables()</a></code> joins the <code>1x1</code> tables
+side-by-side (header fields next to revenue fields, one row per filing)
+and reports each join in a manifest:</p>
+<div class="float">
+<img src="figures/merge-tables.svg" style="width:100.0%" alt="Five core 990 tables joined on the filing keys into one wide row per filing"><div class="figcaption">Five core 990 tables joined on the filing keys
+into one wide row per filing</div>
+</div>
+<p>The years are then stacked into a single data frame:</p>
+<div class="float">
+<img src="figures/stack-years.svg" style="width:100.0%" alt="Merged per-year tables stacked into one long panel with one row per organization-year"><div class="figcaption">Merged per-year tables stacked into one long
+panel with one row per organization-year</div>
+</div>
 <div class="section level3">
 <h3 id="the-one-shot-form">The one-shot form<a class="anchor" aria-label="anchor" href="#the-one-shot-form"></a>
 </h3>
-<p><code><a href="../reference/panelize.html">panelize()</a></code> runs download -&gt; read -&gt; merge -&gt; stack in a single call and returns a <code>panel</code> object. The filing keys (<code>EIN2</code> / <code>TAX_YEAR</code> / <code>OBJECTID</code>) are assigned automatically:</p>
+<p><code><a href="../reference/panelize.html">panelize()</a></code> runs download -&gt; read -&gt; merge -&gt;
+stack in a single call and returns a <code>panel</code> object. The
+filing keys (<code>EIN2</code> / <code>TAX_YEAR</code> /
+<code>OBJECTID</code>) are assigned automatically:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panelize.html">panelize</a></span><span class="op">(</span>tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P08"</span><span class="op">)</span>, years <span class="op">=</span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2020</span><span class="op">)</span></span>
 <span><span class="va">p</span></span>
@@ -276,20 +1232,31 @@
 <span><span class="co">#&gt;   sample frame: panel[P00,P08 | 2019-2020]  (0 rules, ... log entries)</span></span>
 <span><span class="co">#&gt;   panel labels: stale / not computed</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
-<p>Two tables, two years: the package downloads four files, merges the two tables in each year, and stacks 2019 on top of 2020.</p>
+<p>Two tables, two years: the package downloads four files, merges the
+two tables in each year, and stacks 2019 on top of 2020.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="adding-bmf-fields-then-filtering-by-state">Adding BMF fields, then filtering by state<a class="anchor" aria-label="anchor" href="#adding-bmf-fields-then-filtering-by-state"></a>
 </h2>
-<p>Geography, NTEE, and organization type are <strong>not</strong> on the 990 itself – they live in the Business Master File (BMF). To filter by state you first join the BMF, then subset. <code><a href="../reference/bmf_merge.html">bmf_merge()</a></code> downloads and attaches the native BMF fields by <code>EIN2</code>:</p>
+<p>Geography, NTEE, and organization type are <strong>not</strong> on
+the 990 itself – they live in the Business Master File (BMF). To filter
+by state you first join the BMF, then subset. <code><a href="../reference/bmf_merge.html">bmf_merge()</a></code>
+downloads and attaches the native BMF fields by <code>EIN2</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_merge.html">bmf_merge</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>                   <span class="co"># appends geo_state_abbr, subsection_code, ntee_*, ...</span></span>
 <span><span class="fu"><a href="../reference/bmf_vars.html">bmf_vars</a></span><span class="op">(</span><span class="op">)</span>                            <span class="co"># the fields it adds by default</span></span></code></pre></div>
+<div class="float">
+<img src="figures/bmf-merge.svg" style="width:100.0%" alt="BMF organization traits appended to the right of the 990 panel by a left join on EIN2"><div class="figcaption">BMF organization traits appended to the right of
+the 990 panel by a left join on EIN2</div>
+</div>
 <p>Now the state column exists, so a plain base-R subset works:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ga</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geo_state_abbr</span> <span class="op">==</span> <span class="st">"GA"</span>, <span class="op">]</span></span></code></pre></div>
-<p>That is the whole manual pipeline: pick tables and years, download, merge, stack, attach the BMF, and filter. The next tutorial shows how a <strong>sample frame</strong> captures these same choices as a reusable, self-documenting object.</p>
+<p>That is the whole manual pipeline: pick tables and years, download,
+merge, stack, attach the BMF, and filter. The next tutorial shows how a
+<strong>sample frame</strong> captures these same choices as a reusable,
+self-documenting object.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -302,7 +1269,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

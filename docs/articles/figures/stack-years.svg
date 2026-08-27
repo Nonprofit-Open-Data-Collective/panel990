@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="700" viewBox="0 0 1180 700" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1180" height="700" fill="white"/>
+<text x="590.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Stacking Merged Years into a Long Panel</text>
+<text x="590.0" y="72.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" letter-spacing="3.0">THE PER-YEAR TABLES SHARE ONE HARMONIZED LAYOUT, SO ROWS APPEND INTO ONE FILE  •  ONE ROW PER EIN2 × TAX_YEAR</text>
+<rect x="70.0" y="128.0" width="350.0" height="22.0" rx="6.0" fill="#5BAE2E"/>
+<text x="245.0" y="143.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">merged table — 2019</text>
+<rect x="70.0" y="150.0" width="44.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="92.0" y="163.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="114.0" y="150.0" width="72.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="150.0" y="163.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="186.0" y="150.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="225.0" y="163.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="264.0" y="150.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="303.0" y="163.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EXP</text>
+<rect x="342.0" y="150.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="381.0" y="163.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="70.0" y="168.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="187.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="114.0" y="168.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="173.0" width="58.0" height="20.0" rx="10.0" fill="#5BAE2E"/>
+<text x="150.0" y="187.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="186.0" y="168.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="187.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">152</text>
+<rect x="264.0" y="168.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="187.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">140</text>
+<rect x="342.0" y="168.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="187.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">610</text>
+<rect x="70.0" y="198.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="217.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="114.0" y="198.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="203.0" width="58.0" height="20.0" rx="10.0" fill="#5BAE2E"/>
+<text x="150.0" y="217.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="186.0" y="198.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="217.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">305</text>
+<rect x="264.0" y="198.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="217.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">290</text>
+<rect x="342.0" y="198.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="217.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">940</text>
+<rect x="70.0" y="258.0" width="350.0" height="22.0" rx="6.0" fill="#0E87BE"/>
+<text x="245.0" y="273.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">merged table — 2020</text>
+<rect x="70.0" y="280.0" width="44.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="92.0" y="293.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="114.0" y="280.0" width="72.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="150.0" y="293.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="186.0" y="280.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="225.0" y="293.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="264.0" y="280.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="303.0" y="293.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EXP</text>
+<rect x="342.0" y="280.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="381.0" y="293.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="70.0" y="298.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="317.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="114.0" y="298.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="303.0" width="58.0" height="20.0" rx="10.0" fill="#0E87BE"/>
+<text x="150.0" y="317.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="186.0" y="298.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="317.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">160</text>
+<rect x="264.0" y="298.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="317.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">147</text>
+<rect x="342.0" y="298.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="317.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">625</text>
+<rect x="70.0" y="328.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="347.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="114.0" y="328.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="333.0" width="58.0" height="20.0" rx="10.0" fill="#0E87BE"/>
+<text x="150.0" y="347.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="186.0" y="328.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="347.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">312</text>
+<rect x="264.0" y="328.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="347.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">301</text>
+<rect x="342.0" y="328.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="347.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">955</text>
+<rect x="70.0" y="388.0" width="350.0" height="22.0" rx="6.0" fill="#E9A800"/>
+<text x="245.0" y="403.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">merged table — 2021</text>
+<rect x="70.0" y="410.0" width="44.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="92.0" y="423.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="114.0" y="410.0" width="72.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="150.0" y="423.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="186.0" y="410.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="225.0" y="423.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="264.0" y="410.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="303.0" y="423.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EXP</text>
+<rect x="342.0" y="410.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="381.0" y="423.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="70.0" y="428.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="447.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="114.0" y="428.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="433.0" width="58.0" height="20.0" rx="10.0" fill="#E9A800"/>
+<text x="150.0" y="447.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<rect x="186.0" y="428.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="447.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">171</text>
+<rect x="264.0" y="428.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="447.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">150</text>
+<rect x="342.0" y="428.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="447.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">640</text>
+<rect x="70.0" y="458.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="477.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="114.0" y="458.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="463.0" width="58.0" height="20.0" rx="10.0" fill="#E9A800"/>
+<text x="150.0" y="477.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<rect x="186.0" y="458.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="477.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">298</text>
+<rect x="264.0" y="458.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="477.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">288</text>
+<rect x="342.0" y="458.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="477.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">930</text>
+<rect x="70.0" y="518.0" width="350.0" height="22.0" rx="6.0" fill="#6B6EC6"/>
+<text x="245.0" y="533.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">merged table — 2022</text>
+<rect x="70.0" y="540.0" width="44.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="92.0" y="553.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="114.0" y="540.0" width="72.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="150.0" y="553.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="186.0" y="540.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="225.0" y="553.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="264.0" y="540.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="303.0" y="553.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EXP</text>
+<rect x="342.0" y="540.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="381.0" y="553.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="70.0" y="558.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="577.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="114.0" y="558.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="563.0" width="58.0" height="20.0" rx="10.0" fill="#6B6EC6"/>
+<text x="150.0" y="577.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<rect x="186.0" y="558.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="577.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">180</text>
+<rect x="264.0" y="558.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="577.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">162</text>
+<rect x="342.0" y="558.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="577.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">655</text>
+<rect x="70.0" y="588.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="92.0" y="607.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="114.0" y="588.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="121.0" y="593.0" width="58.0" height="20.0" rx="10.0" fill="#6B6EC6"/>
+<text x="150.0" y="607.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<rect x="186.0" y="588.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="225.0" y="607.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">315</text>
+<rect x="264.0" y="588.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="303.0" y="607.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">300</text>
+<rect x="342.0" y="588.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="381.0" y="607.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">970</text>
+<rect x="700.0" y="225.0" width="350.0" height="22.0" rx="6.0" fill="#1B2A5B"/>
+<text x="875.0" y="240.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">long panel — one row per EIN2 × TAX_YEAR</text>
+<rect x="700.0" y="247.0" width="44.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="722.0" y="260.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="744.0" y="247.0" width="72.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="780.0" y="260.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="816.0" y="247.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="855.0" y="260.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="894.0" y="247.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="933.0" y="260.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EXP</text>
+<rect x="972.0" y="247.0" width="78.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="1011.0" y="260.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="700.0" y="265.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="284.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="744.0" y="265.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="270.0" width="58.0" height="20.0" rx="10.0" fill="#5BAE2E"/>
+<text x="780.0" y="284.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="816.0" y="265.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="284.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">152</text>
+<rect x="894.0" y="265.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="284.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">140</text>
+<rect x="972.0" y="265.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="284.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">610</text>
+<rect x="700.0" y="295.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="314.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="744.0" y="295.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="300.0" width="58.0" height="20.0" rx="10.0" fill="#5BAE2E"/>
+<text x="780.0" y="314.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="816.0" y="295.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="314.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">305</text>
+<rect x="894.0" y="295.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="314.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">290</text>
+<rect x="972.0" y="295.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="314.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">940</text>
+<line x1="700.0" y1="325.0" x2="1050.0" y2="325.0" stroke="#C4C9D4" stroke-width="1.6" stroke-linecap="butt"/>
+<rect x="700.0" y="325.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="344.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="744.0" y="325.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="330.0" width="58.0" height="20.0" rx="10.0" fill="#0E87BE"/>
+<text x="780.0" y="344.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="816.0" y="325.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="344.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">160</text>
+<rect x="894.0" y="325.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="344.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">147</text>
+<rect x="972.0" y="325.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="344.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">625</text>
+<rect x="700.0" y="355.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="374.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="744.0" y="355.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="360.0" width="58.0" height="20.0" rx="10.0" fill="#0E87BE"/>
+<text x="780.0" y="374.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="816.0" y="355.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="374.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">312</text>
+<rect x="894.0" y="355.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="374.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">301</text>
+<rect x="972.0" y="355.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="374.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">955</text>
+<line x1="700.0" y1="385.0" x2="1050.0" y2="385.0" stroke="#C4C9D4" stroke-width="1.6" stroke-linecap="butt"/>
+<rect x="700.0" y="385.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="404.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="744.0" y="385.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="390.0" width="58.0" height="20.0" rx="10.0" fill="#E9A800"/>
+<text x="780.0" y="404.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<rect x="816.0" y="385.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="404.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">171</text>
+<rect x="894.0" y="385.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="404.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">150</text>
+<rect x="972.0" y="385.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="404.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">640</text>
+<rect x="700.0" y="415.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="434.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="744.0" y="415.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="420.0" width="58.0" height="20.0" rx="10.0" fill="#E9A800"/>
+<text x="780.0" y="434.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<rect x="816.0" y="415.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="434.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">298</text>
+<rect x="894.0" y="415.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="434.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">288</text>
+<rect x="972.0" y="415.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="434.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">930</text>
+<line x1="700.0" y1="445.0" x2="1050.0" y2="445.0" stroke="#C4C9D4" stroke-width="1.6" stroke-linecap="butt"/>
+<rect x="700.0" y="445.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="464.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="744.0" y="445.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="450.0" width="58.0" height="20.0" rx="10.0" fill="#6B6EC6"/>
+<text x="780.0" y="464.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<rect x="816.0" y="445.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="464.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">180</text>
+<rect x="894.0" y="445.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="464.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">162</text>
+<rect x="972.0" y="445.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="464.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">655</text>
+<rect x="700.0" y="475.0" width="44.0" height="30.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="722.0" y="494.0" font-size="13.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="744.0" y="475.0" width="72.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="751.0" y="480.0" width="58.0" height="20.0" rx="10.0" fill="#6B6EC6"/>
+<text x="780.0" y="494.0" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<rect x="816.0" y="475.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="855.0" y="494.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">315</text>
+<rect x="894.0" y="475.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="933.0" y="494.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">300</text>
+<rect x="972.0" y="475.0" width="78.0" height="30.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="1011.0" y="494.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">970</text>
+<path d="M 428.0 188.0 C 550.0 188.0, 560.0 295.0, 688.0 295.0" fill="none" stroke="#5BAE2E" stroke-width="2.4"/>
+<polygon points="692.0,295.0 679.2,288.6 679.2,301.4" fill="#5BAE2E"/>
+<path d="M 428.0 318.0 C 550.0 318.0, 560.0 355.0, 688.0 355.0" fill="none" stroke="#0E87BE" stroke-width="2.4"/>
+<polygon points="692.0,355.0 679.2,348.6 679.2,361.4" fill="#0E87BE"/>
+<path d="M 428.0 448.0 C 550.0 448.0, 560.0 415.0, 688.0 415.0" fill="none" stroke="#E9A800" stroke-width="2.4"/>
+<polygon points="692.0,415.0 679.2,408.6 679.2,421.4" fill="#E9A800"/>
+<path d="M 428.0 578.0 C 550.0 578.0, 560.0 475.0, 688.0 475.0" fill="none" stroke="#6B6EC6" stroke-width="2.4"/>
+<polygon points="692.0,475.0 679.2,468.6 679.2,481.4" fill="#6B6EC6"/>
+<text x="590.0" y="666.0" font-size="12.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">panelize(tables = c("P00","P01","P08","P09","P10"), years = 2019:2022)  merges within each year, then stacks the years</text>
+</svg>

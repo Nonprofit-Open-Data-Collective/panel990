@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1180" height="720" fill="white"/>
+<text x="590.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Attaching Organization Traits with the BMF</text>
+<text x="590.0" y="74.0" font-size="15.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">panelize(bmf = TRUE)  •  left join on EIN2 — one BMF row per org, broadcast to every filing year</text>
+<rect x="70.0" y="126.0" width="288.0" height="22.0" rx="6.0" fill="#1B2A5B"/>
+<text x="214.0" y="141.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">990 panel — org-years</text>
+<rect x="70.0" y="148.0" width="46.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="93.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="116.0" y="148.0" width="74.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="153.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="190.0" y="148.0" width="84.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="232.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="274.0" y="148.0" width="84.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="316.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="70.0" y="166.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="93.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="116.0" y="166.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="153.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="190.0" y="166.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="232.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">152</text>
+<rect x="274.0" y="166.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="316.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">610</text>
+<rect x="70.0" y="194.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="93.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="116.0" y="194.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="153.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="190.0" y="194.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="232.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">160</text>
+<rect x="274.0" y="194.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="316.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">625</text>
+<rect x="70.0" y="222.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="93.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="116.0" y="222.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="153.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="190.0" y="222.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="232.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">305</text>
+<rect x="274.0" y="222.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="316.0" y="240.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">940</text>
+<rect x="70.0" y="250.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="93.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="116.0" y="250.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="153.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="190.0" y="250.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="232.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">312</text>
+<rect x="274.0" y="250.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="316.0" y="268.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">955</text>
+<rect x="70.0" y="278.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="93.0" y="296.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="116.0" y="278.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="153.0" y="296.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="190.0" y="278.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="232.0" y="296.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">88</text>
+<rect x="274.0" y="278.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="316.0" y="296.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">210</text>
+<rect x="70.0" y="306.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="93.0" y="324.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="116.0" y="306.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="153.0" y="324.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="190.0" y="306.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="232.0" y="324.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">95</text>
+<rect x="274.0" y="306.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="316.0" y="324.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">220</text>
+<rect x="780.0" y="126.0" width="200.0" height="22.0" rx="6.0" fill="#00A99D"/>
+<text x="880.0" y="141.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">BMF — one row per org</text>
+<rect x="780.0" y="148.0" width="46.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="803.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="826.0" y="148.0" width="84.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="868.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">NTEE</text>
+<rect x="910.0" y="148.0" width="70.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="945.0" y="161.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">STATE</text>
+<rect x="780.0" y="166.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="803.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="826.0" y="166.0" width="84.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="868.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">A20</text>
+<rect x="910.0" y="166.0" width="70.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="945.0" y="184.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">NY</text>
+<rect x="780.0" y="194.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="803.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="826.0" y="194.0" width="84.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="868.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">E22</text>
+<rect x="910.0" y="194.0" width="70.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="945.0" y="212.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">CA</text>
+<text x="880.0" y="240.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">(no BMF row for org C)</text>
+<rect x="369.0" y="428.0" width="288.0" height="22.0" rx="6.0" fill="#1B2A5B"/>
+<text x="513.0" y="443.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">990 fields</text>
+<rect x="659.0" y="428.0" width="152.0" height="22.0" rx="6.0" fill="#00A99D"/>
+<text x="734.0" y="443.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">BMF traits →</text>
+<rect x="369.0" y="450.0" width="46.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="392.0" y="463.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">EIN2</text>
+<rect x="415.0" y="450.0" width="74.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="452.0" y="463.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR</text>
+<rect x="489.0" y="450.0" width="84.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="531.0" y="463.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">REV</text>
+<rect x="573.0" y="450.0" width="84.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="615.0" y="463.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ASSET</text>
+<rect x="657.0" y="450.0" width="84.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="699.0" y="463.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">NTEE</text>
+<rect x="741.0" y="450.0" width="70.0" height="18.0" rx="0.0" fill="#EDEFF3"/>
+<text x="776.0" y="463.0" font-size="9.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">STATE</text>
+<rect x="369.0" y="468.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="392.0" y="486.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="415.0" y="468.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="452.0" y="486.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="489.0" y="468.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="531.0" y="486.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">152</text>
+<rect x="573.0" y="468.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="615.0" y="486.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">610</text>
+<rect x="657.0" y="468.0" width="84.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="699.0" y="486.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">A20</text>
+<rect x="741.0" y="468.0" width="70.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="776.0" y="486.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">NY</text>
+<rect x="369.0" y="496.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="392.0" y="514.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="415.0" y="496.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="452.0" y="514.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="489.0" y="496.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="531.0" y="514.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">160</text>
+<rect x="573.0" y="496.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="615.0" y="514.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">625</text>
+<rect x="657.0" y="496.0" width="84.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="699.0" y="514.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">A20</text>
+<rect x="741.0" y="496.0" width="70.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="776.0" y="514.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">NY</text>
+<rect x="369.0" y="524.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="392.0" y="542.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="415.0" y="524.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="452.0" y="542.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="489.0" y="524.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="531.0" y="542.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">305</text>
+<rect x="573.0" y="524.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="615.0" y="542.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">940</text>
+<rect x="657.0" y="524.0" width="84.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="699.0" y="542.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">E22</text>
+<rect x="741.0" y="524.0" width="70.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="776.0" y="542.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">CA</text>
+<rect x="369.0" y="552.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="392.0" y="570.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="415.0" y="552.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="452.0" y="570.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="489.0" y="552.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="531.0" y="570.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">312</text>
+<rect x="573.0" y="552.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="615.0" y="570.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">955</text>
+<rect x="657.0" y="552.0" width="84.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="699.0" y="570.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">E22</text>
+<rect x="741.0" y="552.0" width="70.0" height="28.0" rx="0.0" fill="#EAF7F6" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="776.0" y="570.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">CA</text>
+<rect x="369.0" y="580.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="392.0" y="598.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="415.0" y="580.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="452.0" y="598.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<rect x="489.0" y="580.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="531.0" y="598.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">88</text>
+<rect x="573.0" y="580.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="615.0" y="598.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">210</text>
+<rect x="657.0" y="580.0" width="84.0" height="28.0" rx="0.0" fill="#F7F8FA" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="699.0" y="598.0" font-size="12.5" fill="#B6BCC9" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">NA</text>
+<rect x="741.0" y="580.0" width="70.0" height="28.0" rx="0.0" fill="#F7F8FA" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="776.0" y="598.0" font-size="12.5" fill="#B6BCC9" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">NA</text>
+<rect x="369.0" y="608.0" width="46.0" height="28.0" rx="0.0" fill="#F2F3F5" stroke="white" stroke-width="1.0"/>
+<text x="392.0" y="626.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="415.0" y="608.0" width="74.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="452.0" y="626.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<rect x="489.0" y="608.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="531.0" y="626.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">95</text>
+<rect x="573.0" y="608.0" width="84.0" height="28.0" rx="0.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="615.0" y="626.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">220</text>
+<rect x="657.0" y="608.0" width="84.0" height="28.0" rx="0.0" fill="#F7F8FA" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="699.0" y="626.0" font-size="12.5" fill="#B6BCC9" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">NA</text>
+<rect x="741.0" y="608.0" width="70.0" height="28.0" rx="0.0" fill="#F7F8FA" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="776.0" y="626.0" font-size="12.5" fill="#B6BCC9" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">NA</text>
+<line x1="658.0" y1="450.0" x2="658.0" y2="636.0" stroke="#00A99D" stroke-width="2.4" stroke-linecap="butt"/>
+<path d="M 214.0 342.0 C 214.0 394.0, 489.0 366.0, 489.0 418.0" fill="none" stroke="#1B2A5B" stroke-width="2.4"/>
+<polygon points="489.0,422.0 496.2,407.6 481.8,407.6" fill="#1B2A5B"/>
+<path d="M 880.0 252.0 C 880.0 322.0, 737.0 366.0, 737.0 418.0" fill="none" stroke="#00A99D" stroke-width="2.4"/>
+<polygon points="737.0,422.0 744.2,407.6 729.8,407.6" fill="#00A99D"/>
+<rect x="844.1" y="284.0" width="151.8" height="26.0" rx="13.0" fill="#F2F3F5" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="920.0" y="302.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">left join on EIN2</text>
+<text x="590.0" y="670.0" font-size="12.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">BMF traits are time-invariant — one value per organization, repeated for every year it appears.</text>
+<text x="590.0" y="690.0" font-size="12.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">Filings without a BMF match (org C) are kept, with the BMF columns set to NA.</text>
+</svg>

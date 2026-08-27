@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="620" viewBox="0 0 1160 620" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1160" height="620" fill="white"/>
+<text x="580.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">The Manifest Records What Dropped Out</text>
+<text x="580.0" y="74.0" font-size="15.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">apply_sfw(df, sfw)  →  attr(out, "sfw_steps")  —  one row per rule: rows in, rows removed, rows out</text>
+<text x="135.0" y="118.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">the frame, rule strips applied</text>
+<rect x="60.0" y="133.0" width="150.0" height="21.0" rx="4.0" fill="#EAF6EC" stroke="#CBE7D0" stroke-width="1.0"/>
+<text x="135.0" y="148.0" font-size="11.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">11-101</text>
+<path d="M 193.0 144.3 L 195.2 146.5 L 199.3 141.2" fill="none" stroke="#2E9E44" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="60.0" y="157.0" width="150.0" height="21.0" rx="4.0" fill="#EAF6EC" stroke="#CBE7D0" stroke-width="1.0"/>
+<text x="135.0" y="172.0" font-size="11.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">11-102</text>
+<path d="M 193.0 168.3 L 195.2 170.5 L 199.3 165.2" fill="none" stroke="#2E9E44" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="60.0" y="181.0" width="150.0" height="21.0" rx="4.0" fill="#0E87BE" opacity="0.22"/>
+<rect x="60.0" y="181.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#0E87BE" stroke-width="1.2"/>
+<text x="135.0" y="196.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">22-201</text>
+<line x1="190.0" y1="187.0" x2="200.0" y2="197.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="187.0" x2="190.0" y2="197.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="205.0" width="150.0" height="21.0" rx="4.0" fill="#0E87BE" opacity="0.22"/>
+<rect x="60.0" y="205.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#0E87BE" stroke-width="1.2"/>
+<text x="135.0" y="220.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">22-202</text>
+<line x1="190.0" y1="211.0" x2="200.0" y2="221.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="211.0" x2="190.0" y2="221.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="229.0" width="150.0" height="21.0" rx="4.0" fill="#0E87BE" opacity="0.22"/>
+<rect x="60.0" y="229.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#0E87BE" stroke-width="1.2"/>
+<text x="135.0" y="244.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">22-203</text>
+<line x1="190.0" y1="235.0" x2="200.0" y2="245.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="235.0" x2="190.0" y2="245.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="253.0" width="150.0" height="21.0" rx="4.0" fill="#EAF6EC" stroke="#CBE7D0" stroke-width="1.0"/>
+<text x="135.0" y="268.0" font-size="11.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">11-103</text>
+<path d="M 193.0 264.3 L 195.2 266.5 L 199.3 261.2" fill="none" stroke="#2E9E44" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="60.0" y="277.0" width="150.0" height="21.0" rx="4.0" fill="#5BAE2E" opacity="0.22"/>
+<rect x="60.0" y="277.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#5BAE2E" stroke-width="1.2"/>
+<text x="135.0" y="292.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">33-301</text>
+<line x1="190.0" y1="283.0" x2="200.0" y2="293.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="283.0" x2="190.0" y2="293.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="301.0" width="150.0" height="21.0" rx="4.0" fill="#5BAE2E" opacity="0.22"/>
+<rect x="60.0" y="301.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#5BAE2E" stroke-width="1.2"/>
+<text x="135.0" y="316.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">33-302</text>
+<line x1="190.0" y1="307.0" x2="200.0" y2="317.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="307.0" x2="190.0" y2="317.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="325.0" width="150.0" height="21.0" rx="4.0" fill="#5BAE2E" opacity="0.22"/>
+<rect x="60.0" y="325.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#5BAE2E" stroke-width="1.2"/>
+<text x="135.0" y="340.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">33-303</text>
+<line x1="190.0" y1="331.0" x2="200.0" y2="341.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="331.0" x2="190.0" y2="341.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="349.0" width="150.0" height="21.0" rx="4.0" fill="#EAF6EC" stroke="#CBE7D0" stroke-width="1.0"/>
+<text x="135.0" y="364.0" font-size="11.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">11-104</text>
+<path d="M 193.0 360.3 L 195.2 362.5 L 199.3 357.2" fill="none" stroke="#2E9E44" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="60.0" y="373.0" width="150.0" height="21.0" rx="4.0" fill="#E9A800" opacity="0.22"/>
+<rect x="60.0" y="373.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#E9A800" stroke-width="1.2"/>
+<text x="135.0" y="388.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">44-401</text>
+<line x1="190.0" y1="379.0" x2="200.0" y2="389.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="379.0" x2="190.0" y2="389.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="397.0" width="150.0" height="21.0" rx="4.0" fill="#E9A800" opacity="0.22"/>
+<rect x="60.0" y="397.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#E9A800" stroke-width="1.2"/>
+<text x="135.0" y="412.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">44-402</text>
+<line x1="190.0" y1="403.0" x2="200.0" y2="413.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="403.0" x2="190.0" y2="413.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="421.0" width="150.0" height="21.0" rx="4.0" fill="#E9A800" opacity="0.22"/>
+<rect x="60.0" y="421.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#E9A800" stroke-width="1.2"/>
+<text x="135.0" y="436.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">44-403</text>
+<line x1="190.0" y1="427.0" x2="200.0" y2="437.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="427.0" x2="190.0" y2="437.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="445.0" width="150.0" height="21.0" rx="4.0" fill="#6B6EC6" opacity="0.22"/>
+<rect x="60.0" y="445.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#6B6EC6" stroke-width="1.2"/>
+<text x="135.0" y="460.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">55-501</text>
+<line x1="190.0" y1="451.0" x2="200.0" y2="461.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="451.0" x2="190.0" y2="461.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="469.0" width="150.0" height="21.0" rx="4.0" fill="#6B6EC6" opacity="0.22"/>
+<rect x="60.0" y="469.0" width="150.0" height="21.0" rx="4.0" fill="none" stroke="#6B6EC6" stroke-width="1.2"/>
+<text x="135.0" y="484.0" font-size="11.0" fill="#7A828F" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">55-502</text>
+<line x1="190.0" y1="475.0" x2="200.0" y2="485.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<line x1="200.0" y1="475.0" x2="190.0" y2="485.0" stroke="#D64545" stroke-width="1.8" stroke-linecap="round"/>
+<rect x="60.0" y="493.0" width="150.0" height="21.0" rx="4.0" fill="#EAF6EC" stroke="#CBE7D0" stroke-width="1.0"/>
+<text x="135.0" y="508.0" font-size="11.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">11-105</text>
+<path d="M 193.0 504.3 L 195.2 506.5 L 199.3 501.2" fill="none" stroke="#2E9E44" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="228.0" y1="324.0" x2="294.0" y2="324.0" stroke="#1B2A5B" stroke-width="2.6" stroke-linecap="butt"/>
+<polygon points="300.0,324.0 285.6,316.8 285.6,331.2" fill="#1B2A5B"/>
+<text x="264.0" y="312.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">apply_sfw()</text>
+<text x="473.0" y="138.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">criteria</text>
+<text x="635.0" y="138.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">rows in</text>
+<text x="720.0" y="138.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">removed</text>
+<text x="807.0" y="138.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">rows out</text>
+<rect x="312.0" y="148.0" width="764.0" height="48.0" rx="8.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="322.0" y="164.0" width="16.0" height="16.0" rx="4.0" fill="#0E87BE"/>
+<text x="356.0" y="169.0" font-size="11.0" fill="#0E87BE" text-anchor="start" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">filter · state</text>
+<text x="356.0" y="186.0" font-size="12.0" fill="#1B2A5B" text-anchor="start" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">geo_state_abbr in "GA"</text>
+<text x="635.0" y="178.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">16</text>
+<rect x="682.0" y="160.0" width="76.0" height="24.0" rx="12.0" fill="#FDF0EE"/>
+<text x="720.0" y="178.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">−3</text>
+<text x="807.0" y="178.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">13</text>
+<rect x="852.0" y="164.0" width="162.5" height="16.0" rx="3.0" fill="#B9C0CC"/>
+<rect x="1014.5" y="164.0" width="37.5" height="16.0" rx="3.0" fill="#D64545" opacity="0.75"/>
+<rect x="312.0" y="206.0" width="764.0" height="48.0" rx="8.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="322.0" y="222.0" width="16.0" height="16.0" rx="4.0" fill="#5BAE2E"/>
+<text x="356.0" y="227.0" font-size="11.0" fill="#5BAE2E" text-anchor="start" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">filter · 501c3</text>
+<text x="356.0" y="244.0" font-size="12.0" fill="#1B2A5B" text-anchor="start" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">subsection_code in "3"</text>
+<text x="635.0" y="236.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">13</text>
+<rect x="682.0" y="218.0" width="76.0" height="24.0" rx="12.0" fill="#FDF0EE"/>
+<text x="720.0" y="236.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">−3</text>
+<text x="807.0" y="236.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">10</text>
+<rect x="852.0" y="222.0" width="125.0" height="16.0" rx="3.0" fill="#B9C0CC"/>
+<rect x="977.0" y="222.0" width="37.5" height="16.0" rx="3.0" fill="#D64545" opacity="0.75"/>
+<rect x="312.0" y="264.0" width="764.0" height="48.0" rx="8.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="322.0" y="280.0" width="16.0" height="16.0" rx="4.0" fill="#E9A800"/>
+<text x="356.0" y="285.0" font-size="11.0" fill="#E9A800" text-anchor="start" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">filter · years</text>
+<text x="356.0" y="302.0" font-size="12.0" fill="#1B2A5B" text-anchor="start" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">TAX_YEAR in 2019:2021</text>
+<text x="635.0" y="294.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">10</text>
+<rect x="682.0" y="276.0" width="76.0" height="24.0" rx="12.0" fill="#FDF0EE"/>
+<text x="720.0" y="294.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">−3</text>
+<text x="807.0" y="294.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">7</text>
+<rect x="852.0" y="280.0" width="87.5" height="16.0" rx="3.0" fill="#B9C0CC"/>
+<rect x="939.5" y="280.0" width="37.5" height="16.0" rx="3.0" fill="#D64545" opacity="0.75"/>
+<rect x="312.0" y="322.0" width="764.0" height="48.0" rx="8.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="322.0" y="338.0" width="16.0" height="16.0" rx="4.0" fill="#6B6EC6"/>
+<text x="356.0" y="343.0" font-size="11.0" fill="#6B6EC6" text-anchor="start" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">filter · revenue positive</text>
+<text x="356.0" y="360.0" font-size="12.0" fill="#1B2A5B" text-anchor="start" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">F9_01_REV_TOT_CY &gt; 0</text>
+<text x="635.0" y="352.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">7</text>
+<rect x="682.0" y="334.0" width="76.0" height="24.0" rx="12.0" fill="#FDF0EE"/>
+<text x="720.0" y="352.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">−2</text>
+<text x="807.0" y="352.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">5</text>
+<rect x="852.0" y="338.0" width="62.5" height="16.0" rx="3.0" fill="#B9C0CC"/>
+<rect x="914.5" y="338.0" width="25.0" height="16.0" rx="3.0" fill="#D64545" opacity="0.75"/>
+<rect x="312.0" y="386.0" width="764.0" height="40.0" rx="8.0" fill="#EAF6EC" stroke="#2E9E44" stroke-width="1.6"/>
+<text x="334.0" y="411.0" font-size="13.5" fill="#2E9E44" text-anchor="start" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">kept: 5 rows — every removal is attributed to a named rule</text>
+<rect x="852.0" y="398.0" width="62.5" height="16.0" rx="3.0" fill="#2E9E44"/>
+<text x="580.0" y="464.0" font-size="12.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">the manifest travels with the data — rerunning the frame reproduces the panel, and reviewers can audit every drop</text>
+</svg>

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="800" viewBox="0 0 1160 800" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1160" height="800" fill="white"/>
+<text x="580.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Prefilter Before You Merge</text>
+<text x="580.0" y="72.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" letter-spacing="3.0">FILTERS ARE CHEAP — ONE PASS OVER A COLUMN.  MERGES ARE EXPENSIVE — ROWS × COLUMNS HELD IN RAM.</text>
+<rect x="120.0" y="118.0" width="330.0" height="26.0" rx="7.0" fill="#1B2A5B"/>
+<text x="285.0" y="136.0" font-size="13.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">990 efile tables — P00 · P01 · P08</text>
+<rect x="120.0" y="144.0" width="330.0" height="200.0" rx="4.0" fill="white" stroke="#C4C9D4" stroke-width="1.4"/>
+<line x1="128.0" y1="153.1" x2="442.0" y2="153.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="159.4" x2="442.0" y2="159.4" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="165.7" x2="442.0" y2="165.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="171.9" x2="442.0" y2="171.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="178.2" x2="442.0" y2="178.2" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="184.5" x2="442.0" y2="184.5" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="190.7" x2="442.0" y2="190.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="197.0" x2="442.0" y2="197.0" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="203.3" x2="442.0" y2="203.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="209.5" x2="442.0" y2="209.5" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="215.8" x2="442.0" y2="215.8" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="222.1" x2="442.0" y2="222.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="228.3" x2="442.0" y2="228.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="234.6" x2="442.0" y2="234.6" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="240.9" x2="442.0" y2="240.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="247.1" x2="442.0" y2="247.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="253.4" x2="442.0" y2="253.4" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="259.7" x2="442.0" y2="259.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="265.9" x2="442.0" y2="265.9" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="272.2" x2="442.0" y2="272.2" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="278.5" x2="442.0" y2="278.5" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="284.7" x2="442.0" y2="284.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="291.0" x2="442.0" y2="291.0" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="297.3" x2="442.0" y2="297.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="303.5" x2="442.0" y2="303.5" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="309.8" x2="442.0" y2="309.8" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="316.1" x2="442.0" y2="316.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="322.3" x2="442.0" y2="322.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="328.6" x2="442.0" y2="328.6" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="334.9" x2="442.0" y2="334.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<rect x="268.0" y="152.0" width="174.0" height="24.0" rx="12.0" fill="#9AA3B2"/>
+<text x="355.0" y="168.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">~500K filings / year</text>
+<text x="285.0" y="362.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">every organization that filed, every year</text>
+<rect x="710.0" y="118.0" width="330.0" height="26.0" rx="7.0" fill="#00A99D"/>
+<text x="875.0" y="136.0" font-size="13.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">BMF — organization master</text>
+<rect x="710.0" y="144.0" width="330.0" height="200.0" rx="4.0" fill="white" stroke="#C4C9D4" stroke-width="1.4"/>
+<line x1="718.0" y1="153.1" x2="1032.0" y2="153.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="159.4" x2="1032.0" y2="159.4" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="165.7" x2="1032.0" y2="165.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="171.9" x2="1032.0" y2="171.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="178.2" x2="1032.0" y2="178.2" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="184.5" x2="1032.0" y2="184.5" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="190.7" x2="1032.0" y2="190.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="197.0" x2="1032.0" y2="197.0" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="203.3" x2="1032.0" y2="203.3" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="209.5" x2="1032.0" y2="209.5" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="215.8" x2="1032.0" y2="215.8" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="222.1" x2="1032.0" y2="222.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="228.3" x2="1032.0" y2="228.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="234.6" x2="1032.0" y2="234.6" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="240.9" x2="1032.0" y2="240.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="247.1" x2="1032.0" y2="247.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="253.4" x2="1032.0" y2="253.4" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="259.7" x2="1032.0" y2="259.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="265.9" x2="1032.0" y2="265.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="272.2" x2="1032.0" y2="272.2" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="278.5" x2="1032.0" y2="278.5" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="284.7" x2="1032.0" y2="284.7" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="291.0" x2="1032.0" y2="291.0" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="297.3" x2="1032.0" y2="297.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="303.5" x2="1032.0" y2="303.5" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="309.8" x2="1032.0" y2="309.8" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="316.1" x2="1032.0" y2="316.1" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="322.3" x2="1032.0" y2="322.3" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="328.6" x2="1032.0" y2="328.6" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="334.9" x2="1032.0" y2="334.9" stroke="#DCE0E7" stroke-width="2.0" stroke-linecap="butt"/>
+<rect x="887.6" y="152.0" width="144.4" height="24.0" rx="12.0" fill="#D64545"/>
+<text x="959.8" y="168.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">millions of rows</text>
+<text x="875.0" y="362.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">one row per org ever registered — most are not in your study</text>
+<rect x="90.0" y="392.0" width="980.0" height="118.0" rx="12.0" fill="#EAF6EC" stroke="#2E9E44" stroke-width="2.0"/>
+<text x="120.0" y="420.0" font-size="15.0" fill="#2E9E44" text-anchor="start" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">PREFILTER — cheap</text>
+<text x="120.0" y="444.0" font-size="13.0" fill="#1B2A5B" text-anchor="start" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">ga_c3 &lt;- bmf$EIN2[bmf$geo_state_abbr == "GA" &amp; bmf$subsection_code == "3"]</text>
+<text x="120.0" y="466.0" font-size="13.0" fill="#1B2A5B" text-anchor="start" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">sfw   &lt;- add_rule(sfw, "GA 501c3 cohort", "subset", subset = ga_c3)</text>
+<text x="120.0" y="491.0" font-size="12.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">the subset rule is pushed down to read time — only cohort rows are ever read into memory</text>
+<line x1="285.0" y1="372.0" x2="285.0" y2="386.0" stroke="#1B2A5B" stroke-width="2.4" stroke-linecap="butt"/>
+<polygon points="285.0,390.0 292.2,375.6 277.8,375.6" fill="#1B2A5B"/>
+<line x1="285.0" y1="514.0" x2="285.0" y2="548.0" stroke="#2E9E44" stroke-width="2.4" stroke-linecap="butt"/>
+<polygon points="285.0,552.0 292.2,537.6 277.8,537.6" fill="#2E9E44"/>
+<line x1="875.0" y1="372.0" x2="875.0" y2="386.0" stroke="#1B2A5B" stroke-width="2.4" stroke-linecap="butt"/>
+<polygon points="875.0,390.0 882.2,375.6 867.8,375.6" fill="#1B2A5B"/>
+<line x1="875.0" y1="514.0" x2="875.0" y2="548.0" stroke="#2E9E44" stroke-width="2.4" stroke-linecap="butt"/>
+<polygon points="875.0,552.0 882.2,537.6 867.8,537.6" fill="#2E9E44"/>
+<rect x="120.0" y="560.0" width="330.0" height="22.0" rx="6.0" fill="#2E9E44"/>
+<text x="285.0" y="575.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">cohort filings</text>
+<rect x="120.0" y="582.0" width="330.0" height="54.0" rx="4.0" fill="white" stroke="#2E9E44" stroke-width="1.4"/>
+<line x1="128.0" y1="589.3" x2="442.0" y2="589.3" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="595.9" x2="442.0" y2="595.9" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="602.4" x2="442.0" y2="602.4" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="609.0" x2="442.0" y2="609.0" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="615.6" x2="442.0" y2="615.6" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="622.1" x2="442.0" y2="622.1" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="128.0" y1="628.7" x2="442.0" y2="628.7" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<text x="285.0" y="654.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">~8K rows / year</text>
+<rect x="710.0" y="560.0" width="330.0" height="22.0" rx="6.0" fill="#2E9E44"/>
+<text x="875.0" y="575.5" font-size="12.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">cohort BMF traits</text>
+<rect x="710.0" y="582.0" width="330.0" height="54.0" rx="4.0" fill="white" stroke="#2E9E44" stroke-width="1.4"/>
+<line x1="718.0" y1="589.3" x2="1032.0" y2="589.3" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="595.9" x2="1032.0" y2="595.9" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="602.4" x2="1032.0" y2="602.4" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="609.0" x2="1032.0" y2="609.0" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="615.6" x2="1032.0" y2="615.6" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="622.1" x2="1032.0" y2="622.1" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<line x1="718.0" y1="628.7" x2="1032.0" y2="628.7" stroke="#2E9E44" stroke-width="3.0" stroke-linecap="butt"/>
+<text x="875.0" y="654.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">one row per cohort org</text>
+<polygon points="554.0,586.0 578.0,604.0 554.0,622.0" fill="#1B2A5B"/>
+<polygon points="606.0,586.0 582.0,604.0 606.0,622.0" fill="#1B2A5B"/>
+<text x="580.0" y="644.0" font-size="12.5" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">ready to merge</text>
+<text x="580.0" y="662.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">small × small</text>
+<rect x="190.0" y="692.0" width="780.0" height="54.0" rx="10.0" fill="#FDF0EE" stroke="#D64545" stroke-width="1.6"/>
+<text x="580.0" y="714.0" font-size="13.0" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">⚠  without prefiltering: full panel ⋈ full BMF — millions of rows × hundreds of columns</text>
+<text x="580.0" y="734.0" font-size="12.0" fill="#D64545" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">a merge that size can exhaust RAM on most machines; prefiltering keeps assembly cheap</text>
+</svg>

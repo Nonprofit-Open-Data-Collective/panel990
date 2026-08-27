@@ -3,6 +3,15 @@ url: https://nonprofit-open-data-collective.github.io/panel990/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: [intro, getting-started, reference, articles]
+    right: [search, github]
+  components:
+    getting-started:
+      text: Getting started
+      href: articles/getting-started.html
+
 reference:
 - title: Sample frame
   desc: >
@@ -90,8 +99,11 @@ reference:
   - accounting_identities
 
 articles:
-- title: Getting started
-  navbar: Getting started
+- title: Start here
+  contents:
+  - getting-started
+- title: Tutorials
+  navbar: Tutorials
   contents:
   - downloading-tables
   - sampling-framework

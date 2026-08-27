@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="748" viewBox="0 0 1060 748" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1060" height="748" fill="white"/>
+<text x="530.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Panel Membership Patterns</text>
+<text x="530.0" y="72.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" letter-spacing="3.0">PANEL_TYPE  ×  PANEL_SPELL  —  AS CLASSIFIED BY PANEL_DESCRIBE()</text>
+<polygon points="34.0,102.0 92.0,102.0 92.0,140.0 63.0,147.0 34.0,140.0" fill="#9AA3B2"/>
+<text x="63.0" y="125.7" font-size="13.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">EIN2</text>
+<polygon points="96.0,102.0 224.0,102.0 224.0,140.0 160.0,147.0 96.0,140.0" fill="#9AA3B2"/>
+<text x="160.0" y="125.7" font-size="13.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">panel_type</text>
+<polygon points="228.0,102.0 344.0,102.0 344.0,140.0 286.0,147.0 228.0,140.0" fill="#9AA3B2"/>
+<text x="286.0" y="125.7" font-size="13.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">panel_spell</text>
+<polygon points="348.0,102.0 440.0,102.0 440.0,140.0 394.0,147.0 348.0,140.0" fill="#1B2A5B"/>
+<text x="394.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2018</text>
+<polygon points="444.0,102.0 536.0,102.0 536.0,140.0 490.0,147.0 444.0,140.0" fill="#1B2A5B"/>
+<text x="490.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<polygon points="540.0,102.0 632.0,102.0 632.0,140.0 586.0,147.0 540.0,140.0" fill="#1B2A5B"/>
+<text x="586.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<polygon points="636.0,102.0 728.0,102.0 728.0,140.0 682.0,147.0 636.0,140.0" fill="#1B2A5B"/>
+<text x="682.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<polygon points="732.0,102.0 824.0,102.0 824.0,140.0 778.0,147.0 732.0,140.0" fill="#1B2A5B"/>
+<text x="778.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<polygon points="828.0,102.0 920.0,102.0 920.0,140.0 874.0,147.0 828.0,140.0" fill="#1B2A5B"/>
+<text x="874.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2023</text>
+<polygon points="924.0,102.0 1016.0,102.0 1016.0,140.0 970.0,147.0 924.0,140.0" fill="#1B2A5B"/>
+<text x="970.0" y="126.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">2024</text>
+<rect x="34.0" y="154.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="186.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">A</text>
+<rect x="102.0" y="163.0" width="116.0" height="34.0" rx="17.0" fill="#5BAE2E"/>
+<text x="160.0" y="185.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">persistent</text>
+<text x="286.0" y="185.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">seamless</text>
+<rect x="348.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="394.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 388.5 182.5 L 392.5 186.5 L 400.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="444.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="490.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 484.5 182.5 L 488.5 186.5 L 496.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="540.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 580.5 182.5 L 584.5 186.5 L 592.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="636.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 676.5 182.5 L 680.5 186.5 L 688.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="778.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 772.5 182.5 L 776.5 186.5 L 784.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="828.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="874.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 868.5 182.5 L 872.5 186.5 L 880.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="924.0" y="154.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="970.0" cy="182.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 964.5 182.5 L 968.5 186.5 L 976.0 177.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="34.0" y="212.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="244.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">B</text>
+<rect x="102.0" y="221.0" width="116.0" height="34.0" rx="17.0" fill="#5BAE2E"/>
+<text x="160.0" y="243.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">persistent</text>
+<text x="286.0" y="243.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">segmented</text>
+<rect x="348.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="394.0" cy="240.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 388.5 240.5 L 392.5 244.5 L 400.0 235.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="444.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="490.0" cy="240.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 484.5 240.5 L 488.5 244.5 L 496.0 235.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="540.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="240.0" r="13.5" fill="white" stroke="#D64545" stroke-width="2.0" stroke-dasharray="4,3.5"/>
+<rect x="636.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="240.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 676.5 240.5 L 680.5 244.5 L 688.0 235.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="778.0" cy="240.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 772.5 240.5 L 776.5 244.5 L 784.0 235.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="828.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="874.0" cy="240.0" r="13.5" fill="white" stroke="#D64545" stroke-width="2.0" stroke-dasharray="4,3.5"/>
+<rect x="924.0" y="212.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="970.0" cy="240.0" r="13.5" fill="#5BAE2E"/>
+<path d="M 964.5 240.5 L 968.5 244.5 L 976.0 235.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="34.0" y1="269.5" x2="1016.0" y2="269.5" stroke="#C4C9D4" stroke-width="1.4" stroke-linecap="butt"/>
+<rect x="34.0" y="270.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="302.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">C</text>
+<rect x="102.0" y="279.0" width="116.0" height="34.0" rx="17.0" fill="#0E87BE"/>
+<text x="160.0" y="301.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">entrant</text>
+<text x="286.0" y="301.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">seamless</text>
+<rect x="348.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="444.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="540.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="298.0" r="13.5" fill="#0E87BE"/>
+<path d="M 580.5 298.5 L 584.5 302.5 L 592.0 293.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="636.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="298.0" r="13.5" fill="#0E87BE"/>
+<path d="M 676.5 298.5 L 680.5 302.5 L 688.0 293.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="778.0" cy="298.0" r="13.5" fill="#0E87BE"/>
+<path d="M 772.5 298.5 L 776.5 302.5 L 784.0 293.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="828.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="874.0" cy="298.0" r="13.5" fill="#0E87BE"/>
+<path d="M 868.5 298.5 L 872.5 302.5 L 880.0 293.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="924.0" y="270.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="970.0" cy="298.0" r="13.5" fill="#0E87BE"/>
+<path d="M 964.5 298.5 L 968.5 302.5 L 976.0 293.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="34.0" y="328.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="360.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">D</text>
+<rect x="102.0" y="337.0" width="116.0" height="34.0" rx="17.0" fill="#0E87BE"/>
+<text x="160.0" y="359.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">entrant</text>
+<text x="286.0" y="359.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">segmented</text>
+<rect x="348.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="444.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="540.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="356.0" r="13.5" fill="#0E87BE"/>
+<path d="M 580.5 356.5 L 584.5 360.5 L 592.0 351.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="636.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="356.0" r="13.5" fill="#0E87BE"/>
+<path d="M 676.5 356.5 L 680.5 360.5 L 688.0 351.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="778.0" cy="356.0" r="13.5" fill="white" stroke="#D64545" stroke-width="2.0" stroke-dasharray="4,3.5"/>
+<rect x="828.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="874.0" cy="356.0" r="13.5" fill="#0E87BE"/>
+<path d="M 868.5 356.5 L 872.5 360.5 L 880.0 351.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="924.0" y="328.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="970.0" cy="356.0" r="13.5" fill="#0E87BE"/>
+<path d="M 964.5 356.5 L 968.5 360.5 L 976.0 351.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="34.0" y1="385.5" x2="1016.0" y2="385.5" stroke="#C4C9D4" stroke-width="1.4" stroke-linecap="butt"/>
+<rect x="34.0" y="386.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="418.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">E</text>
+<rect x="102.0" y="395.0" width="116.0" height="34.0" rx="17.0" fill="#E9A800"/>
+<text x="160.0" y="417.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">exit</text>
+<text x="286.0" y="417.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">seamless</text>
+<rect x="348.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="394.0" cy="414.0" r="13.5" fill="#E9A800"/>
+<path d="M 388.5 414.5 L 392.5 418.5 L 400.0 409.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="444.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="490.0" cy="414.0" r="13.5" fill="#E9A800"/>
+<path d="M 484.5 414.5 L 488.5 418.5 L 496.0 409.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="540.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="414.0" r="13.5" fill="#E9A800"/>
+<path d="M 580.5 414.5 L 584.5 418.5 L 592.0 409.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="636.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="414.0" r="13.5" fill="#E9A800"/>
+<path d="M 676.5 414.5 L 680.5 418.5 L 688.0 409.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="828.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="924.0" y="386.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="34.0" y="444.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="476.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">F</text>
+<rect x="102.0" y="453.0" width="116.0" height="34.0" rx="17.0" fill="#E9A800"/>
+<text x="160.0" y="475.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">exit</text>
+<text x="286.0" y="475.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">segmented</text>
+<rect x="348.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="394.0" cy="472.0" r="13.5" fill="#E9A800"/>
+<path d="M 388.5 472.5 L 392.5 476.5 L 400.0 467.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="444.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="490.0" cy="472.0" r="13.5" fill="white" stroke="#D64545" stroke-width="2.0" stroke-dasharray="4,3.5"/>
+<rect x="540.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="472.0" r="13.5" fill="#E9A800"/>
+<path d="M 580.5 472.5 L 584.5 476.5 L 592.0 467.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="636.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="472.0" r="13.5" fill="#E9A800"/>
+<path d="M 676.5 472.5 L 680.5 476.5 L 688.0 467.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="828.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="924.0" y="444.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<line x1="34.0" y1="501.5" x2="1016.0" y2="501.5" stroke="#C4C9D4" stroke-width="1.4" stroke-linecap="butt"/>
+<rect x="34.0" y="502.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="534.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">G</text>
+<rect x="102.0" y="511.0" width="116.0" height="34.0" rx="17.0" fill="#6B6EC6"/>
+<text x="160.0" y="533.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">transient</text>
+<text x="286.0" y="533.0" font-size="14.0" fill="#1B2A5B" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">seamless</text>
+<rect x="348.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="444.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="490.0" cy="530.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 484.5 530.5 L 488.5 534.5 L 496.0 525.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="540.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="530.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 580.5 530.5 L 584.5 534.5 L 592.0 525.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="636.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="530.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 676.5 530.5 L 680.5 534.5 L 688.0 525.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="778.0" cy="530.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 772.5 530.5 L 776.5 534.5 L 784.0 525.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="828.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="924.0" y="502.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="34.0" y="560.0" width="58.0" height="52.0" rx="6.0" fill="#F2F3F5"/>
+<text x="63.0" y="592.0" font-size="17.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">H</text>
+<rect x="102.0" y="569.0" width="116.0" height="34.0" rx="17.0" fill="#6B6EC6"/>
+<text x="160.0" y="591.0" font-size="14.0" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">transient</text>
+<text x="286.0" y="591.0" font-size="14.0" fill="#D64545" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">segmented</text>
+<rect x="348.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="444.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="490.0" cy="588.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 484.5 588.5 L 488.5 592.5 L 496.0 583.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="540.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="586.0" cy="588.0" r="13.5" fill="white" stroke="#D64545" stroke-width="2.0" stroke-dasharray="4,3.5"/>
+<rect x="636.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="682.0" cy="588.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 676.5 588.5 L 680.5 592.5 L 688.0 583.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="732.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="778.0" cy="588.0" r="13.5" fill="#6B6EC6"/>
+<path d="M 772.5 588.5 L 776.5 592.5 L 784.0 583.0" fill="none" stroke="white" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="828.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<rect x="924.0" y="560.0" width="92.0" height="52.0" rx="6.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<circle cx="46.0" cy="640.0" r="10.0" fill="#5BAE2E"/>
+<path d="M 41.9 640.4 L 44.9 643.4 L 50.5 636.2" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="64.0" y="644.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">990 filed (year observed)</text>
+<circle cx="296.0" cy="640.0" r="10.0" fill="white" stroke="#D64545" stroke-width="2.0" stroke-dasharray="4,3.5"/>
+<text x="314.0" y="644.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">interior gap → spell is segmented</text>
+<rect x="590.0" y="630.0" width="20.0" height="20.0" rx="4.0" fill="white" stroke="#E3E5EA" stroke-width="1.0"/>
+<text x="618.0" y="644.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">outside the org's spell (entry / exit boundary)</text>
+</svg>

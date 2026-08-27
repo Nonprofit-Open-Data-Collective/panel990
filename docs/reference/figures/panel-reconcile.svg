@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="700" viewBox="0 0 1180 700" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1180" height="700" fill="white"/>
+<text x="590.0" y="44.0" font-size="26.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">Smoothing Breaks Accounting Identities — reconcile() Restores Them</text>
+<text x="590.0" y="72.0" font-size="12.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" letter-spacing="3.0">EACH VARIABLE IS SMOOTHED INDEPENDENTLY, SO CONTRIBUTIONS + EARNED NO LONGER EQUALS TOTAL REVENUE</text>
+<text x="290.0" y="112.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Consolas, Menlo, Courier New, monospace">after panel_smooth()</text>
+<rect x="223.0" y="122.0" width="134.0" height="24.0" rx="12.0" fill="#D64545"/>
+<text x="290.0" y="138.5" font-size="12.5" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">identity broken</text>
+<line x1="90.0" y1="399.3" x2="520.0" y2="399.3" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="82.0" y="403.3" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">50</text>
+<line x1="90.0" y1="331.2" x2="520.0" y2="331.2" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="82.0" y="335.2" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">100</text>
+<line x1="90.0" y1="263.2" x2="520.0" y2="263.2" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="82.0" y="267.2" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">150</text>
+<line x1="90.0" y1="195.1" x2="520.0" y2="195.1" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="82.0" y="199.1" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">200</text>
+<line x1="90.0" y1="402.0" x2="520.0" y2="402.0" stroke="#3A3A3A" stroke-width="1.6" stroke-linecap="butt"/>
+<text x="116.9" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2016</text>
+<text x="170.6" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2017</text>
+<text x="224.4" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2018</text>
+<text x="278.1" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<text x="331.9" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<text x="385.6" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<text x="439.4" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<text x="493.1" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2023</text>
+<line x1="116.9" y1="244.6" x2="116.9" y2="226.4" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="170.6" y1="244.6" x2="170.6" y2="226.4" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="224.4" y1="229.6" x2="224.4" y2="201.5" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="278.1" y1="218.3" x2="278.1" y2="208.3" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="331.9" y1="210.1" x2="331.9" y2="220.5" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="385.6" y1="197.4" x2="385.6" y2="217.8" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="439.4" y1="186.5" x2="439.4" y2="201.5" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<line x1="493.1" y1="186.5" x2="493.1" y2="201.5" stroke="#D64545" stroke-width="2.0" stroke-linecap="butt"/>
+<polyline points="116.9,377.5 170.6,377.5 224.4,372.5 278.1,368.0 331.9,364.3 385.6,357.5 439.4,352.1 493.1,352.1" fill="none" stroke="#5BAE2E" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="116.9,334.4 170.6,334.4 224.4,324.4 278.1,317.6 331.9,313.1 385.6,307.2 439.4,301.7 493.1,301.7" fill="none" stroke="#0E87BE" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="116.9,226.4 170.6,226.4 224.4,201.5 278.1,208.3 331.9,220.5 385.6,217.8 439.4,201.5 493.1,201.5" fill="none" stroke="#1B2A5B" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="116.9,244.6 170.6,244.6 224.4,229.6 278.1,218.3 331.9,210.1 385.6,197.4 439.4,186.5 493.1,186.5" fill="none" stroke="#D64545" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7,5"/>
+<circle cx="116.9" cy="377.5" r="4.4" fill="#5BAE2E"/>
+<circle cx="116.9" cy="334.4" r="4.4" fill="#0E87BE"/>
+<circle cx="116.9" cy="226.4" r="5.0" fill="#1B2A5B"/>
+<circle cx="170.6" cy="377.5" r="4.4" fill="#5BAE2E"/>
+<circle cx="170.6" cy="334.4" r="4.4" fill="#0E87BE"/>
+<circle cx="170.6" cy="226.4" r="5.0" fill="#1B2A5B"/>
+<circle cx="224.4" cy="372.5" r="4.4" fill="#5BAE2E"/>
+<circle cx="224.4" cy="324.4" r="4.4" fill="#0E87BE"/>
+<circle cx="224.4" cy="201.5" r="5.0" fill="#1B2A5B"/>
+<circle cx="278.1" cy="368.0" r="4.4" fill="#5BAE2E"/>
+<circle cx="278.1" cy="317.6" r="4.4" fill="#0E87BE"/>
+<circle cx="278.1" cy="208.3" r="5.0" fill="#1B2A5B"/>
+<circle cx="331.9" cy="364.3" r="4.4" fill="#5BAE2E"/>
+<circle cx="331.9" cy="313.1" r="4.4" fill="#0E87BE"/>
+<circle cx="331.9" cy="220.5" r="5.0" fill="#1B2A5B"/>
+<circle cx="385.6" cy="357.5" r="4.4" fill="#5BAE2E"/>
+<circle cx="385.6" cy="307.2" r="4.4" fill="#0E87BE"/>
+<circle cx="385.6" cy="217.8" r="5.0" fill="#1B2A5B"/>
+<circle cx="439.4" cy="352.1" r="4.4" fill="#5BAE2E"/>
+<circle cx="439.4" cy="301.7" r="4.4" fill="#0E87BE"/>
+<circle cx="439.4" cy="201.5" r="5.0" fill="#1B2A5B"/>
+<circle cx="493.1" cy="352.1" r="4.4" fill="#5BAE2E"/>
+<circle cx="493.1" cy="301.7" r="4.4" fill="#0E87BE"/>
+<circle cx="493.1" cy="201.5" r="5.0" fill="#1B2A5B"/>
+<rect x="92.9" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="116.9" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">-13.3</text>
+<rect x="146.6" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="170.6" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">-13.3</text>
+<rect x="200.4" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="224.4" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">-20.7</text>
+<rect x="254.1" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="278.1" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">-7.3</text>
+<rect x="307.9" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="331.9" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">+7.7</text>
+<rect x="361.6" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="385.6" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">+15.0</text>
+<rect x="415.4" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="439.4" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">+11.0</text>
+<rect x="469.1" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#FDF0EE"/>
+<text x="493.1" y="474.0" font-size="12.5" fill="#D64545" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">+11.0</text>
+<text x="305.0" y="502.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">identity residual   (contributions + earned − total)</text>
+<text x="890.0" y="112.0" font-size="15.0" fill="#1B2A5B" text-anchor="middle" font-weight="bold" font-family="Consolas, Menlo, Courier New, monospace">after reconcile()</text>
+<rect x="815.8" y="122.0" width="148.4" height="24.0" rx="12.0" fill="#2E9E44"/>
+<text x="890.0" y="138.5" font-size="12.5" fill="white" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">identity restored</text>
+<line x1="690.0" y1="399.3" x2="1120.0" y2="399.3" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="682.0" y="403.3" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">50</text>
+<line x1="690.0" y1="331.2" x2="1120.0" y2="331.2" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="682.0" y="335.2" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">100</text>
+<line x1="690.0" y1="263.2" x2="1120.0" y2="263.2" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="682.0" y="267.2" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">150</text>
+<line x1="690.0" y1="195.1" x2="1120.0" y2="195.1" stroke="#CFCFCF" stroke-width="1.0" stroke-linecap="butt" stroke-dasharray="5,5"/>
+<text x="682.0" y="199.1" font-size="11.5" fill="#8A93A6" text-anchor="end" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">200</text>
+<line x1="690.0" y1="402.0" x2="1120.0" y2="402.0" stroke="#3A3A3A" stroke-width="1.6" stroke-linecap="butt"/>
+<text x="716.9" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2016</text>
+<text x="770.6" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2017</text>
+<text x="824.4" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2018</text>
+<text x="878.1" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2019</text>
+<text x="931.9" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2020</text>
+<text x="985.6" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2021</text>
+<text x="1039.4" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2022</text>
+<text x="1093.1" y="420.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">2023</text>
+<polyline points="716.9,371.5 770.6,371.5 824.4,363.1 878.1,364.6 931.9,367.8 985.6,364.3 1039.4,357.1 1093.1,357.1" fill="none" stroke="#5BAE2E" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="716.9,328.4 770.6,328.4 824.4,315.0 878.1,314.3 931.9,316.6 985.6,314.0 1039.4,306.7 1093.1,306.7" fill="none" stroke="#0E87BE" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="716.9,232.5 770.6,232.5 824.4,210.8 878.1,211.6 931.9,217.0 985.6,211.0 1039.4,196.5 1093.1,196.5" fill="none" stroke="#1B2A5B" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="716.9,232.5 770.6,232.5 824.4,210.8 878.1,211.6 931.9,217.0 985.6,211.0 1039.4,196.5 1093.1,196.5" fill="none" stroke="#2E9E44" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7,5"/>
+<circle cx="716.9" cy="371.5" r="4.4" fill="#5BAE2E"/>
+<circle cx="716.9" cy="328.4" r="4.4" fill="#0E87BE"/>
+<circle cx="716.9" cy="232.5" r="5.0" fill="#1B2A5B"/>
+<circle cx="770.6" cy="371.5" r="4.4" fill="#5BAE2E"/>
+<circle cx="770.6" cy="328.4" r="4.4" fill="#0E87BE"/>
+<circle cx="770.6" cy="232.5" r="5.0" fill="#1B2A5B"/>
+<circle cx="824.4" cy="363.1" r="4.4" fill="#5BAE2E"/>
+<circle cx="824.4" cy="315.0" r="4.4" fill="#0E87BE"/>
+<circle cx="824.4" cy="210.8" r="5.0" fill="#1B2A5B"/>
+<circle cx="878.1" cy="364.6" r="4.4" fill="#5BAE2E"/>
+<circle cx="878.1" cy="314.3" r="4.4" fill="#0E87BE"/>
+<circle cx="878.1" cy="211.6" r="5.0" fill="#1B2A5B"/>
+<circle cx="931.9" cy="367.8" r="4.4" fill="#5BAE2E"/>
+<circle cx="931.9" cy="316.6" r="4.4" fill="#0E87BE"/>
+<circle cx="931.9" cy="217.0" r="5.0" fill="#1B2A5B"/>
+<circle cx="985.6" cy="364.3" r="4.4" fill="#5BAE2E"/>
+<circle cx="985.6" cy="314.0" r="4.4" fill="#0E87BE"/>
+<circle cx="985.6" cy="211.0" r="5.0" fill="#1B2A5B"/>
+<circle cx="1039.4" cy="357.1" r="4.4" fill="#5BAE2E"/>
+<circle cx="1039.4" cy="306.7" r="4.4" fill="#0E87BE"/>
+<circle cx="1039.4" cy="196.5" r="5.0" fill="#1B2A5B"/>
+<circle cx="1093.1" cy="357.1" r="4.4" fill="#5BAE2E"/>
+<circle cx="1093.1" cy="306.7" r="4.4" fill="#0E87BE"/>
+<circle cx="1093.1" cy="196.5" r="5.0" fill="#1B2A5B"/>
+<rect x="692.9" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="716.9" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="746.6" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="770.6" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="800.4" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="824.4" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="854.1" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="878.1" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="907.9" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="931.9" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="961.6" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="985.6" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="1015.4" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="1039.4" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<rect x="1069.1" y="456.0" width="48.0" height="26.0" rx="6.0" fill="#EAF6EC"/>
+<text x="1093.1" y="474.0" font-size="12.5" fill="#2E9E44" text-anchor="middle" font-weight="bold" font-family="Segoe UI, Helvetica, Arial, sans-serif">0</text>
+<text x="905.0" y="502.0" font-size="11.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">identity residual   (contributions + earned − total)</text>
+<line x1="560.0" y1="280.0" x2="620.0" y2="280.0" stroke="#1B2A5B" stroke-width="2.6" stroke-linecap="butt"/>
+<polygon points="624.0,280.0 609.6,272.8 609.6,287.2" fill="#1B2A5B"/>
+<text x="592.0" y="262.0" font-size="12.5" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Consolas, Menlo, Courier New, monospace">reconcile()</text>
+<line x1="120.0" y1="552.0" x2="154.0" y2="552.0" stroke="#0E87BE" stroke-width="3.0" stroke-linecap="butt"/>
+<circle cx="137.0" cy="552.0" r="4.4" fill="#0E87BE"/>
+<text x="162.0" y="556.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">contributions</text>
+<line x1="320.0" y1="552.0" x2="354.0" y2="552.0" stroke="#5BAE2E" stroke-width="3.0" stroke-linecap="butt"/>
+<circle cx="337.0" cy="552.0" r="4.4" fill="#5BAE2E"/>
+<text x="362.0" y="556.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">earned revenue</text>
+<line x1="540.0" y1="552.0" x2="574.0" y2="552.0" stroke="#1B2A5B" stroke-width="3.0" stroke-linecap="butt"/>
+<circle cx="557.0" cy="552.0" r="4.4" fill="#1B2A5B"/>
+<text x="582.0" y="556.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">total revenue (as filed)</text>
+<line x1="810.0" y1="552.0" x2="844.0" y2="552.0" stroke="#D64545" stroke-width="2.4" stroke-linecap="butt" stroke-dasharray="7,5"/>
+<text x="852.0" y="556.0" font-size="13.0" fill="#8A93A6" text-anchor="start" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif">contributions + earned (sum of parts)</text>
+<text x="590.0" y="586.0" font-size="13.0" fill="#8A93A6" text-anchor="middle" font-weight="normal" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-style="italic">reconcile() makes the smallest weighted adjustment to each variable so every accounting identity holds exactly</text>
+</svg>
