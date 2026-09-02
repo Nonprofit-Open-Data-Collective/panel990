@@ -160,6 +160,21 @@ rd <- read_tables(dl)                 # optionally columns=, filters=
 mg <- merge_tables(rd)                # join P00 + P08 per year by filing keys
 ```
 
+These stages report progress the same way downloads do, so a long `panelize()`
+run is never silent -- reading, each per-year join, and the final stack each
+announce themselves with dimensions and elapsed time:
+
+```
+-> READ     [1/4] F9-P00-T00-HEADER 2022 (338.0 MB)
+<- READ OK  [1/4] F9-P00-T00-HEADER 2022 555,185 x 80 in 7.7s (54 duplicate row(s) removed)
+-> MERGE    2022: F9-P00-T00-HEADER + F9-P10-T00-BALANCE-SHEET on EIN2, TAX_YEAR, ...
+<- MERGE OK 2022 555,185 x 157 in 11.5s
+-> STACK    2 year(s)
+<- STACK OK 1,116,332 x 157 in 5.7s
+```
+
+Pass `verbose = FALSE` to any of them to silence it.
+
 `merge_tables()` joins the `1x1` tables side-by-side (header fields next to
 revenue fields, one row per filing) and reports each join in a manifest:
 

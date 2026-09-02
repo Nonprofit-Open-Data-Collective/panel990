@@ -1,11 +1,11 @@
 .efile_bind_rows <- function(items) {
   columns <- unique(unlist(lapply(items, names), use.names = FALSE))
-  items <- lapply(items, function(x) {
-    missing <- setdiff(columns, names(x))
-    for (field in missing) x[[field]] <- NA
-    x[, columns, drop = FALSE]
-  })
-  out <- do.call(rbind, items)
+  # rbindlist(fill = TRUE) supplies missing columns and is far faster than
+  # do.call(rbind, ...) on efile-sized frames; the explicit reorder keeps the
+  # first-appearance column order the previous implementation produced.
+  out <- data.table::rbindlist(items, use.names = TRUE, fill = TRUE)
+  out <- as.data.frame(out, stringsAsFactors = FALSE)
+  out <- out[, columns, drop = FALSE]
   rownames(out) <- NULL
   out
 }
@@ -97,11 +97,19 @@ panelize <- function(
   read_columns <- if (is.null(columns)) NULL else unique(c(keys, columns))
   reads <- if (backend == "duckdb")
     read_tables_duckdb(downloads, columns = read_columns, filters = filters) else
-      read_tables(downloads, columns = read_columns, filters = filters)
+      read_tables(downloads, columns = read_columns, filters = filters,
+                  verbose = verbose)
   merged <- merge_tables(reads, keys = keys, include_many = include_many,
-                        collision = collision)
+                        collision = collision, verbose = verbose)
   if (!length(merged$years)) stop("No table-year data were available for the panel.")
+  if (verbose) .p990_say("-> STACK    ", length(merged$years), " year(s)")
+  stack_started <- Sys.time()
   data <- .efile_bind_rows(merged$years)
+  if (verbose)
+    .p990_say("<- STACK OK ", format(nrow(data), big.mark = ","), " x ",
+              ncol(data), " in ",
+              round(as.numeric(difftime(Sys.time(), stack_started,
+                                        units = "secs")), 1L), "s")
   sfw <- .panel_receipt(sfw, "panelize",
                         paste0(length(tables), " tables x ",
                                length(unique(years)), " years"),

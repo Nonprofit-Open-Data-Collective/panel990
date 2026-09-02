@@ -1204,6 +1204,14 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_tables.html">read_tables</a></span><span class="op">(</span><span class="va">dl</span><span class="op">)</span>                 <span class="co"># optionally columns=, filters=</span></span>
 <span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_tables.html">merge_tables</a></span><span class="op">(</span><span class="va">rd</span><span class="op">)</span>                <span class="co"># join P00 + P08 per year by filing keys</span></span></code></pre></div>
+<p>These stages report progress the same way downloads do, so a long <code><a href="../reference/panelize.html">panelize()</a></code> run is never silent – reading, each per-year join, and the final stack each announce themselves with dimensions and elapsed time:</p>
+<pre><code>-&gt; READ     [1/4] F9-P00-T00-HEADER 2022 (338.0 MB)
+&lt;- READ OK  [1/4] F9-P00-T00-HEADER 2022 555,185 x 80 in 7.7s (54 duplicate row(s) removed)
+-&gt; MERGE    2022: F9-P00-T00-HEADER + F9-P10-T00-BALANCE-SHEET on EIN2, TAX_YEAR, ...
+&lt;- MERGE OK 2022 555,185 x 157 in 11.5s
+-&gt; STACK    2 year(s)
+&lt;- STACK OK 1,116,332 x 157 in 5.7s</code></pre>
+<p>Pass <code>verbose = FALSE</code> to any of them to silence it.</p>
 <p><code><a href="../reference/merge_tables.html">merge_tables()</a></code> joins the <code>1x1</code> tables side-by-side (header fields next to revenue fields, one row per filing) and reports each join in a manifest:</p>
 <div class="figure">
 <img src="figures/merge-tables.svg" style="width:100.0%" alt=""><p class="caption">Five core 990 tables joined on the filing keys into one wide row per filing</p>
@@ -1216,7 +1224,7 @@
 <h3 id="the-one-shot-form">The one-shot form<a class="anchor" aria-label="anchor" href="#the-one-shot-form"></a>
 </h3>
 <p><code><a href="../reference/panelize.html">panelize()</a></code> runs download -&gt; read -&gt; merge -&gt; stack in a single call and returns a <code>panel</code> object. The filing keys (<code>EIN2</code> / <code>TAX_YEAR</code> / <code>OBJECTID</code>) are assigned automatically:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panelize.html">panelize</a></span><span class="op">(</span>tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P08"</span><span class="op">)</span>, years <span class="op">=</span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2020</span><span class="op">)</span></span>
 <span><span class="va">p</span></span>
 <span><span class="co">#&gt; &lt;panel&gt;  ... rows x ... cols  years 2019-2020</span></span>
@@ -1230,7 +1238,7 @@
 <h2 id="adding-bmf-fields-then-filtering-by-state">Adding BMF fields, then filtering by state<a class="anchor" aria-label="anchor" href="#adding-bmf-fields-then-filtering-by-state"></a>
 </h2>
 <p>Geography, NTEE, and organization type are <strong>not</strong> on the 990 itself – they live in the Business Master File (BMF). To filter by state you first join the BMF, then subset. <code><a href="../reference/bmf_merge.html">bmf_merge()</a></code> downloads and attaches the native BMF fields by <code>EIN2</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_merge.html">bmf_merge</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>                   <span class="co"># appends geo_state_abbr, subsection_code, ntee_*, ...</span></span>
 <span><span class="fu"><a href="../reference/bmf_vars.html">bmf_vars</a></span><span class="op">(</span><span class="op">)</span>                            <span class="co"># the fields it adds by default</span></span></code></pre></div>
 <div class="section level3">
@@ -1238,13 +1246,13 @@
 </h3>
 <p>The unified BMF is published as one parquet file (~640 MB) and one CSV (~3.6 GB) holding identical rows. The default <code>format = "auto"</code> downloads the <strong>parquet</strong> when DuckDB or arrow is installed, reading only the requested columns; that transfers roughly a fifth of the bytes of the CSV.</p>
 <p>With no parquet reader installed, retrieval falls back to the <strong>per-state CSV marts</strong> (6–380 MB each) and stacks them. Stacking is a plain row bind, not a join, so it is cheap, and each state is downloaded and retried independently – which also makes it the robust choice on a flaky connection, and the efficient way to work with one or two states:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_retrieve.html">bmf_retrieve</a></span><span class="op">(</span>states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GA"</span>, <span class="st">"NC"</span>, <span class="st">"SC"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># only these marts</span></span>
 <span><span class="fu"><a href="../reference/bmf_states.html">bmf_states</a></span><span class="op">(</span><span class="op">)</span>                                       <span class="co"># all 63 published marts</span></span></code></pre></div>
 <p>The 63 marts cover the 50 states, DC, the territories, military and freely associated postal codes, and <code>ZZ</code> for unresolved addresses.</p>
 <p><strong>The state marts are a separate, lagging build, not a partition of the unified file.</strong> At the 2026_08 release they stack to 3,687,435 rows against the unified file’s 3,698,124 – 0.29% fewer – and their <code>bmf_vintage_ym</code> runs about a month behind. Stacking all 63 therefore emits a warning. Use the parquet path when the vintage matters; use the state marts for a state-scoped analysis or when no parquet reader is available.</p>
 <p>Transfers are verified against the published build manifest, which also records the vintage of the data you retrieved:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_manifest.html">bmf_manifest</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">m</span><span class="op">$</span><span class="va">vintage</span>                                    <span class="co"># e.g. "2026_08"</span></span>
 <span><span class="va">m</span><span class="op">$</span><span class="va">files</span><span class="op">[[</span><span class="st">"bmf_unified_geocoded.parquet"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">row_count</span></span></code></pre></div>
@@ -1252,7 +1260,7 @@
 <img src="figures/bmf-merge.svg" style="width:100.0%" alt=""><p class="caption">BMF organization traits appended to the right of the 990 panel by a left join on EIN2</p>
 </div>
 <p>Now the state column exists, so a plain base-R subset works:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ga</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geo_state_abbr</span> <span class="op">==</span> <span class="st">"GA"</span>, <span class="op">]</span></span></code></pre></div>
 <p>That is the whole manual pipeline: pick tables and years, download, merge, stack, attach the BMF, and filter. The next tutorial shows how a <strong>sample frame</strong> captures these same choices as a reusable, self-documenting object.</p>
 </div>

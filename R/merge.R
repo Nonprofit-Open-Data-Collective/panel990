@@ -12,6 +12,7 @@
 #'   requires at least one key.
 #' @param include_many Join `1xm` and supplemental tables. Default `FALSE`.
 #' @param collision `"error"` or `"prefix"` for shared non-key field names.
+#' @param verbose Print per-join progress messages.
 #' @return An `merge_result` containing one merged data frame per year,
 #'   a table manifest, and a join manifest.
 #' @export
@@ -19,7 +20,8 @@ merge_tables <- function(
     reads,
     keys = .EFILE_FILING_KEYS,
     include_many = FALSE,
-    collision = c("error", "prefix")
+    collision = c("error", "prefix"),
+    verbose = TRUE
 ) {
   collision <- match.arg(collision)
   if (!inherits(reads, "read_result"))
@@ -44,7 +46,11 @@ merge_tables <- function(
       name <- paste(manifest$table[[i]], year, sep = "::")
       right <- reads$tables[[name]]
       key <- intersect(keys, names(right))
-      duplicate_keys <- if (length(key)) sum(duplicated(right[, key, drop = FALSE])) else NA_integer_
+      # duplicated() via data.table: the base data.frame method pastes rows
+      # into strings and is orders of magnitude slower on efile-sized tables.
+      duplicate_keys <- if (length(key))
+        sum(duplicated(data.table::as.data.table(right[, key, drop = FALSE])))
+        else NA_integer_
       if (manifest$cardinality[[i]] == "1x1" && !is.na(duplicate_keys) && duplicate_keys > 0L)
         stop("Unexpected duplicate keys in 1x1 table ", manifest$table[[i]], ".")
       if (is.null(left)) {
@@ -63,7 +69,16 @@ merge_tables <- function(
       }
       before <- nrow(left)
       right_rows <- nrow(right)
+      started <- Sys.time()
+      if (isTRUE(verbose))
+        .p990_say("-> MERGE    ", year, ": ", left_name, " + ",
+                  manifest$table[[i]], " on ", paste(by, collapse = ", "))
       left <- merge(left, right, by = by, all = TRUE, sort = FALSE)
+      if (isTRUE(verbose))
+        .p990_say("<- MERGE OK ", year, " ", format(nrow(left), big.mark = ","),
+                  " x ", ncol(left), " in ",
+                  round(as.numeric(difftime(Sys.time(), started,
+                                            units = "secs")), 1L), "s")
       j <- j + 1L
       joins[[j]] <- data.frame(
         year = year, left = left_name, right = manifest$table[[i]],

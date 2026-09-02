@@ -480,6 +480,11 @@ bmf_retrieve <- function(
     if (length(seen)) observed_vintage <- max(seen)
   }
 
+  # Filtering and preparing several million rows takes a while; say so rather
+  # than going quiet after the transfer finishes.
+  if (verbose)
+    .p990_say("-> PREPARE  ", format(nrow(bmf), big.mark = ","),
+              " BMF row(s): resolving duplicates by vintage ...")
   bmf <- .bmf_filter_eins(bmf, eins)
   out <- bmf_prepare(bmf, vars = vars, strict = strict, verbose = verbose)
   diagnostics <- attr(out, "bmf_diagnostics")

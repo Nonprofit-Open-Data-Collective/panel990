@@ -8,7 +8,8 @@ merge_tables(
   reads,
   keys = .EFILE_FILING_KEYS,
   include_many = FALSE,
-  collision = c("error", "prefix")
+  collision = c("error", "prefix"),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ requires at least one key.}
 \item{include_many}{Join \verb{1xm} and supplemental tables. Default \code{FALSE}.}
 
 \item{collision}{\code{"error"} or \code{"prefix"} for shared non-key field names.}
+
+\item{verbose}{Print per-join progress messages.}
 }
 \value{
 An \code{merge_result} containing one merged data frame per year,

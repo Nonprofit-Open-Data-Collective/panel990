@@ -4,7 +4,13 @@
 \alias{read_tables}
 \title{Read acquired efile CSV tables}
 \usage{
-read_tables(downloads, columns = NULL, filters = NULL, unique_rows = TRUE)
+read_tables(
+  downloads,
+  columns = NULL,
+  filters = NULL,
+  unique_rows = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{downloads}{Result from \code{\link[=download_tables]{download_tables()}}.}
@@ -14,10 +20,15 @@ read_tables(downloads, columns = NULL, filters = NULL, unique_rows = TRUE)
 \item{filters}{Named list of accepted values, such as \code{list(EIN2 = eins)}.}
 
 \item{unique_rows}{Remove exact duplicate rows.}
+
+\item{verbose}{Print per-table progress messages.}
 }
 \value{
 An \code{read_result} with named tables and an augmented manifest.
 }
 \description{
-Read acquired efile CSV tables
+Deduplication runs on a \code{data.table}. Base \code{duplicated()} on a wide
+\code{data.frame} pastes every row into a string and dominates the cost of this
+step -- on a 555k x 80 header table it takes roughly 47 seconds against
+under a second here, for identical results.
 }

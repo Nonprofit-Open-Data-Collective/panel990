@@ -60,7 +60,8 @@
 <span>  <span class="va">reads</span>,</span>
 <span>  keys <span class="op">=</span> <span class="va">.EFILE_FILING_KEYS</span>,</span>
 <span>  include_many <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  collision <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"error"</span>, <span class="st">"prefix"</span><span class="op">)</span></span>
+<span>  collision <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"error"</span>, <span class="st">"prefix"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,6 +84,10 @@ requires at least one key.</p></dd>
 
 <dt id="arg-collision">collision<a class="anchor" aria-label="anchor" href="#arg-collision"></a></dt>
 <dd><p><code>"error"</code> or <code>"prefix"</code> for shared non-key field names.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Print per-join progress messages.</p></dd>
 
 </dl></div>
     <div class="section level2">
