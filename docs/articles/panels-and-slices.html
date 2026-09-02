@@ -78,13 +78,8 @@
 
     
     
-<p>With several years assembled, <code>panel990</code> classifies each
-organization by <em>how its observations sit in the panel window</em>,
-so you can slice out entrants, exits, or a balanced set.</p>
-<p>In a real project you would start from a download – for example
-<code>panelize(tables = c("P00", "P01"), years = 2016:2022, bmf = TRUE)</code>
-– but the classification works on any data frame with an id and a year,
-so this tutorial uses a small in-memory panel.</p>
+<p>With several years assembled, <code>panel990</code> classifies each organization by <em>how its observations sit in the panel window</em>, so you can slice out entrants, exits, or a balanced set.</p>
+<p>In a real project you would start from a download – for example <code>panelize(tables = c("P00", "P01"), years = 2016:2022, bmf = TRUE)</code> – but the classification works on any data frame with an id and a year, so this tutorial uses a small in-memory panel.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  EIN2     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"C"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"D"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -98,19 +93,12 @@ so this tutorial uses a small in-memory panel.</p>
 <p>Classification has <strong>two independent axes</strong>:</p>
 <ul>
 <li>
-<strong><code>panel_type</code></strong> (boundary):
-<code>persistent</code> (present at the first <em>and</em> last year),
-<code>entrant</code> (enters late, present at the end),
-<code>exit</code> (present at the start, gone before the end),
-<code>transient</code> (only interior years), <code>empty</code>.</li>
+<strong><code>panel_type</code></strong> (boundary): <code>persistent</code> (present at the first <em>and</em> last year), <code>entrant</code> (enters late, present at the end), <code>exit</code> (present at the start, gone before the end), <code>transient</code> (only interior years), <code>empty</code>.</li>
 <li>
-<strong><code>panel_spell</code></strong> (continuity):
-<code>seamless</code> (consecutive years) or <code>segmented</code>
-(interior gaps).</li>
+<strong><code>panel_spell</code></strong> (continuity): <code>seamless</code> (consecutive years) or <code>segmented</code> (interior gaps).</li>
 </ul>
-<div class="float">
-<img src="figures/panel-types.svg" style="width:100.0%" alt="The eight panel membership patterns: panel_type crossed with panel_spell"><div class="figcaption">The eight panel membership patterns: panel_type
-crossed with panel_spell</div>
+<div class="figure">
+<img src="figures/panel-types.svg" style="width:100.0%" alt=""><p class="caption">The eight panel membership patterns: panel_type crossed with panel_spell</p>
 </div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/panel_describe.html">panel_describe</a></span><span class="op">(</span><span class="va">panel</span>, time <span class="op">=</span> <span class="st">"TAX_YEAR"</span>, id <span class="op">=</span> <span class="st">"EIN2"</span><span class="op">)</span></span>
@@ -129,21 +117,14 @@ crossed with panel_spell</div>
 <span><span class="co">#&gt;  2020          1       1    1</span></span>
 <span><span class="co">#&gt;  2021          1       1    0</span></span>
 <span><span class="co">#&gt;  2022          2       1    0</span></span></code></pre></div>
-<p>Organization A spans 2018–2022 with no gaps (<code>persistent</code>
-+ <code>seamless</code> – the “balanced” case); D also spans the window
-but skips the middle years (<code>persistent</code> +
-<code>segmented</code>); B enters in 2020 (<code>entrant</code>); C
-leaves after 2020 (<code>exit</code>).</p>
+<p>Organization A spans 2018–2022 with no gaps (<code>persistent</code> + <code>seamless</code> – the “balanced” case); D also spans the window but skips the middle years (<code>persistent</code> + <code>segmented</code>); B enters in 2020 (<code>entrant</code>); C leaves after 2020 (<code>exit</code>).</p>
 </div>
 <div class="section level2">
 <h2 id="slice-by-membership">Slice by membership<a class="anchor" aria-label="anchor" href="#slice-by-membership"></a>
 </h2>
-<p><code><a href="../reference/panel_filter.html">panel_filter()</a></code> returns the rows of the organizations
-that match. It classifies internally, so you just name what you
-want:</p>
-<div class="float">
-<img src="figures/panel-filter.svg" style="width:100.0%" alt="panel_filter() selecting persistent organizations and entrants out of a mixed panel"><div class="figcaption">panel_filter() selecting persistent
-organizations and entrants out of a mixed panel</div>
+<p><code><a href="../reference/panel_filter.html">panel_filter()</a></code> returns the rows of the organizations that match. It classifies internally, so you just name what you want:</p>
+<div class="figure">
+<img src="figures/panel-filter.svg" style="width:100.0%" alt=""><p class="caption">panel_filter() selecting persistent organizations and entrants out of a mixed panel</p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># new entrants</span></span>
@@ -160,15 +141,12 @@ organizations and entrants out of a mixed panel</div>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="../reference/panel_filter.html">panel_filter</a></span><span class="op">(</span><span class="va">panel</span>, panel_type <span class="op">=</span> <span class="st">"persistent"</span>, spell <span class="op">=</span> <span class="st">"seamless"</span>,</span>
 <span>                    time <span class="op">=</span> <span class="st">"TAX_YEAR"</span>, id <span class="op">=</span> <span class="st">"EIN2"</span><span class="op">)</span><span class="op">$</span><span class="va">EIN2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "A"</span></span></code></pre></div>
-<p><code>min_obs=</code> adds a minimum number of observed years, and
-passing a pre-computed classification (from
-<code><a href="../reference/panel_describe.html">panel_describe()</a></code>) avoids reclassifying.</p>
+<p><code>min_obs=</code> adds a minimum number of observed years, and passing a pre-computed classification (from <code><a href="../reference/panel_describe.html">panel_describe()</a></code>) avoids reclassifying.</p>
 </div>
 <div class="section level2">
 <h2 id="attach-labels-for-your-own-analysis">Attach labels for your own analysis<a class="anchor" aria-label="anchor" href="#attach-labels-for-your-own-analysis"></a>
 </h2>
-<p><code><a href="../reference/panel_label.html">panel_label()</a></code> appends the classification columns to
-every row, preserving order – handy for grouping or modelling:</p>
+<p><code><a href="../reference/panel_label.html">panel_label()</a></code> appends the classification columns to every row, preserving order – handy for grouping or modelling:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">labelled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_label.html">panel_label</a></span><span class="op">(</span><span class="va">panel</span>, time <span class="op">=</span> <span class="st">"TAX_YEAR"</span>, id <span class="op">=</span> <span class="st">"EIN2"</span><span class="op">)</span></span>
 <span><span class="va">labelled</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">duplicated</a></span><span class="op">(</span><span class="va">labelled</span><span class="op">$</span><span class="va">EIN2</span><span class="op">)</span>,</span>
@@ -182,9 +160,7 @@ every row, preserving order – handy for grouping or modelling:</p>
 <div class="section level2">
 <h2 id="slicing-through-a-sample-frame">Slicing through a sample frame<a class="anchor" aria-label="anchor" href="#slicing-through-a-sample-frame"></a>
 </h2>
-<p>Inside a sample frame, <code><a href="../reference/classify_panel.html">classify_panel()</a></code> stores the two
-axes as label rules, so panel membership becomes just another filter you
-can compose with the others:</p>
+<p>Inside a sample frame, <code><a href="../reference/classify_panel.html">classify_panel()</a></code> stores the two axes as label rules, so panel membership becomes just another filter you can compose with the others:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sfw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_panel.html">classify_panel</a></span><span class="op">(</span><span class="fu"><a href="../reference/create_sfw.html">create_sfw</a></span><span class="op">(</span><span class="st">"panel demo"</span><span class="op">)</span>, <span class="va">panel</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/sfw_rules.html">get_rules</a></span><span class="op">(</span><span class="va">sfw</span><span class="op">)</span></span>
@@ -196,10 +172,7 @@ can compose with the others:</p>
 <span><span class="va">persistent</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_sfw.html">apply_sfw</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">sfw</span>, panel_type <span class="op">=</span> <span class="st">"persistent"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">persistent</span><span class="op">$</span><span class="va">EIN2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "A" "D"</span></span></code></pre></div>
-<p>Combined with the filters and BMF traits from the previous tutorial,
-this lets a single frame express a full study sample – “Georgia
-501(c)(3) housing nonprofits observed as a balanced panel from 2019 to
-2021” – and apply it consistently across every step of the analysis.</p>
+<p>Combined with the filters and BMF traits from the previous tutorial, this lets a single frame express a full study sample – “Georgia 501(c)(3) housing nonprofits observed as a balanced panel from 2019 to 2021” – and apply it consistently across every step of the analysis.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -212,7 +185,7 @@ this lets a single frame express a full study sample – “Georgia
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

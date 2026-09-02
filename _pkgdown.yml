@@ -50,11 +50,13 @@ reference:
   contents:
   - panelize
   - data_source
+  - efile_version
   - table_catalog
   - resolve_tables
   - download_tables
   - read_tables
   - merge_tables
+  - retrieval_log
 
 - title: Organization traits (BMF)
   desc: Attach NCCS Business Master File fields by EIN.
@@ -64,6 +66,8 @@ reference:
   - bmf_prepare
   - bmf_url
   - bmf_vars
+  - bmf_states
+  - bmf_manifest
 
 - title: Normalize & clean
   desc: Form-aware normalization of source encodings and record deduplication.

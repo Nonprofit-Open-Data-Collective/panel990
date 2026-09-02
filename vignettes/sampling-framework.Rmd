@@ -122,7 +122,7 @@ resolve it to an organization set from the BMF first, then add it as a `subset`
 rule:
 
 ```{r, eval = FALSE}
-bmf   <- bmf_retrieve()                                   # the NCCS master
+bmf   <- bmf_retrieve(states = "GA")                      # just the GA mart
 ga_c3 <- bmf$EIN2[bmf$geo_state_abbr == "GA" &
                     bmf$subsection_code == "3"]
 

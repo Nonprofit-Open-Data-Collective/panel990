@@ -1,4 +1,14 @@
-.EFILE_ROOT <- "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_1/"
+# The published efile release is versioned in the S3 prefix. Keep the bucket
+# and the version separate so callers can move between releases without
+# rebuilding the URL by hand; `.EFILE_VERSION` is only the default.
+.EFILE_BUCKET <- "https://nccs-efile.s3.us-east-1.amazonaws.com/public/"
+.EFILE_VERSION <- "v2_2"
+
+.efile_version_root <- function(version) {
+  paste0(.EFILE_BUCKET, "efile_", version, "/")
+}
+
+.EFILE_ROOT <- .efile_version_root(.EFILE_VERSION)
 
 .EFILE_ALIASES <- c(
   P00 = "F9-P00-T00-HEADER",
@@ -165,17 +175,46 @@
 
 #' Create an efile source configuration
 #'
+#' The NCCS efile release is versioned. Leave `root` as `NULL` to point at a
+#' published release by `version`, or pass `root` explicitly to read from a
+#' local directory or a mirror, in which case `version` is recorded as `NA`.
+#'
 #' @param root Base URL or local directory containing table-year CSV files.
+#'   `NULL` (default) builds the URL for `version`.
+#' @param version Published release, such as `"v2_2"` (the current default) or
+#'   `"v2_1"`. Ignored when `root` is supplied.
 #' @param aliases Named character vector mapping short aliases to table names.
-#' @return An `data_source` object.
+#' @return An `data_source` object carrying `root`, `version`, and `aliases`.
+#' @examples
+#' data_source()                   # current release
+#' data_source(version = "v2_1")   # pin the previous release
 #' @export
-data_source <- function(root = .EFILE_ROOT, aliases = .EFILE_ALIASES) {
-  if (!is.character(root) || length(root) != 1L || is.na(root) || !nzchar(root))
-    stop("`root` must be one non-empty URL or directory path.")
+data_source <- function(root = NULL, version = .EFILE_VERSION,
+                        aliases = .EFILE_ALIASES) {
+  if (is.null(root)) {
+    if (!is.character(version) || length(version) != 1L || is.na(version) ||
+        !nzchar(version))
+      stop("`version` must be one non-empty string such as \"v2_2\".")
+    version <- sub("^efile_", "", tolower(trimws(version)))
+    if (!grepl("^v[0-9]+_[0-9]+$", version))
+      stop("`version` must look like \"v2_2\"; received \"", version, "\".")
+    root <- .efile_version_root(version)
+  } else {
+    if (!is.character(root) || length(root) != 1L || is.na(root) || !nzchar(root))
+      stop("`root` must be one non-empty URL or directory path.")
+    version <- NA_character_
+  }
   if (!is.character(aliases) || is.null(names(aliases)) || any(!nzchar(names(aliases))))
     stop("`aliases` must be a named character vector.")
-  structure(list(root = root, aliases = aliases), class = "data_source")
+  structure(list(root = root, version = version, aliases = aliases),
+            class = "data_source")
 }
+
+#' Current default efile release
+#'
+#' @return The version string used by [data_source()] when none is supplied.
+#' @export
+efile_version <- function() .EFILE_VERSION
 
 .efile_table_cardinality <- function(table) {
   match_text <- regmatches(table, regexpr("-T[0-9]{2}(-|$)", table))

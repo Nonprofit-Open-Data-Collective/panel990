@@ -78,10 +78,7 @@
 
     
     
-<p><code><a href="../reference/panel_smooth.html">panel_smooth()</a></code> replaces a numeric field with a rolling
-weighted average taken <em>within each organization</em>, ordered by
-year. It dampens year-to-year noise (reporting quirks, one-off spikes)
-while leaving the rows in place.</p>
+<p><code><a href="../reference/panel_smooth.html">panel_smooth()</a></code> replaces a numeric field with a rolling weighted average taken <em>within each organization</em>, ordered by year. It dampens year-to-year noise (reporting quirks, one-off spikes) while leaving the rows in place.</p>
 <p>A single organization with a one-year spike:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -92,23 +89,17 @@ while leaving the rows in place.</p>
 <div class="section level2">
 <h2 id="window-and-weights">Window and weights<a class="anchor" aria-label="anchor" href="#window-and-weights"></a>
 </h2>
-<p><code>window</code> is the (odd) number of years averaged;
-<code>weights</code> decides how much each year in the window
-counts:</p>
+<p><code>window</code> is the (odd) number of years averaged; <code>weights</code> decides how much each year in the window counts:</p>
 <ul>
 <li>
-<strong><code>equal</code></strong> – a plain moving average; every
-year in the window counts the same.</li>
+<strong><code>equal</code></strong> – a plain moving average; every year in the window counts the same.</li>
 <li>
-<strong><code>half</code></strong> – the focal year gets half the
-weight, the neighbours share the other half.</li>
+<strong><code>half</code></strong> – the focal year gets half the weight, the neighbours share the other half.</li>
 <li>
-<strong><code>decay</code></strong> – weight falls by half per year
-of distance (<code>0.5^distance</code>).</li>
+<strong><code>decay</code></strong> – weight falls by half per year of distance (<code>0.5^distance</code>).</li>
 </ul>
-<div class="float">
-<img src="figures/panel-smooth.svg" style="width:100.0%" alt="panel_smooth() applied with different window and weights settings, compared against the raw series"><div class="figcaption">panel_smooth() applied with different window and
-weights settings, compared against the raw series</div>
+<div class="figure">
+<img src="figures/panel-smooth.svg" style="width:100.0%" alt=""><p class="caption">panel_smooth() applied with different window and weights settings, compared against the raw series</p>
 </div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">wt</span><span class="op">)</span> <span class="fu"><a href="../reference/panel_smooth.html">panel_smooth</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"revenue"</span>, window <span class="op">=</span> <span class="fl">3</span>, weights <span class="op">=</span> <span class="va">wt</span>,</span>
@@ -128,13 +119,7 @@ weights settings, compared against the raw series</div>
 <span><span class="co">#&gt; 5 2020  13  25.0 22.0  22.0</span></span>
 <span><span class="co">#&gt; 6 2021  12  12.0 12.0  12.0</span></span>
 <span><span class="co">#&gt; 7 2022  11  12.0 11.8  11.6</span></span></code></pre></div>
-<p>Notice 2019: <code>equal</code> pulls the spike down hardest (it
-treats the neighbours and the spike alike), while <code>half</code> and
-<code>decay</code> keep more of the focal value. (For a centred width-3
-window <code>half</code> and <code>decay</code> give identical weights;
-they differ at the series edges, where the window is off-centre, and
-more visibly from <code>window = 5</code> on, where <code>decay</code>
-down-weights distant years more steeply.)</p>
+<p>Notice 2019: <code>equal</code> pulls the spike down hardest (it treats the neighbours and the spike alike), while <code>half</code> and <code>decay</code> keep more of the focal value. (For a centred width-3 window <code>half</code> and <code>decay</code> give identical weights; they differ at the series edges, where the window is off-centre, and more visibly from <code>window = 5</code> on, where <code>decay</code> down-weights distant years more steeply.)</p>
 <p>A wider window smooths more aggressively:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -154,16 +139,8 @@ down-weights distant years more steeply.)</p>
 <div class="section level2">
 <h2 id="edges-gaps-and-multiple-series">Edges, gaps, and multiple series<a class="anchor" aria-label="anchor" href="#edges-gaps-and-multiple-series"></a>
 </h2>
-<p>At the ends of a series the fixed-width window slides inward rather
-than shrinking, and organizations with fewer years than
-<code>window</code> use a smaller effective window. Missing values
-(<code>NA</code>/<code>NaN</code>) are dropped from each window and the
-remaining weights are renormalized, so a stray gap does not blank out
-its neighbours; a window with nothing observed returns
-<code>NA</code>.</p>
-<p><code><a href="../reference/panel_smooth.html">panel_smooth()</a></code> handles many organizations and several
-fields at once, always smoothing each organization independently and
-returning the rows in their original order:</p>
+<p>At the ends of a series the fixed-width window slides inward rather than shrinking, and organizations with fewer years than <code>window</code> use a smaller effective window. Missing values (<code>NA</code>/<code>NaN</code>) are dropped from each window and the remaining weights are renormalized, so a stray gap does not blank out its neighbours; a window with nothing observed returns <code>NA</code>.</p>
+<p><code><a href="../reference/panel_smooth.html">panel_smooth()</a></code> handles many organizations and several fields at once, always smoothing each organization independently and returning the rows in their original order:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  EIN2     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
@@ -178,8 +155,7 @@ returning the rows in their original order:</p>
 <span><span class="co">#&gt; 2    A     2020     200 173.3333</span></span>
 <span><span class="co">#&gt; 3    A     2021     300 260.0000</span></span>
 <span><span class="co">#&gt; 4    A     2022     300 260.0000</span></span></code></pre></div>
-<p>Smoothing changes values but never the shape of the data – same rows,
-same order, selected columns replaced by their smoothed versions.</p>
+<p>Smoothing changes values but never the shape of the data – same rows, same order, selected columns replaced by their smoothed versions.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -192,7 +168,7 @@ same order, selected columns replaced by their smoothed versions.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

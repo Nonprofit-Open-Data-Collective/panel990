@@ -2,13 +2,16 @@
 % Please edit documentation in R/bmf.R
 \name{bmf_url}
 \alias{bmf_url}
-\title{Return the current NCCS geocoded BMF master URL}
+\title{Return the current NCCS unified BMF URL}
 \usage{
-bmf_url()
+bmf_url(format = c("parquet", "csv", "manifest"))
+}
+\arguments{
+\item{format}{\code{"parquet"} (default), \code{"csv"}, or \code{"manifest"}.}
 }
 \value{
 A length-one character vector.
 }
 \description{
-Return the current NCCS geocoded BMF master URL
+Return the current NCCS unified BMF URL
 }

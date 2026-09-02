@@ -8,11 +8,11 @@ download_tables(
   years,
   tables,
   source = data_source(),
-  path = "efdata",
+  path = "PANEL990",
   cache = c("retain", "temporary"),
   overwrite = FALSE,
   retry_max = 3L,
-  timeout = 300,
+  timeout = 1800,
   verbose = TRUE
 )
 }
@@ -32,14 +32,22 @@ temporary directory.}
 
 \item{retry_max}{Maximum attempts per remote file.}
 
-\item{timeout}{Download timeout in seconds.}
+\item{timeout}{Download timeout in seconds, per attempt.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Print per-file progress messages.}
 }
 \value{
-An \code{download_result} containing successful file paths and a
-structured table-year manifest.
+An \code{download_result} containing successful file paths, a structured
+table-year manifest, the \code{run_id}, and the per-run \code{log_file}.
 }
 \description{
-Download or reuse efile table CSV files
+Each file is fetched by \code{\link[=.p990_fetch]{.p990_fetch()}}, which raises the download timeout,
+retries with exponential backoff, and discards partial files between
+attempts. Progress is reported as a START line before each transfer begins
+and an OK/FAIL line when it settles, so a stalled file is identifiable while
+it is still running.
+}
+\details{
+Every call writes its own log under \verb{<path>/logs} named for the run, so
+repeated runs accumulate rather than overwrite. See \code{\link[=retrieval_log]{retrieval_log()}}.
 }

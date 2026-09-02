@@ -78,13 +78,7 @@
 
     
     
-<p>990 financial data carries <strong>deterministic accounting
-identities</strong>: a total is the sum of its parts, a net equals gross
-minus expenses, and on the balance sheet assets equal liabilities plus
-net assets. <code>panel990</code> ships these as a registry and lets you
-<strong>check</strong> whether rows satisfy them and
-<strong>reconcile</strong> rows that do not – changing the values as
-little as possible.</p>
+<p>990 financial data carries <strong>deterministic accounting identities</strong>: a total is the sum of its parts, a net equals gross minus expenses, and on the balance sheet assets equal liabilities plus net assets. <code>panel990</code> ships these as a registry and lets you <strong>check</strong> whether rows satisfy them and <strong>reconcile</strong> rows that do not – changing the values as little as possible.</p>
 <div class="section level2">
 <h2 id="the-identity-registry">The identity registry<a class="anchor" aria-label="anchor" href="#the-identity-registry"></a>
 </h2>
@@ -97,9 +91,7 @@ little as possible.</p>
 <span><span class="co">#&gt;   balance_sheet       2      0           0   1        2</span></span>
 <span><span class="co">#&gt;   expenses            0     32           0   0        0</span></span>
 <span><span class="co">#&gt;   revenue             0     11           1   6        3</span></span></code></pre></div>
-<p>58 identities across revenue (Part VIII), functional expenses (Part
-IX), and the balance sheet (Part X). Each is a linear combination of ef2
-fields that must equal zero; for example the contributions subtotal:</p>
+<p>58 identities across revenue (Part VIII), functional expenses (Part IX), and the balance sheet (Part X). Each is a linear combination of ef2 fields that must equal zero; for example the contributions subtotal:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">accounting_identities</span><span class="op">[</span><span class="va">accounting_identities</span><span class="op">$</span><span class="va">identity</span> <span class="op">==</span> <span class="st">"rev_contributions_subtotal"</span>,</span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"coefficient"</span><span class="op">)</span><span class="op">]</span></span>
@@ -115,9 +107,7 @@ fields that must equal zero; for example the contributions subtotal:</p>
 <div class="section level2">
 <h2 id="checking">Checking<a class="anchor" aria-label="anchor" href="#checking"></a>
 </h2>
-<p><code><a href="../reference/accounting_check.html">accounting_check()</a></code> evaluates every identity whose fields
-are present and, by default, returns only the violations. Start from a
-consistent revenue row:</p>
+<p><code><a href="../reference/accounting_check.html">accounting_check()</a></code> evaluates every identity whose fields are present and, by default, returns only the violations. Start from a consistent revenue row:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  EIN2 <span class="op">=</span> <span class="st">"A"</span>, TAX_YEAR <span class="op">=</span> <span class="fl">2020</span>,</span>
@@ -131,8 +121,7 @@ consistent revenue row:</p>
 <span><span class="fu"><a href="../reference/accounting_check.html">accounting_check</a></span><span class="op">(</span><span class="va">row</span><span class="op">)</span>                     <span class="co"># consistent -&gt; no violations</span></span>
 <span><span class="co">#&gt; [1] EIN2     TAX_YEAR identity residual ok      </span></span>
 <span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
-<p>Now imagine two contribution components and one investment column
-were imputed independently and no longer add up:</p>
+<p>Now imagine two contribution components and one investment column were imputed independently and no longer add up:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bad</span> <span class="op">&lt;-</span> <span class="va">row</span></span>
 <span><span class="va">bad</span><span class="op">$</span><span class="va">F9_08_REV_CONTR_GOVT_GRANT</span> <span class="op">&lt;-</span> <span class="fl">180</span>     <span class="co"># true 200</span></span>
@@ -142,20 +131,16 @@ were imputed independently and no longer add up:</p>
 <span><span class="co">#&gt;   EIN2 TAX_YEAR                   identity residual    ok</span></span>
 <span><span class="co">#&gt; 1    A     2020 rev_contributions_subtotal       30 FALSE</span></span>
 <span><span class="co">#&gt; 2    A     2020         rev_invest_columns        5 FALSE</span></span></code></pre></div>
-<p>The check names the broken identities and the exact gap:
-contributions short by 30, the investment column short by 5.</p>
+<p>The check names the broken identities and the exact gap: contributions short by 30, the investment column short by 5.</p>
 </div>
 <div class="section level2">
 <h2 id="reconciling">Reconciling<a class="anchor" aria-label="anchor" href="#reconciling"></a>
 </h2>
-<p><code><a href="../reference/reconcile.html">reconcile()</a></code> adjusts the values as little as possible
-(weighted least squares) to satisfy the identities:</p>
-<div class="float">
-<img src="figures/panel-reconcile.svg" style="width:100.0%" alt="Independently smoothed revenue components no longer sum to total revenue; reconcile() restores the identity"><div class="figcaption">Independently smoothed revenue components no
-longer sum to total revenue; reconcile() restores the identity</div>
+<p><code><a href="../reference/reconcile.html">reconcile()</a></code> adjusts the values as little as possible (weighted least squares) to satisfy the identities:</p>
+<div class="figure">
+<img src="figures/panel-reconcile.svg" style="width:100.0%" alt=""><p class="caption">Independently smoothed revenue components no longer sum to total revenue; reconcile() restores the identity</p>
 </div>
-<p>Because the org <strong>reported</strong> its totals, we hold those
-fixed and let the imputed components move:</p>
+<p>Because the org <strong>reported</strong> its totals, we hold those fixed and let the imputed components move:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imputed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F9_08_REV_CONTR_GOVT_GRANT"</span>, <span class="st">"F9_08_REV_CONTR_OTH"</span>,</span>
 <span>             <span class="st">"F9_08_REV_OTH_INVEST_INCOME_EXCL"</span><span class="op">)</span></span>
@@ -172,47 +157,25 @@ fixed and let the imputed components move:</p>
 <span><span class="fu"><a href="../reference/accounting_check.html">accounting_check</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span>                     <span class="co"># identities restored</span></span>
 <span><span class="co">#&gt; [1] EIN2     TAX_YEAR identity residual ok      </span></span>
 <span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
-<p>The 30 contributions gap splits evenly across the two free components
-(195 / 105); the single free investment column absorbs its 5 (35). Every
-identity now holds and the reported totals are untouched. Use
-<code>weights=</code> to make some values more resistant to change than
-others (e.g. by imputation uncertainty), or a different
-<code>fixed=</code> set to hold different values.</p>
+<p>The 30 contributions gap splits evenly across the two free components (195 / 105); the single free investment column absorbs its 5 (35). Every identity now holds and the reported totals are untouched. Use <code>weights=</code> to make some values more resistant to change than others (e.g. by imputation uncertainty), or a different <code>fixed=</code> set to hold different values.</p>
 </div>
 <div class="section level2">
 <h2 id="when-does-this-matter">When does this matter?<a class="anchor" aria-label="anchor" href="#when-does-this-matter"></a>
 </h2>
-<p>A useful subtlety: <strong>whole-row linear imputation preserves
-linear identities.</strong> If the years bracketing a gap both balance,
-then interpolating (or averaging, or carrying forward) the
-<em>entire</em> row also balances – it is an affine combination of
-balanced vectors. So identities break mainly under:</p>
+<p>A useful subtlety: <strong>whole-row linear imputation preserves linear identities.</strong> If the years bracketing a gap both balance, then interpolating (or averaging, or carrying forward) the <em>entire</em> row also balances – it is an affine combination of balanced vectors. So identities break mainly under:</p>
 <ul>
 <li>
-<strong>partial missingness</strong> – some cells observed, some
-imputed (the case above);</li>
+<strong>partial missingness</strong> – some cells observed, some imputed (the case above);</li>
 <li>
-<strong>rounding</strong> – <code>as_integers</code> rounds each
-cell independently, so sums drift;</li>
+<strong>rounding</strong> – <code>as_integers</code> rounds each cell independently, so sums drift;</li>
 <li>
-<strong>filer error</strong> in the source data – which
-<code><a href="../reference/accounting_check.html">accounting_check()</a></code> surfaces on observed rows as a
-data-quality signal, not just an imputation artifact.</li>
+<strong>filer error</strong> in the source data – which <code><a href="../reference/accounting_check.html">accounting_check()</a></code> surfaces on observed rows as a data-quality signal, not just an imputation artifact.</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="scope-and-caveats">Scope and caveats<a class="anchor" aria-label="anchor" href="#scope-and-caveats"></a>
 </h2>
-<p>The registry is a curated, high-confidence set: column splits,
-subtotals, net-of-expense lines, the revenue grand total, and the
-balance-sheet equation. It deliberately omits identities that cannot
-close cleanly from the 1x1 tables alone – the expense line-24 write-ins
-live in a one-to-many detail table, and total assets / net-asset
-composition hit form-version variants and
-donor-restriction-vs-fund-accounting differences. Memo lines (“of which”
-amounts) are inequalities, not sums, and are excluded. All identities
-are scoped to the full 990 (<code>form_scope = "PC"</code>); the 990EZ
-has its own, smaller set. ```</p>
+<p>The registry is a curated, high-confidence set: column splits, subtotals, net-of-expense lines, the revenue grand total, and the balance-sheet equation. It deliberately omits identities that cannot close cleanly from the 1x1 tables alone – the expense line-24 write-ins live in a one-to-many detail table, and total assets / net-asset composition hit form-version variants and donor-restriction-vs-fund-accounting differences. Memo lines (“of which” amounts) are inequalities, not sums, and are excluded. All identities are scoped to the full 990 (<code>form_scope = "PC"</code>); the 990EZ has its own, smaller set. ```</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -225,7 +188,7 @@ has its own, smaller set. ```</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

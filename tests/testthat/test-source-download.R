@@ -72,3 +72,59 @@ test_that("temporary cache returns readable paths", {
   expect_true(file.exists(out$files))
   expect_true(file.exists(out$log_file))
 })
+
+test_that("each run writes its own log and appends to the run index", {
+  source_root <- make_download_source()
+  cache <- tempfile("efile-cache-")
+  on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
+  source <- data_source(source_root)
+
+  first <- download_tables(2022, "P00", source = source, path = cache,
+                           verbose = FALSE)
+  second <- download_tables(2022, "P00", source = source, path = cache,
+                            verbose = FALSE)
+
+  # Distinct run ids, distinct files: a later run cannot clobber an earlier one.
+  expect_false(identical(first$run_id, second$run_id))
+  expect_false(identical(first$log_file, second$log_file))
+  expect_true(file.exists(first$log_file))
+  expect_true(file.exists(second$log_file))
+
+  index <- retrieval_log(cache)
+  expect_equal(nrow(index), 2L)
+  expect_setequal(index$run_id, c(first$run_id, second$run_id))
+  expect_equal(index$kind, rep("download", 2L))
+  expect_equal(index$downloaded, c(1L, 0L))
+  expect_equal(index$reused, c(0L, 1L))
+})
+
+test_that("retrieval_log reports an empty cache without erroring", {
+  expect_message(out <- retrieval_log(tempfile("no-such-cache-")),
+                 "No retrieval runs recorded")
+  expect_null(out)
+})
+
+test_that("a failing fetch retries up to retry_max and records the attempts", {
+  source_root <- make_download_source()
+  cache <- tempfile("efile-cache-")
+  on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
+
+  out <- download_tables(2022, "P01", source = data_source(source_root),
+                         path = cache, retry_max = 3L, verbose = FALSE)
+
+  expect_equal(out$manifest$status, "failed")
+  expect_equal(out$manifest$attempts, 3L)
+  expect_match(out$manifest$error, "Source file not found")
+  expect_length(out$files, 0L)
+})
+
+test_that("data_source resolves a release version or an explicit root", {
+  expect_equal(data_source()$version, efile_version())
+  expect_match(data_source()$root, "efile_v2_2/$")
+  expect_match(data_source(version = "v2_1")$root, "efile_v2_1/$")
+  # An explicit root wins and carries no version.
+  local <- data_source(tempdir())
+  expect_true(is.na(local$version))
+  expect_equal(local$root, tempdir())
+  expect_error(data_source(version = "2.2"), "must look like")
+})

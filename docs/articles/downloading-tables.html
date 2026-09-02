@@ -78,23 +78,14 @@
 
     
     
-<p><code>panel990</code> retrieves IRS 990 efile tables from the NCCS S3
-bucket, merges the tables that describe a filing, and stacks years into
-one panel. This tutorial specifies everything with direct argument
-values – no sample frame yet.</p>
+<p><code>panel990</code> retrieves IRS 990 efile tables from the NCCS S3 bucket, merges the tables that describe a filing, and stacks years into one panel. This tutorial specifies everything with direct argument values – no sample frame yet.</p>
 <blockquote>
-<p>The download chunks below are shown but <strong>not executed</strong>
-in this vignette; they require network access to the NCCS bucket. Run
-them in a live session.</p>
+<p>The download chunks below are shown but <strong>not executed</strong> in this vignette; they require network access to the NCCS bucket. Run them in a live session.</p>
 </blockquote>
 <div class="section level2">
 <h2 id="table-abbreviations">Table abbreviations<a class="anchor" aria-label="anchor" href="#table-abbreviations"></a>
 </h2>
-<p>The efile data is split into ~125 tables, each corresponding to a
-section of the 990. <code>panel990</code> ships short aliases for the
-most common ones. Preview them with <code><a href="../reference/table_catalog.html">table_catalog()</a></code>; below,
-the catalog is joined with the bundled <code>field_concordance</code> to
-add a readable name and the number of documented fields per table:</p>
+<p>The efile data is split into ~125 tables, each corresponding to a section of the 990. <code>panel990</code> ships short aliases for the most common ones. Preview them with <code><a href="../reference/table_catalog.html">table_catalog()</a></code>; below, the catalog is joined with the bundled <code>field_concordance</code> to add a readable name and the number of documented fields per table:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/table_catalog.html">table_catalog</a></span><span class="op">(</span><span class="op">)</span>      <span class="co"># columns: table, alias, cardinality</span></span></code></pre></div>
 <table class="table">
@@ -1143,22 +1134,15 @@ add a readable name and the number of documented fields per table:</p>
 </table>
 <ul>
 <li>
-<strong>alias</strong> – the short token you pass to
-<code>tables=</code> (e.g. <code>"P08"</code>).</li>
+<strong>alias</strong> – the short token you pass to <code>tables=</code> (e.g. <code>"P08"</code>).</li>
 <li>
-<strong>table</strong> – the canonical file name it resolves
-to.</li>
+<strong>table</strong> – the canonical file name it resolves to.</li>
 <li>
-<strong>fields</strong> – how many variables the bundled
-<code>field_concordance</code> documents for the table.</li>
+<strong>fields</strong> – how many variables the bundled <code>field_concordance</code> documents for the table.</li>
 <li>
-<strong>cardinality</strong> – <code>1x1</code> is one row per
-filing (safe to merge side-by-side); <code>1xm</code> is one-to-many
-(kept separate unless you opt in).</li>
+<strong>cardinality</strong> – <code>1x1</code> is one row per filing (safe to merge side-by-side); <code>1xm</code> is one-to-many (kept separate unless you opt in).</li>
 </ul>
-<p>You are not limited to the aliases: any literal table name (for a
-schedule or a newly published table) is accepted as-is.
-<code><a href="../reference/resolve_tables.html">resolve_tables()</a></code> shows how a request resolves:</p>
+<p>You are not limited to the aliases: any literal table name (for a schedule or a newly published table) is accepted as-is. <code><a href="../reference/resolve_tables.html">resolve_tables()</a></code> shows how a request resolves:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/resolve_tables.html">resolve_tables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P08"</span>, <span class="st">"SB-P01-T00-CONTRIBUTORS"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                         request                   table</span></span>
@@ -1173,90 +1157,105 @@ schedule or a newly published table) is accepted as-is.
 <div class="section level2">
 <h2 id="the-data-source">The data source<a class="anchor" aria-label="anchor" href="#the-data-source"></a>
 </h2>
-<p><code><a href="../reference/data_source.html">data_source()</a></code> configures where files come from. The
-default points at the NCCS bucket, so you rarely change it; pass a local
-directory to read from disk.</p>
+<p><code><a href="../reference/data_source.html">data_source()</a></code> configures where files come from. The default points at the current NCCS release, so you rarely change it; pass a local directory to read from disk.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/data_source.html">data_source</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">src</span><span class="op">$</span><span class="va">root</span></span>
+<span><span class="co">#&gt; [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"</span></span>
+<span><span class="va">src</span><span class="op">$</span><span class="va">version</span></span>
+<span><span class="co">#&gt; [1] "v2_2"</span></span></code></pre></div>
+<p>The efile release is versioned in the S3 prefix, and <code>version</code> is an argument rather than a constant, so you can pin an analysis to a specific release or reproduce earlier work:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/data_source.html">data_source</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"v2_1"</span><span class="op">)</span><span class="op">$</span><span class="va">root</span></span>
 <span><span class="co">#&gt; [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_1/"</span></span></code></pre></div>
+<p>Passing <code>root</code> explicitly (a local directory or a mirror) overrides <code>version</code>, which is then recorded as <code>NA</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="downloading-two-tables-for-two-years">Downloading two tables for two years<a class="anchor" aria-label="anchor" href="#downloading-two-tables-for-two-years"></a>
 </h2>
-<p><code><a href="../reference/download_tables.html">download_tables()</a></code> fetches (or reuses) the CSVs. Give it
-the years and tables directly:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/download_tables.html">download_tables()</a></code> fetches (or reuses) the CSVs. Give it the years and tables directly:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/download_tables.html">download_tables</a></span><span class="op">(</span></span>
 <span>  years  <span class="op">=</span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2020</span>,</span>
 <span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P08"</span><span class="op">)</span>,     <span class="co"># header + revenue</span></span>
 <span>  cache  <span class="op">=</span> <span class="st">"retain"</span>,            <span class="co"># keep files in `path`; use "temporary" to discard</span></span>
-<span>  path   <span class="op">=</span> <span class="st">"efdata"</span></span>
+<span>  path   <span class="op">=</span> <span class="st">"PANEL990"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">dl</span><span class="op">$</span><span class="va">manifest</span>   <span class="co"># one row per table-year: status, bytes, path</span></span></code></pre></div>
-<p>Every table-year is recorded in a manifest, so you can see exactly
-what was downloaded, reused, or failed.</p>
+<p>Every table-year is recorded in a manifest, so you can see exactly what was downloaded, reused, or failed.</p>
+<p>Downloads print a <code>START</code> line before each transfer and an <code>OK</code>/<code>FAIL</code> line when it settles, so a stalled file is identifiable while it is still running:</p>
+<pre><code>-&gt; START    [1/4] F9-P00-T00-HEADER 2019
+&lt;- OK       [1/4] F9-P00-T00-HEADER 2019 337.0 MB in 41.3s @ 8.2 MB/s</code></pre>
+<p>Failed transfers are retried with exponential backoff, and partial files are deleted between attempts so a truncated download is never mistaken for a valid cache entry. Raise <code>retry_max</code> or <code>timeout</code> on an unreliable connection.</p>
+<div class="section level3">
+<h3 id="per-run-logs">Per-run logs<a class="anchor" aria-label="anchor" href="#per-run-logs"></a>
+</h3>
+<p>Each call writes its own log under <code>&lt;path&gt;/logs</code>, named for the run, so repeated runs accumulate instead of overwriting one another:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dl</span><span class="op">$</span><span class="va">run_id</span>            <span class="co"># identifies this run</span></span>
+<span><span class="va">dl</span><span class="op">$</span><span class="va">log_file</span>          <span class="co"># full manifest for this run</span></span>
+<span><span class="fu"><a href="../reference/retrieval_log.html">retrieval_log</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">"PANEL990"</span><span class="op">)</span>   <span class="co"># one row per run, oldest first</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="read-merge-and-stack">Read, merge, and stack<a class="anchor" aria-label="anchor" href="#read-merge-and-stack"></a>
 </h2>
-<p>Reading turns the CSVs into data frames; merging joins the tables
-<em>within</em> a year on the filing keys; stacking binds the years
-together.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Reading turns the CSVs into data frames; merging joins the tables <em>within</em> a year on the filing keys; stacking binds the years together.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_tables.html">read_tables</a></span><span class="op">(</span><span class="va">dl</span><span class="op">)</span>                 <span class="co"># optionally columns=, filters=</span></span>
 <span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_tables.html">merge_tables</a></span><span class="op">(</span><span class="va">rd</span><span class="op">)</span>                <span class="co"># join P00 + P08 per year by filing keys</span></span></code></pre></div>
-<p><code><a href="../reference/merge_tables.html">merge_tables()</a></code> joins the <code>1x1</code> tables
-side-by-side (header fields next to revenue fields, one row per filing)
-and reports each join in a manifest:</p>
-<div class="float">
-<img src="figures/merge-tables.svg" style="width:100.0%" alt="Five core 990 tables joined on the filing keys into one wide row per filing"><div class="figcaption">Five core 990 tables joined on the filing keys
-into one wide row per filing</div>
+<p><code><a href="../reference/merge_tables.html">merge_tables()</a></code> joins the <code>1x1</code> tables side-by-side (header fields next to revenue fields, one row per filing) and reports each join in a manifest:</p>
+<div class="figure">
+<img src="figures/merge-tables.svg" style="width:100.0%" alt=""><p class="caption">Five core 990 tables joined on the filing keys into one wide row per filing</p>
 </div>
 <p>The years are then stacked into a single data frame:</p>
-<div class="float">
-<img src="figures/stack-years.svg" style="width:100.0%" alt="Merged per-year tables stacked into one long panel with one row per organization-year"><div class="figcaption">Merged per-year tables stacked into one long
-panel with one row per organization-year</div>
+<div class="figure">
+<img src="figures/stack-years.svg" style="width:100.0%" alt=""><p class="caption">Merged per-year tables stacked into one long panel with one row per organization-year</p>
 </div>
 <div class="section level3">
 <h3 id="the-one-shot-form">The one-shot form<a class="anchor" aria-label="anchor" href="#the-one-shot-form"></a>
 </h3>
-<p><code><a href="../reference/panelize.html">panelize()</a></code> runs download -&gt; read -&gt; merge -&gt;
-stack in a single call and returns a <code>panel</code> object. The
-filing keys (<code>EIN2</code> / <code>TAX_YEAR</code> /
-<code>OBJECTID</code>) are assigned automatically:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/panelize.html">panelize()</a></code> runs download -&gt; read -&gt; merge -&gt; stack in a single call and returns a <code>panel</code> object. The filing keys (<code>EIN2</code> / <code>TAX_YEAR</code> / <code>OBJECTID</code>) are assigned automatically:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panelize.html">panelize</a></span><span class="op">(</span>tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P08"</span><span class="op">)</span>, years <span class="op">=</span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2020</span><span class="op">)</span></span>
 <span><span class="va">p</span></span>
 <span><span class="co">#&gt; &lt;panel&gt;  ... rows x ... cols  years 2019-2020</span></span>
 <span><span class="co">#&gt;   sample frame: panel[P00,P08 | 2019-2020]  (0 rules, ... log entries)</span></span>
 <span><span class="co">#&gt;   panel labels: stale / not computed</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
-<p>Two tables, two years: the package downloads four files, merges the
-two tables in each year, and stacks 2019 on top of 2020.</p>
+<p>Two tables, two years: the package downloads four files, merges the two tables in each year, and stacks 2019 on top of 2020.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="adding-bmf-fields-then-filtering-by-state">Adding BMF fields, then filtering by state<a class="anchor" aria-label="anchor" href="#adding-bmf-fields-then-filtering-by-state"></a>
 </h2>
-<p>Geography, NTEE, and organization type are <strong>not</strong> on
-the 990 itself – they live in the Business Master File (BMF). To filter
-by state you first join the BMF, then subset. <code><a href="../reference/bmf_merge.html">bmf_merge()</a></code>
-downloads and attaches the native BMF fields by <code>EIN2</code>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>Geography, NTEE, and organization type are <strong>not</strong> on the 990 itself – they live in the Business Master File (BMF). To filter by state you first join the BMF, then subset. <code><a href="../reference/bmf_merge.html">bmf_merge()</a></code> downloads and attaches the native BMF fields by <code>EIN2</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_merge.html">bmf_merge</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>                   <span class="co"># appends geo_state_abbr, subsection_code, ntee_*, ...</span></span>
 <span><span class="fu"><a href="../reference/bmf_vars.html">bmf_vars</a></span><span class="op">(</span><span class="op">)</span>                            <span class="co"># the fields it adds by default</span></span></code></pre></div>
-<div class="float">
-<img src="figures/bmf-merge.svg" style="width:100.0%" alt="BMF organization traits appended to the right of the 990 panel by a left join on EIN2"><div class="figcaption">BMF organization traits appended to the right of
-the 990 panel by a left join on EIN2</div>
+<div class="section level3">
+<h3 id="how-the-bmf-is-retrieved">How the BMF is retrieved<a class="anchor" aria-label="anchor" href="#how-the-bmf-is-retrieved"></a>
+</h3>
+<p>The unified BMF is published as one parquet file (~640 MB) and one CSV (~3.6 GB) holding identical rows. The default <code>format = "auto"</code> downloads the <strong>parquet</strong> when DuckDB or arrow is installed, reading only the requested columns; that transfers roughly a fifth of the bytes of the CSV.</p>
+<p>With no parquet reader installed, retrieval falls back to the <strong>per-state CSV marts</strong> (6–380 MB each) and stacks them. Stacking is a plain row bind, not a join, so it is cheap, and each state is downloaded and retried independently – which also makes it the robust choice on a flaky connection, and the efficient way to work with one or two states:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_retrieve.html">bmf_retrieve</a></span><span class="op">(</span>states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GA"</span>, <span class="st">"NC"</span>, <span class="st">"SC"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># only these marts</span></span>
+<span><span class="fu"><a href="../reference/bmf_states.html">bmf_states</a></span><span class="op">(</span><span class="op">)</span>                                       <span class="co"># all 63 published marts</span></span></code></pre></div>
+<p>The 63 marts cover the 50 states, DC, the territories, military and freely associated postal codes, and <code>ZZ</code> for unresolved addresses.</p>
+<p><strong>The state marts are a separate, lagging build, not a partition of the unified file.</strong> At the 2026_08 release they stack to 3,687,435 rows against the unified file’s 3,698,124 – 0.29% fewer – and their <code>bmf_vintage_ym</code> runs about a month behind. Stacking all 63 therefore emits a warning. Use the parquet path when the vintage matters; use the state marts for a state-scoped analysis or when no parquet reader is available.</p>
+<p>Transfers are verified against the published build manifest, which also records the vintage of the data you retrieved:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmf_manifest.html">bmf_manifest</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">m</span><span class="op">$</span><span class="va">vintage</span>                                    <span class="co"># e.g. "2026_08"</span></span>
+<span><span class="va">m</span><span class="op">$</span><span class="va">files</span><span class="op">[[</span><span class="st">"bmf_unified_geocoded.parquet"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">row_count</span></span></code></pre></div>
+<div class="figure">
+<img src="figures/bmf-merge.svg" style="width:100.0%" alt=""><p class="caption">BMF organization traits appended to the right of the 990 panel by a left join on EIN2</p>
 </div>
 <p>Now the state column exists, so a plain base-R subset works:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ga</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geo_state_abbr</span> <span class="op">==</span> <span class="st">"GA"</span>, <span class="op">]</span></span></code></pre></div>
-<p>That is the whole manual pipeline: pick tables and years, download,
-merge, stack, attach the BMF, and filter. The next tutorial shows how a
-<strong>sample frame</strong> captures these same choices as a reusable,
-self-documenting object.</p>
+<p>That is the whole manual pipeline: pick tables and years, download, merge, stack, attach the BMF, and filter. The next tutorial shows how a <strong>sample frame</strong> captures these same choices as a reusable, self-documenting object.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -1269,7 +1268,7 @@ self-documenting object.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

@@ -78,31 +78,20 @@
 
     
     
-<p><code><a href="../reference/panel_balance.html">panel_balance()</a></code> trims a panel to a <strong>balanced
-rectangle</strong> – a block of years in which every retained
-organization is observed in every retained year. It is the complement of
-<code><a href="../reference/panel_complete.html">panel_complete()</a></code>: completion <em>fills</em> gaps to reach a
-full rectangle, balancing <em>drops</em> organizations and years to
-reach one.</p>
-<div class="float">
-<img src="figures/panel-balance.svg" style="width:100.0%" alt="panel_balance() trimming a mixed panel to its largest fully observed block of organizations and years"><div class="figcaption">panel_balance() trimming a mixed panel to its
-largest fully observed block of organizations and years</div>
+<p><code><a href="../reference/panel_balance.html">panel_balance()</a></code> trims a panel to a <strong>balanced rectangle</strong> – a block of years in which every retained organization is observed in every retained year. It is the complement of <code><a href="../reference/panel_complete.html">panel_complete()</a></code>: completion <em>fills</em> gaps to reach a full rectangle, balancing <em>drops</em> organizations and years to reach one.</p>
+<div class="figure">
+<img src="figures/panel-balance.svg" style="width:100.0%" alt=""><p class="caption">panel_balance() trimming a mixed panel to its largest fully observed block of organizations and years</p>
 </div>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  EIN2     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"C"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"D"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  TAX_YEAR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">:</span><span class="fl">2022</span>,   <span class="fl">2019</span><span class="op">:</span><span class="fl">2022</span>,   <span class="fl">2019</span><span class="op">:</span><span class="fl">2021</span>,   <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2020</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><code>A</code> and <code>B</code> are observed all four years;
-<code>C</code> misses 2022; <code>D</code> only appears in
-2019–2020.</p>
+<p><code>A</code> and <code>B</code> are observed all four years; <code>C</code> misses 2022; <code>D</code> only appears in 2019–2020.</p>
 <div class="section level2">
 <h2 id="the-year-window-is-the-trade-off">The year window is the trade-off<a class="anchor" aria-label="anchor" href="#the-year-window-is-the-trade-off"></a>
 </h2>
-<p>A <strong>wider</strong> window keeps more years but fewer
-organizations; a <strong>narrower</strong> one keeps more organizations.
-By default <code><a href="../reference/panel_balance.html">panel_balance()</a></code> uses the full observed range –
-the strictest balance:</p>
+<p>A <strong>wider</strong> window keeps more years but fewer organizations; a <strong>narrower</strong> one keeps more organizations. By default <code><a href="../reference/panel_balance.html">panel_balance()</a></code> uses the full observed range – the strictest balance:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_balance.html">panel_balance</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">full</span><span class="op">$</span><span class="va">EIN2</span><span class="op">)</span>          <span class="co"># only orgs present in all of 2019-2022</span></span>
@@ -128,9 +117,7 @@ the strictest balance:</p>
 <div class="section level2">
 <h2 id="let-it-find-the-largest-block">Let it find the largest block<a class="anchor" aria-label="anchor" href="#let-it-find-the-largest-block"></a>
 </h2>
-<p>If you would rather have the package pick the window that retains the
-most data (organizations x years), use
-<code>strategy = "max_rectangle"</code>:</p>
+<p>If you would rather have the package pick the window that retains the most data (organizations x years), use <code>strategy = "max_rectangle"</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">best</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_balance.html">panel_balance</a></span><span class="op">(</span><span class="va">df</span>, strategy <span class="op">=</span> <span class="st">"max_rectangle"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">best</span>, <span class="st">"balance"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"years"</span>, <span class="st">"orgs_kept"</span><span class="op">)</span><span class="op">]</span></span>
@@ -139,21 +126,12 @@ most data (organizations x years), use
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $orgs_kept</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
-<p>Here the 3-year x 3-organization block (2019–2021, A/B/C = 9
-observations) beats the full 4-year x 2-organization block (8), so that
-is what it returns. <code>min_years</code> sets a floor on how short a
-balanced window may be.</p>
+<p>Here the 3-year x 3-organization block (2019–2021, A/B/C = 9 observations) beats the full 4-year x 2-organization block (8), so that is what it returns. <code>min_years</code> sets a floor on how short a balanced window may be.</p>
 </div>
 <div class="section level2">
 <h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
 </h2>
-<p>The <code>"balance"</code> attribute always records the retained
-years and the keep/drop counts. If no organization spans the window, the
-result is simply empty (zero rows) rather than an error – a useful
-signal that your window is too demanding. And because balancing only
-<em>selects</em> rows, run <code><a href="../reference/panel_deduplicate.html">deduplicate()</a></code> first if an
-organization can have more than one filing per year, so each cell of the
-rectangle is a single record.</p>
+<p>The <code>"balance"</code> attribute always records the retained years and the keep/drop counts. If no organization spans the window, the result is simply empty (zero rows) rather than an error – a useful signal that your window is too demanding. And because balancing only <em>selects</em> rows, run <code><a href="../reference/panel_deduplicate.html">deduplicate()</a></code> first if an organization can have more than one filing per year, so each cell of the rectangle is a single record.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -166,7 +144,7 @@ rectangle is a single record.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

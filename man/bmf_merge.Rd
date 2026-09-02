@@ -6,8 +6,15 @@
 \usage{
 bmf_merge(
   data,
-  source = .EFILE_BMF_URL,
+  source = NULL,
   vars = .EFILE_BMF_VARS,
+  states = NULL,
+  format = c("auto", "parquet", "states", "csv"),
+  cache = c("retain", "temporary"),
+  path = "PANEL990",
+  overwrite = FALSE,
+  timeout = 3600,
+  retry_max = 3L,
   strict = FALSE,
   verbose = TRUE
 )
@@ -15,9 +22,23 @@ bmf_merge(
 \arguments{
 \item{data}{Efile data containing \code{EIN2}.}
 
-\item{source}{URL, local CSV path, or BMF data frame.}
+\item{source}{Optional BMF override: URL, local path, or data frame.}
 
 \item{vars}{Native BMF fields to retain.}
+
+\item{states}{Optional state marts to restrict retrieval to.}
+
+\item{format}{Retrieval strategy; see \code{\link[=bmf_retrieve]{bmf_retrieve()}}.}
+
+\item{cache}{\code{"retain"} or \code{"temporary"}.}
+
+\item{path}{Cache directory used when \code{cache = "retain"}.}
+
+\item{overwrite}{Download again even when a cached file exists.}
+
+\item{timeout}{Download timeout in seconds, per attempt.}
+
+\item{retry_max}{Maximum attempts per file.}
 
 \item{strict}{Error when requested fields are unavailable.}
 

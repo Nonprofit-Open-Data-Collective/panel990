@@ -58,10 +58,10 @@
 panelize <- function(
     sfw = NULL, tables, years, source = data_source(),
     bmf = "auto", backend = "memory",
-    cache = c("retain", "temporary", "none"), path = "efdata",
+    cache = c("retain", "temporary", "none"), path = "PANEL990",
     filters = NULL, columns = NULL, include_many = FALSE,
     collision = c("error", "prefix"), overwrite = FALSE,
-    retry_max = 3L, timeout = 300, verbose = TRUE
+    retry_max = 3L, timeout = 1800, verbose = TRUE
 ) {
   cache <- match.arg(cache)
   collision <- match.arg(collision)
@@ -110,9 +110,16 @@ panelize <- function(
   bmf_diagnostics <- NULL
   do_bmf <- if (identical(bmf, "auto")) .sfw_references_bmf(sfw) else !isFALSE(bmf)
   if (isTRUE(do_bmf)) {
-    bmf_source <- if (isTRUE(bmf) || identical(bmf, "auto")) .EFILE_BMF_URL else bmf
+    # NULL routes bmf_merge() to the published release and its own strategy
+    # selection; anything else is an explicit user override.
+    bmf_source <- if (isTRUE(bmf) || identical(bmf, "auto")) NULL else bmf
     before <- dim(data)
-    data <- bmf_merge(data, source = bmf_source, verbose = verbose)
+    data <- bmf_merge(
+      data, source = bmf_source, path = path,
+      cache = if (cache == "retain") "retain" else "temporary",
+      overwrite = overwrite, timeout = max(timeout, 3600), retry_max = retry_max,
+      verbose = verbose
+    )
     bmf_diagnostics <- attr(data, "bmf_diagnostics")
     attr(data, "bmf_diagnostics") <- NULL
     sfw <- .panel_receipt(sfw, "bmf_merge", "append BMF fields", before, dim(data))

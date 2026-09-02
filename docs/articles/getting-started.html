@@ -78,68 +78,45 @@
 
     
     
-<p><code>panel990</code> assembles IRS 990 efile tables into
-research-ready panels and gives you a small vocabulary of verbs for
-describing, selecting, and cleaning them. This tour walks the whole
-pipeline in six steps:</p>
+<p><code>panel990</code> assembles IRS 990 efile tables into research-ready panels and gives you a small vocabulary of verbs for describing, selecting, and cleaning them. This tour walks the whole pipeline in six steps:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Build</strong> the panel from the raw efile tables</li>
 <li>
-<strong>Identify</strong> each organization’s membership
-pattern</li>
+<strong>Identify</strong> each organization’s membership pattern</li>
 <li>
-<strong>Filter</strong> to the patterns your design calls for
-(including a balanced panel)</li>
+<strong>Filter</strong> to the patterns your design calls for (including a balanced panel)</li>
 <li>
 <strong>Impute</strong> missing interior years</li>
 <li>
 <strong>Smooth</strong> noisy series</li>
 <li>
-<strong>Reconcile</strong> the accounting identities that cleaning
-disturbs</li>
+<strong>Reconcile</strong> the accounting identities that cleaning disturbs</li>
 </ol>
-<p>Each step below pairs a short code example with a picture of what the
-verb does. The download step needs network access, so it is shown but
-not run; every other example runs on a small in-memory panel.</p>
+<p>Each step below pairs a short code example with a picture of what the verb does. The download step needs network access, so it is shown but not run; every other example runs on a small in-memory panel.</p>
 <div class="section level2">
 <h2 id="build-the-panel">1. Build the panel<a class="anchor" aria-label="anchor" href="#build-the-panel"></a>
 </h2>
-<p><code><a href="../reference/panelize.html">panelize()</a></code> is the one-shot assembler: it downloads the
-tables you name for the years you name, merges them within each year,
-stacks the years, and (optionally) attaches organization traits from the
-Business Master File:</p>
+<p><code><a href="../reference/panelize.html">panelize()</a></code> is the one-shot assembler: it downloads the tables you name for the years you name, merges them within each year, stacks the years, and (optionally) attaches organization traits from the Business Master File:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panelize.html">panelize</a></span><span class="op">(</span></span>
 <span>  tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P00"</span>, <span class="st">"P01"</span>, <span class="st">"P08"</span>, <span class="st">"P09"</span>, <span class="st">"P10"</span><span class="op">)</span>,   <span class="co"># header, summary, revenue,</span></span>
 <span>  years  <span class="op">=</span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2022</span>,                              <span class="co">#   expenses, balance sheet</span></span>
 <span>  bmf    <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Within each year the five tables are joined into one wide row per
-filing. Every table carries the same filing keys (<code>EIN2</code> ×
-<code>TAX_YEAR</code> × <code>OBJECTID</code>), and the join is a full
-outer join, so a filing missing from one part keeps its row:</p>
-<div class="float">
-<img src="figures/merge-tables.svg" style="width:100.0%" alt="Five core 990 tables joined on the filing keys into one wide row per filing"><div class="figcaption">Five core 990 tables joined on the filing keys
-into one wide row per filing</div>
+<p>Within each year the five tables are joined into one wide row per filing. Every table carries the same filing keys (<code>EIN2</code> × <code>TAX_YEAR</code> × <code>OBJECTID</code>), and the join is a full outer join, so a filing missing from one part keeps its row:</p>
+<div class="figure">
+<img src="figures/merge-tables.svg" style="width:100.0%" alt=""><p class="caption">Five core 990 tables joined on the filing keys into one wide row per filing</p>
 </div>
-<p>The per-year tables share a harmonized layout, so they stack into one
-long panel with one row per organization-year:</p>
-<div class="float">
-<img src="figures/stack-years.svg" style="width:100.0%" alt="Merged per-year tables stacked into one long panel with one row per organization-year"><div class="figcaption">Merged per-year tables stacked into one long
-panel with one row per organization-year</div>
+<p>The per-year tables share a harmonized layout, so they stack into one long panel with one row per organization-year:</p>
+<div class="figure">
+<img src="figures/stack-years.svg" style="width:100.0%" alt=""><p class="caption">Merged per-year tables stacked into one long panel with one row per organization-year</p>
 </div>
-<p><code>bmf = TRUE</code> then left-joins the BMF on <code>EIN2</code>,
-appending time-invariant organization traits (name, NTEE, subsection,
-geography) to the right of the 990 fields and broadcasting them to every
-year the organization appears:</p>
-<div class="float">
-<img src="figures/bmf-merge.svg" style="width:100.0%" alt="BMF organization traits appended to the right of the 990 panel by a left join on EIN2"><div class="figcaption">BMF organization traits appended to the right of
-the 990 panel by a left join on EIN2</div>
+<p><code>bmf = TRUE</code> then left-joins the BMF on <code>EIN2</code>, appending time-invariant organization traits (name, NTEE, subsection, geography) to the right of the 990 fields and broadcasting them to every year the organization appears:</p>
+<div class="figure">
+<img src="figures/bmf-merge.svg" style="width:100.0%" alt=""><p class="caption">BMF organization traits appended to the right of the 990 panel by a left join on EIN2</p>
 </div>
-<p>Everything after this point works the same on a <code>panel</code>
-object or on any plain data frame with an id and a year column, so the
-rest of the tour uses a small in-memory panel:</p>
+<p>Everything after this point works the same on a <code>panel</code> object or on any plain data frame with an id and a year column, so the rest of the tour uses a small in-memory panel:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  EIN2     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"C"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"D"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -150,22 +127,15 @@ rest of the tour uses a small in-memory panel:</p>
 <div class="section level2">
 <h2 id="identify-panel-types">2. Identify panel types<a class="anchor" aria-label="anchor" href="#identify-panel-types"></a>
 </h2>
-<p>Organizations rarely appear in every year of a panel.
-<code><a href="../reference/panel_describe.html">panel_describe()</a></code> classifies each one on two independent
-axes:</p>
+<p>Organizations rarely appear in every year of a panel. <code><a href="../reference/panel_describe.html">panel_describe()</a></code> classifies each one on two independent axes:</p>
 <ul>
 <li>
-<strong><code>panel_type</code></strong> (boundary) — which edges of
-the window the org touches: <code>persistent</code>,
-<code>entrant</code>, <code>exit</code>, <code>transient</code>.</li>
+<strong><code>panel_type</code></strong> (boundary) — which edges of the window the org touches: <code>persistent</code>, <code>entrant</code>, <code>exit</code>, <code>transient</code>.</li>
 <li>
-<strong><code>panel_spell</code></strong> (continuity) — whether its
-observed years are consecutive (<code>seamless</code>) or contain
-interior gaps (<code>segmented</code>).</li>
+<strong><code>panel_spell</code></strong> (continuity) — whether its observed years are consecutive (<code>seamless</code>) or contain interior gaps (<code>segmented</code>).</li>
 </ul>
-<div class="float">
-<img src="figures/panel-types.svg" style="width:100.0%" alt="The eight panel membership patterns: panel_type crossed with panel_spell"><div class="figcaption">The eight panel membership patterns: panel_type
-crossed with panel_spell</div>
+<div class="figure">
+<img src="figures/panel-types.svg" style="width:100.0%" alt=""><p class="caption">The eight panel membership patterns: panel_type crossed with panel_spell</p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/panel_describe.html">panel_describe</a></span><span class="op">(</span><span class="va">panel</span>, time <span class="op">=</span> <span class="st">"TAX_YEAR"</span>, id <span class="op">=</span> <span class="st">"EIN2"</span><span class="op">)</span></span>
@@ -184,21 +154,14 @@ crossed with panel_spell</div>
 <span><span class="co">#&gt;  2020          1       1    1</span></span>
 <span><span class="co">#&gt;  2021          1       1    0</span></span>
 <span><span class="co">#&gt;  2022          2       1    0</span></span></code></pre></div>
-<p><code>A</code> spans the window with no gaps (<code>persistent</code>
-+ <code>seamless</code> — the balanced case), <code>B</code> enters
-late, <code>C</code> exits early, and <code>D</code> spans the window
-but skips the middle (<code>persistent</code> +
-<code>segmented</code>).</p>
+<p><code>A</code> spans the window with no gaps (<code>persistent</code> + <code>seamless</code> — the balanced case), <code>B</code> enters late, <code>C</code> exits early, and <code>D</code> spans the window but skips the middle (<code>persistent</code> + <code>segmented</code>).</p>
 </div>
 <div class="section level2">
 <h2 id="filter-panel-types">3. Filter panel types<a class="anchor" aria-label="anchor" href="#filter-panel-types"></a>
 </h2>
-<p><code><a href="../reference/panel_filter.html">panel_filter()</a></code> keeps the rows of the organizations whose
-classification matches. It classifies internally, so you just name what
-you want:</p>
-<div class="float">
-<img src="figures/panel-filter.svg" style="width:100.0%" alt="panel_filter() selecting persistent organizations and entrants out of a mixed panel"><div class="figcaption">panel_filter() selecting persistent
-organizations and entrants out of a mixed panel</div>
+<p><code><a href="../reference/panel_filter.html">panel_filter()</a></code> keeps the rows of the organizations whose classification matches. It classifies internally, so you just name what you want:</p>
+<div class="figure">
+<img src="figures/panel-filter.svg" style="width:100.0%" alt=""><p class="caption">panel_filter() selecting persistent organizations and entrants out of a mixed panel</p>
 </div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># organizations that span the whole window</span></span>
@@ -213,15 +176,9 @@ organizations and entrants out of a mixed panel</div>
 <div class="section level3">
 <h3 id="searching-for-a-balanced-panel">Searching for a balanced panel<a class="anchor" aria-label="anchor" href="#searching-for-a-balanced-panel"></a>
 </h3>
-<p>A <strong>balanced</strong> panel is a rectangle: every retained
-organization observed in every retained year. You can select it by
-pattern —
-<code>panel_filter(panel_type = "persistent", spell = "seamless")</code>
-— or let <code><a href="../reference/panel_balance.html">panel_balance()</a></code> <em>search</em> for the year
-window that maximizes retained observations:</p>
-<div class="float">
-<img src="figures/panel-balance.svg" style="width:100.0%" alt="panel_balance() trimming a mixed panel to its largest fully observed block of organizations and years"><div class="figcaption">panel_balance() trimming a mixed panel to its
-largest fully observed block of organizations and years</div>
+<p>A <strong>balanced</strong> panel is a rectangle: every retained organization observed in every retained year. You can select it by pattern — <code>panel_filter(panel_type = "persistent", spell = "seamless")</code> — or let <code><a href="../reference/panel_balance.html">panel_balance()</a></code> <em>search</em> for the year window that maximizes retained observations:</p>
+<div class="figure">
+<img src="figures/panel-balance.svg" style="width:100.0%" alt=""><p class="caption">panel_balance() trimming a mixed panel to its largest fully observed block of organizations and years</p>
 </div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">best</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_balance.html">panel_balance</a></span><span class="op">(</span><span class="va">panel</span>, strategy <span class="op">=</span> <span class="st">"max_rectangle"</span>,</span>
@@ -243,15 +200,9 @@ largest fully observed block of organizations and years</div>
 <div class="section level2">
 <h2 id="impute-missing-cases">4. Impute missing cases<a class="anchor" aria-label="anchor" href="#impute-missing-cases"></a>
 </h2>
-<p><code><a href="../reference/panel_impute.html">panel_impute()</a></code> inserts an organization’s missing
-interior years and fills their numeric fields from the observations
-bracketing each gap (<code>method = "interpolate"</code>,
-<code>"mean"</code>, <code>"locf"</code>, or <code>"nocb"</code>).
-Inserted rows are flagged <code>imputed_row = TRUE</code> so they are
-never mistaken for filings:</p>
-<div class="float">
-<img src="figures/panel-impute.svg" style="width:100.0%" alt="panel_impute() filling interior gaps, shown as a table with missing cells and as trend plots with imputed points"><div class="figcaption">panel_impute() filling interior gaps, shown as a
-table with missing cells and as trend plots with imputed points</div>
+<p><code><a href="../reference/panel_impute.html">panel_impute()</a></code> inserts an organization’s missing interior years and fills their numeric fields from the observations bracketing each gap (<code>method = "interpolate"</code>, <code>"mean"</code>, <code>"locf"</code>, or <code>"nocb"</code>). Inserted rows are flagged <code>imputed_row = TRUE</code> so they are never mistaken for filings:</p>
+<div class="figure">
+<img src="figures/panel-impute.svg" style="width:100.0%" alt=""><p class="caption">panel_impute() filling interior gaps, shown as a table with missing cells and as trend plots with imputed points</p>
 </div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_impute.html">panel_impute</a></span><span class="op">(</span><span class="va">panel</span>, vars <span class="op">=</span> <span class="st">"revenue"</span>, method <span class="op">=</span> <span class="st">"interpolate"</span><span class="op">)</span></span>
@@ -262,22 +213,14 @@ table with missing cells and as trend plots with imputed points</div>
 <span><span class="co">#&gt; 14    D     2020      42        TRUE</span></span>
 <span><span class="co">#&gt; 15    D     2021      43        TRUE</span></span>
 <span><span class="co">#&gt; 16    D     2022      44       FALSE</span></span></code></pre></div>
-<p><code>D</code>’s 2019–2021 hole is interpolated between its 2018 and
-2022 filings. (The researcher-facing wrapper
-<code><a href="../reference/panel_complete.html">panel_complete()</a></code> fills every segmented span in one
-call.)</p>
+<p><code>D</code>’s 2019–2021 hole is interpolated between its 2018 and 2022 filings. (The researcher-facing wrapper <code><a href="../reference/panel_complete.html">panel_complete()</a></code> fills every segmented span in one call.)</p>
 </div>
 <div class="section level2">
 <h2 id="smooth-values">5. Smooth values<a class="anchor" aria-label="anchor" href="#smooth-values"></a>
 </h2>
-<p><code><a href="../reference/panel_smooth.html">panel_smooth()</a></code> replaces a numeric field with a rolling
-weighted average taken within each organization. <code>window</code>
-sets how many years are averaged; <code>weights</code> sets how much the
-focal year keeps (<code>"equal"</code>, <code>"half"</code>, or
-<code>"decay"</code>):</p>
-<div class="float">
-<img src="figures/panel-smooth.svg" style="width:100.0%" alt="panel_smooth() applied with different window and weights settings, compared against the raw series"><div class="figcaption">panel_smooth() applied with different window and
-weights settings, compared against the raw series</div>
+<p><code><a href="../reference/panel_smooth.html">panel_smooth()</a></code> replaces a numeric field with a rolling weighted average taken within each organization. <code>window</code> sets how many years are averaged; <code>weights</code> sets how much the focal year keeps (<code>"equal"</code>, <code>"half"</code>, or <code>"decay"</code>):</p>
+<div class="figure">
+<img src="figures/panel-smooth.svg" style="width:100.0%" alt=""><p class="caption">panel_smooth() applied with different window and weights settings, compared against the raw series</p>
 </div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">noisy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -302,16 +245,9 @@ weights settings, compared against the raw series</div>
 <div class="section level2">
 <h2 id="reconcile-accounting-principles">6. Reconcile accounting principles<a class="anchor" aria-label="anchor" href="#reconcile-accounting-principles"></a>
 </h2>
-<p>990 financials carry deterministic identities — contributions
-components sum to the contributions total, revenue lines sum to total
-revenue, assets equal liabilities plus net assets. Cell-level cleaning
-(partial imputation, rounding, smoothing over filer errors) can leave
-rows that violate them. <code><a href="../reference/accounting_check.html">accounting_check()</a></code> finds the
-violations and <code><a href="../reference/reconcile.html">reconcile()</a></code> repairs them with the smallest
-possible adjustment, holding the values you trust fixed:</p>
-<div class="float">
-<img src="figures/panel-reconcile.svg" style="width:100.0%" alt="Independently smoothed revenue components no longer sum to total revenue; reconcile() restores the identity"><div class="figcaption">Independently smoothed revenue components no
-longer sum to total revenue; reconcile() restores the identity</div>
+<p>990 financials carry deterministic identities — contributions components sum to the contributions total, revenue lines sum to total revenue, assets equal liabilities plus net assets. Cell-level cleaning (partial imputation, rounding, smoothing over filer errors) can leave rows that violate them. <code><a href="../reference/accounting_check.html">accounting_check()</a></code> finds the violations and <code><a href="../reference/reconcile.html">reconcile()</a></code> repairs them with the smallest possible adjustment, holding the values you trust fixed:</p>
+<div class="figure">
+<img src="figures/panel-reconcile.svg" style="width:100.0%" alt=""><p class="caption">Independently smoothed revenue components no longer sum to total revenue; reconcile() restores the identity</p>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -341,18 +277,13 @@ longer sum to total revenue; reconcile() restores the identity</div>
 <p>Each step has a task-focused vignette with the full details:</p>
 <ul>
 <li>
-<em>Downloading and assembling efile tables</em> and <em>the
-sampling framework</em> — building panels reproducibly</li>
+<em>Downloading and assembling efile tables</em> and <em>the sampling framework</em> — building panels reproducibly</li>
 <li>
-<em>Panels and panel slices</em> — the classification
-vocabulary</li>
+<em>Panels and panel slices</em> — the classification vocabulary</li>
 <li>
-<em>Imputing missing years</em>, <em>Completing panel spans</em>,
-<em>Smoothing panel variables</em>, <em>Balancing a panel</em> —
-cleaning</li>
+<em>Imputing missing years</em>, <em>Completing panel spans</em>, <em>Smoothing panel variables</em>, <em>Balancing a panel</em> — cleaning</li>
 <li>
-<em>Accounting consistency</em> and <em>Consistent gap-filling</em>
-— validation</li>
+<em>Accounting consistency</em> and <em>Consistent gap-filling</em> — validation</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -366,7 +297,7 @@ cleaning</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

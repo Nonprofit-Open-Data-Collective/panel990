@@ -68,9 +68,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="panel990">panel990<a class="anchor" aria-label="anchor" href="#panel990"></a>
 </h1></div>
-<!-- badges: start -->
-<!-- badges: end -->
-<p><strong>Retrieve, normalize, and assemble clean longitudinal panels from IRS 990 e-file data.</strong></p>
+<!-- badges: start --><!-- badges: end --><p><strong>Retrieve, normalize, and assemble clean longitudinal panels from IRS 990 e-file data.</strong></p>
 <p><code>panel990</code> turns the hundreds of raw IRS 990 e-file tables into analysis-ready organization-by-year panels. It downloads and merges the tables, harmonizes their many blank-encoding conventions, classifies how each organization enters and exits the panel, and fills or smooths gaps — all while keeping a running ledger of everything it did.</p>
 <p>It sits in the middle of the nonprofit open-data pipeline:</p>
 <pre><code>ef2  ──▶  panel990  ──▶  fiscal
@@ -226,16 +224,16 @@
 <h3 id="how-panelize-assembles-the-panel">How <code>panelize()</code> assembles the panel<a class="anchor" aria-label="anchor" href="#how-panelize-assembles-the-panel"></a>
 </h3>
 <p>That one call in step 1 does three things. First, <strong>within each year it merges the five tables into one wide row per filing</strong>. Each table holds one part of the 990 form and carries the same filing keys — <code>EIN2</code> (organization), <code>TAX_YEAR</code> (year), and <code>OBJECTID</code> (one id per filed return). The join is a full outer join, so a filing missing from one part keeps its row (with <code>NA</code>s) instead of being dropped.</p>
-<div class="float">
-<img src="reference/figures/merge-tables.svg" alt="Merging the five core tables within one year"><div class="figcaption">Merging the five core tables within one year</div>
+<div class="figure">
+<img src="reference/figures/merge-tables.svg" alt=""><p class="caption">Merging the five core tables within one year</p>
 </div>
 <p>Second, <strong>the merged per-year tables are stacked into one long panel</strong>. The per-year frames share a harmonized column layout, so they append into a single table with one row per organization-year:</p>
-<div class="float">
-<img src="reference/figures/stack-years.svg" alt="Stacking merged years into a long panel"><div class="figcaption">Stacking merged years into a long panel</div>
+<div class="figure">
+<img src="reference/figures/stack-years.svg" alt=""><p class="caption">Stacking merged years into a long panel</p>
 </div>
 <p>Third, <strong><code>bmf = TRUE</code> appends organization traits from the NCCS Business Master File</strong>. The BMF holds one row per organization — time-invariant traits like name, NTEE code, subsection, and geography — left-joined on <code>EIN2</code> and broadcast to every year that organization appears. Filings without a BMF match are kept, with the BMF columns set to <code>NA</code>.</p>
-<div class="float">
-<img src="reference/figures/bmf-merge.svg" alt="Attaching organization traits with the BMF"><div class="figcaption">Attaching organization traits with the BMF</div>
+<div class="figure">
+<img src="reference/figures/bmf-merge.svg" alt=""><p class="caption">Attaching organization traits with the BMF</p>
 </div>
 <p>Want the raw tables instead of a normalized panel? <code><a href="reference/download_tables.html">download_tables()</a></code>, <code><a href="reference/read_tables.html">read_tables()</a></code>, and <code><a href="reference/merge_tables.html">merge_tables()</a></code> expose each stage of <code><a href="reference/panelize.html">panelize()</a></code>. Want a reusable specification? <code><a href="reference/create_sfw.html">create_sfw()</a></code> builds a <strong>sample frame</strong> of keys and typed rules that you can carry across projects and hand directly to <code><a href="reference/panelize.html">panelize()</a></code>.</p>
 </div>
@@ -289,7 +287,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Jesse Lecy <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-4974-0782" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Jesse Lecy <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-4974-0782" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 </ul>
 </div>
 
@@ -304,7 +302,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

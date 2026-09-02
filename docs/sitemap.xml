@@ -22,9 +22,11 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/apply_check.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/apply_sfw.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/as_panel.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_manifest.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_merge.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_prepare.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_retrieve.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_states.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_url.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/bmf_vars.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/classify_panel.html</loc></url>
@@ -32,7 +34,11 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/conform.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/create_sfw.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_fetch.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_run_id.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_write_log.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/download_tables.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/efile_version.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/fields_in_scope.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/financial_fields.html</loc></url>
@@ -56,6 +62,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables_duckdb.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/reconcile.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/resolve_tables.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/retrieval_log.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/sfw_config.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/sfw_rules.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/table_catalog.html</loc></url>

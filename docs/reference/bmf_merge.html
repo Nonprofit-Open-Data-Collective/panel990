@@ -58,8 +58,15 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bmf_merge</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
-<span>  source <span class="op">=</span> <span class="va">.EFILE_BMF_URL</span>,</span>
+<span>  source <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vars <span class="op">=</span> <span class="va">.EFILE_BMF_VARS</span>,</span>
+<span>  states <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"parquet"</span>, <span class="st">"states"</span>, <span class="st">"csv"</span><span class="op">)</span>,</span>
+<span>  cache <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"retain"</span>, <span class="st">"temporary"</span><span class="op">)</span>,</span>
+<span>  path <span class="op">=</span> <span class="st">"PANEL990"</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  timeout <span class="op">=</span> <span class="fl">3600</span>,</span>
+<span>  retry_max <span class="op">=</span> <span class="fl">3L</span>,</span>
 <span>  strict <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -74,11 +81,39 @@
 
 
 <dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
-<dd><p>URL, local CSV path, or BMF data frame.</p></dd>
+<dd><p>Optional BMF override: URL, local path, or data frame.</p></dd>
 
 
 <dt id="arg-vars">vars<a class="anchor" aria-label="anchor" href="#arg-vars"></a></dt>
 <dd><p>Native BMF fields to retain.</p></dd>
+
+
+<dt id="arg-states">states<a class="anchor" aria-label="anchor" href="#arg-states"></a></dt>
+<dd><p>Optional state marts to restrict retrieval to.</p></dd>
+
+
+<dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
+<dd><p>Retrieval strategy; see <code><a href="bmf_retrieve.html">bmf_retrieve()</a></code>.</p></dd>
+
+
+<dt id="arg-cache">cache<a class="anchor" aria-label="anchor" href="#arg-cache"></a></dt>
+<dd><p><code>"retain"</code> or <code>"temporary"</code>.</p></dd>
+
+
+<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
+<dd><p>Cache directory used when <code>cache = "retain"</code>.</p></dd>
+
+
+<dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
+<dd><p>Download again even when a cached file exists.</p></dd>
+
+
+<dt id="arg-timeout">timeout<a class="anchor" aria-label="anchor" href="#arg-timeout"></a></dt>
+<dd><p>Download timeout in seconds, per attempt.</p></dd>
+
+
+<dt id="arg-retry-max">retry_max<a class="anchor" aria-label="anchor" href="#arg-retry-max"></a></dt>
+<dd><p>Maximum attempts per file.</p></dd>
 
 
 <dt id="arg-strict">strict<a class="anchor" aria-label="anchor" href="#arg-strict"></a></dt>
@@ -104,7 +139,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

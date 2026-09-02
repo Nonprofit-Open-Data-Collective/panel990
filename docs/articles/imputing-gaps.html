@@ -78,27 +78,18 @@
 
     
     
-<p><code><a href="../reference/panel_impute.html">panel_impute()</a></code> is the low-level engine that inserts a
-panel’s missing <em>interior</em> years and fills their numeric fields
-from the observations that bracket each gap. (For the researcher-facing
-“just complete every span” verb, see <code><a href="../reference/panel_complete.html">panel_complete()</a></code> in
-<em>Completing panel spans</em>.)</p>
-<div class="float">
-<img src="figures/panel-impute.svg" style="width:100.0%" alt="panel_impute() filling interior gaps, shown as a table with missing cells and as trend plots with imputed points"><div class="figcaption">panel_impute() filling interior gaps, shown as a
-table with missing cells and as trend plots with imputed points</div>
+<p><code><a href="../reference/panel_impute.html">panel_impute()</a></code> is the low-level engine that inserts a panel’s missing <em>interior</em> years and fills their numeric fields from the observations that bracket each gap. (For the researcher-facing “just complete every span” verb, see <code><a href="../reference/panel_complete.html">panel_complete()</a></code> in <em>Completing panel spans</em>.)</p>
+<div class="figure">
+<img src="figures/panel-impute.svg" style="width:100.0%" alt=""><p class="caption">panel_impute() filling interior gaps, shown as a table with missing cells and as trend plots with imputed points</p>
 </div>
-<p>A year can only be inserted if it is part of the panel, so our toy
-data has a filler organization <code>F</code> observed every year, and
-one organization <code>A</code> that skips the middle:</p>
+<p>A year can only be inserted if it is part of the panel, so our toy data has a filler organization <code>F</code> observed every year, and one organization <code>A</code> that skips the middle:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  EIN2     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"F"</span>, <span class="st">"F"</span>, <span class="st">"F"</span>, <span class="st">"F"</span><span class="op">)</span>,</span>
 <span>  TAX_YEAR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2021</span>, <span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span><span class="op">)</span>,</span>
 <span>  revenue  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><code>A</code> spans 2018–2021 but is missing 2019 and 2020 –
-<code>persistent</code> on the boundary axis, <code>segmented</code> on
-the spell axis:</p>
+<p><code>A</code> spans 2018–2021 but is missing 2019 and 2020 – <code>persistent</code> on the boundary axis, <code>segmented</code> on the spell axis:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="../reference/panel_describe.html">panel_describe</a></span><span class="op">(</span><span class="va">df</span>, print <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="st">"classification"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EIN2"</span>, <span class="st">"panel_type"</span>, <span class="st">"panel_spell"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   EIN2 panel_type panel_spell</span></span>
@@ -107,8 +98,7 @@ the spell axis:</p>
 <div class="section level2">
 <h2 id="fill-methods">Fill methods<a class="anchor" aria-label="anchor" href="#fill-methods"></a>
 </h2>
-<p>The gap between <code>A</code>’s 2018 value (0) and 2021 value (30)
-can be filled four ways. Compare them on the two missing years:</p>
+<p>The gap between <code>A</code>’s 2018 value (0) and 2021 value (30) can be filled four ways. Compare them on the two missing years:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fill</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_impute.html">panel_impute</a></span><span class="op">(</span><span class="va">df</span>, vars <span class="op">=</span> <span class="st">"revenue"</span>, method <span class="op">=</span> <span class="va">m</span><span class="op">)</span></span>
@@ -124,17 +114,12 @@ can be filled four ways. Compare them on the two missing years:</p>
 <span><span class="co">#&gt;   year mean interpolate locf nocb</span></span>
 <span><span class="co">#&gt; 1 2019   15          10    0   30</span></span>
 <span><span class="co">#&gt; 2 2020   15          20    0   30</span></span></code></pre></div>
-<p><code>mean</code> (the default here) puts the same average in every
-hole; <code>interpolate</code> draws a straight line; <code>locf</code>
-holds the prior value; <code>nocb</code> pulls the next value back.
-Imputation never extends past an organization’s own span, and a hole
-stays <code>NA</code> only when <em>both</em> brackets are missing.</p>
+<p><code>mean</code> (the default here) puts the same average in every hole; <code>interpolate</code> draws a straight line; <code>locf</code> holds the prior value; <code>nocb</code> pulls the next value back. Imputation never extends past an organization’s own span, and a hole stays <code>NA</code> only when <em>both</em> brackets are missing.</p>
 </div>
 <div class="section level2">
 <h2 id="which-organizations-are-eligible">Which organizations are eligible<a class="anchor" aria-label="anchor" href="#which-organizations-are-eligible"></a>
 </h2>
-<p>By default only <code>persistent</code> organizations (those that
-span the window) are imputed, and every gap is filled:</p>
+<p>By default only <code>persistent</code> organizations (those that span the window) are imputed, and every gap is filled:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/panel_impute.html">panel_impute</a></span><span class="op">(</span><span class="va">df</span>, vars <span class="op">=</span> <span class="st">"revenue"</span><span class="op">)</span>     <span class="co"># method = "mean", types = "persistent"</span></span>
 <span><span class="va">out</span><span class="op">[</span><span class="va">out</span><span class="op">$</span><span class="va">EIN2</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TAX_YEAR"</span>, <span class="st">"revenue"</span>, <span class="st">"imputed_row"</span><span class="op">)</span><span class="op">]</span></span>
@@ -143,19 +128,14 @@ span the window) are imputed, and every gap is filled:</p>
 <span><span class="co">#&gt; 2     2019      15        TRUE</span></span>
 <span><span class="co">#&gt; 3     2020      15        TRUE</span></span>
 <span><span class="co">#&gt; 4     2021      30       FALSE</span></span></code></pre></div>
-<p>Inserted rows are flagged with <code>imputed_row</code>, so you can
-always tell filled values from reported ones. Gap-size and gap-count
-limits skip anything too wide to trust:</p>
+<p>Inserted rows are flagged with <code>imputed_row</code>, so you can always tell filled values from reported ones. Gap-size and gap-count limits skip anything too wide to trust:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># refuse to fill a gap longer than one year</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="fu"><a href="../reference/panel_impute.html">panel_impute</a></span><span class="op">(</span><span class="va">df</span>, vars <span class="op">=</span> <span class="st">"revenue"</span>, max_gap_size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>   <span class="co"># A's 2-year gap is left alone</span></span>
 <span><span class="co">#&gt; [1] 6</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 6</span></span></code></pre></div>
-<p>Other controls: <code>vars</code> chooses which numeric fields to
-fill (all numeric non-key fields by default), <code>types</code> widens
-eligibility to other boundary types, and <code>as_integers</code> rounds
-filled values for originally integer columns.</p>
+<p>Other controls: <code>vars</code> chooses which numeric fields to fill (all numeric non-key fields by default), <code>types</code> widens eligibility to other boundary types, and <code>as_integers</code> rounds filled values for originally integer columns.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -168,7 +148,7 @@ filled values for originally integer columns.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

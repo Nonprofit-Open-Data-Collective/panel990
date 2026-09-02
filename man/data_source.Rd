@@ -4,16 +4,26 @@
 \alias{data_source}
 \title{Create an efile source configuration}
 \usage{
-data_source(root = .EFILE_ROOT, aliases = .EFILE_ALIASES)
+data_source(root = NULL, version = .EFILE_VERSION, aliases = .EFILE_ALIASES)
 }
 \arguments{
-\item{root}{Base URL or local directory containing table-year CSV files.}
+\item{root}{Base URL or local directory containing table-year CSV files.
+\code{NULL} (default) builds the URL for \code{version}.}
+
+\item{version}{Published release, such as \code{"v2_2"} (the current default) or
+\code{"v2_1"}. Ignored when \code{root} is supplied.}
 
 \item{aliases}{Named character vector mapping short aliases to table names.}
 }
 \value{
-An \code{data_source} object.
+An \code{data_source} object carrying \code{root}, \code{version}, and \code{aliases}.
 }
 \description{
-Create an efile source configuration
+The NCCS efile release is versioned. Leave \code{root} as \code{NULL} to point at a
+published release by \code{version}, or pass \code{root} explicitly to read from a
+local directory or a mirror, in which case \code{version} is recorded as \code{NA}.
+}
+\examples{
+data_source()                   # current release
+data_source(version = "v2_1")   # pin the previous release
 }

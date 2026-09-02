@@ -12,14 +12,14 @@ panelize(
   bmf = "auto",
   backend = "memory",
   cache = c("retain", "temporary", "none"),
-  path = "efdata",
+  path = "PANEL990",
   filters = NULL,
   columns = NULL,
   include_many = FALSE,
   collision = c("error", "prefix"),
   overwrite = FALSE,
   retry_max = 3L,
-  timeout = 300,
+  timeout = 1800,
   verbose = TRUE
 )
 }
