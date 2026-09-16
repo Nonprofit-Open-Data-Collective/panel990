@@ -52,6 +52,20 @@ scope_to_forms <- list(
 
 # Precedence for resolving the (few) variables with conflicting metadata.
 scope_priority <- c("PZ", "PC", "EZ", "HD", "SG")
+
+# The MCF flags many single-form fields as PZ when the *concept* exists on both
+# forms (e.g. Part X line 1 cash is PZ because the 990EZ has a combined line 22
+# cash/savings/investments, which is a different variable). Taken literally,
+# that zero-fills 990EZ filers on full-990-only lines and vice versa. For
+# main-form fields, scope is therefore derived from where the variable's xpaths
+# actually live, across all schema versions: under IRS990/ -> PC, IRS990EZ/ ->
+# EZ, both -> PZ. Header, signature, and schedule fields keep the MCF value.
+xpath_form_scope <- function(xpaths, mcf_scope) {
+  if (is.na(mcf_scope) || !mcf_scope %in% c("PC", "EZ", "PZ")) return(mcf_scope)
+  on_pc <- any(grepl("^/Return/ReturnData/IRS990/",   xpaths))
+  on_ez <- any(grepl("^/Return/ReturnData/IRS990EZ/", xpaths))
+  if (on_pc && on_ez) "PZ" else if (on_pc) "PC" else if (on_ez) "EZ" else mcf_scope
+}
 type_priority  <- c("numeric", "checkbox", "date", "text")
 
 # --- 3. Collapse to one row per variable_name ---------------------------------
@@ -76,7 +90,8 @@ vars <- vars[!is.na(vars) & vars != ""]
 rows <- lapply(vars, function(v) {
   sub_all <- mcf[mcf$variable_name == v, , drop = FALSE]
   sub <- if (any(sub_all$.current)) sub_all[sub_all$.current, , drop = FALSE] else sub_all
-  scope <- pick(sub$variable_scope,   scope_priority)
+  scope_mcf <- pick(sub$variable_scope, scope_priority)
+  scope <- xpath_form_scope(sub_all$xpath, scope_mcf)
   dtype <- pick(sub$data_type_simple, type_priority)
   xsd   <- pick(sub$data_type_xsd,    character())
   is_money <- !is.na(dtype) && dtype == "numeric" &&
@@ -86,6 +101,7 @@ rows <- lapply(vars, function(v) {
     variable_name    = v,
     description      = pick(sub$description, character()),
     variable_scope   = scope,
+    scope_mcf        = scope_mcf,
     form_type        = pick(sub$form_type, character()),
     data_type_simple = dtype,
     data_type_xsd    = xsd,
@@ -130,6 +146,8 @@ print(table(fc$variable_scope, fc$blank_meaning))
 cat("\nconflicts resolved  scope:", sum(fc$scope_conflict),
     " type:", sum(fc$type_conflict), "\n")
 cat("both-forms (PZ) fields:", sum(fc$variable_scope == "PZ"), "\n")
+cat("\nscope corrected from xpaths (MCF -> derived):\n")
+print(table(mcf = fc$scope_mcf, derived = fc$variable_scope))
 
 # --- 5. Save ------------------------------------------------------------------
 if (!dir.exists("data")) dir.create("data")

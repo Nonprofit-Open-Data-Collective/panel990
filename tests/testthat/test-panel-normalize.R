@@ -29,6 +29,32 @@ test_that("panel_normalize zeros in scope, masks EZ, and guards non-filers", {
   expect_equal(aud$ez_rows, 1L)
 })
 
+test_that("panel_normalize leaves full-990-only balance-sheet lines NA for 990EZ", {
+  # Part X lines 1, 2, 10a, 11, 12 are not on the 990EZ, which reports a
+  # combined line 22 (cash, savings, and investments) instead.
+  pc_only <- c("F9_10_ASSET_CASH_BOY", "F9_10_ASSET_CASH_EOY",
+               "F9_10_ASSET_SAVING_BOY", "F9_10_ASSET_SAVING_EOY",
+               "F9_10_ASSET_INVEST_SEC_BOY", "F9_10_ASSET_INVEST_SEC_EOY",
+               "F9_10_ASSET_INVEST_SEC_OTH_BOY", "F9_10_ASSET_INVEST_SEC_OTH_EOY",
+               "F9_10_ASSET_LAND_BLDG")
+  ez_only <- c("F9_10_ASSET_CASH_SAVING_BOY", "F9_10_ASSET_CASH_SAVING_EOY")
+
+  df <- data.frame(EIN2 = c("A", "B"), TAX_YEAR = 2020,
+                   RETURN_TYPE = c("990", "990EZ"),
+                   F9_01_REV_TOT_CY = c(100, 50), stringsAsFactors = FALSE)
+  for (v in c(pc_only, ez_only)) df[[v]] <- NA_real_
+  out <- panel_normalize(df, verbose = FALSE)
+
+  for (v in pc_only) {
+    expect_equal(out[[v]][1], 0, info = v)           # full 990: blank -> 0
+    expect_true(is.na(out[[v]][2]), info = v)        # 990EZ: out of scope -> NA
+  }
+  for (v in ez_only) {
+    expect_true(is.na(out[[v]][1]), info = v)        # full 990: out of scope -> NA
+    expect_equal(out[[v]][2], 0, info = v)           # 990EZ: blank -> 0
+  }
+})
+
 test_that("panel_normalize runs on a panel and logs a receipt", {
   df <- data.frame(EIN2 = "A", TAX_YEAR = 2020, RETURN_TYPE = "990",
                    F9_01_REV_TOT_CY = 100, F9_08_REV_TOT_TOT = NA,

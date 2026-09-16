@@ -10,7 +10,12 @@
 #'   \item{variable_name}{Research-database field name (matches ef2 table columns).}
 #'   \item{description}{Field description from the 990 forms.}
 #'   \item{variable_scope}{Form scope: `PC` (full 990 only), `EZ` (990EZ only),
-#'     `PZ` (both forms), `HD` (header), `SG` (signature block).}
+#'     `PZ` (both forms), `HD` (header), `SG` (signature block). For main-form
+#'     fields this is derived from where the variable's xpaths live
+#'     (`IRS990/`, `IRS990EZ/`, or both) across all schema versions.}
+#'   \item{scope_mcf}{Scope as flagged in the source concordance, kept for
+#'     audit. It marks some single-form fields `PZ` (e.g. Part X cash and
+#'     investments, which the 990EZ reports only as a combined line).}
 #'   \item{form_type}{Originating form of the mapped xpath.}
 #'   \item{data_type_simple}{Simplified R type: `numeric`, `checkbox`, `text`, `date`.}
 #'   \item{data_type_xsd}{XSD schema type (e.g. `USAmountType`), used to detect money fields.}

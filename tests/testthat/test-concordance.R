@@ -42,6 +42,27 @@ test_that("fields_in_scope selects by form presence", {
   expect_false(pc_only %in% ez)
 })
 
+test_that("form scope follows the forms a field's xpaths appear on", {
+  data("field_concordance", package = "panel990")
+  scope <- stats::setNames(field_concordance$variable_scope,
+                           field_concordance$variable_name)
+
+  # Source concordance flags these PZ, but they exist only on the full 990.
+  expect_equal(unname(scope[c("F9_10_ASSET_CASH_EOY", "F9_10_ASSET_SAVING_EOY",
+                              "F9_10_ASSET_INVEST_SEC_EOY",
+                              "F9_10_ASSET_INVEST_SEC_OTH_EOY",
+                              "F9_10_ASSET_LAND_BLDG",
+                              "F9_01_NAFB_ASSET_TOT_EOY")]),
+               rep("PC", 6))
+  # ... and these only on the 990EZ.
+  expect_equal(unname(scope[c("F9_10_ASSET_CASH_SAVING_EOY",
+                              "F9_10_ASSET_LAND_BLDG_EOY")]),
+               rep("EZ", 2))
+  # Genuinely shared fields stay PZ.
+  expect_equal(unname(scope[c("F9_01_REV_TOT_CY", "F9_10_ASSET_TOT_EOY")]),
+               rep("PZ", 2))
+})
+
 test_that("built-in concordance normalizes only within form scope", {
   data("field_concordance", package = "panel990")
   f <- field_concordance$variable_name[
