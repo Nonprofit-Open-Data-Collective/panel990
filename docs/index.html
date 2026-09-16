@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Retrieve, Normalize, and Prepare IRS Efile Panel Data • panel990</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Retrieve, Normalize, and Prepare IRS Efile Panel Data">
 <meta name="description" content="Retrieve IRS efile tables, normalize source encodings using form-aware concordance rules, construct longitudinal panels, and support panel classification, filtering, missing-year imputation, and smoothing.">
@@ -68,7 +68,9 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="panel990">panel990<a class="anchor" aria-label="anchor" href="#panel990"></a>
 </h1></div>
-<!-- badges: start --><!-- badges: end --><p><strong>Retrieve, normalize, and assemble clean longitudinal panels from IRS 990 e-file data.</strong></p>
+<!-- badges: start -->
+<!-- badges: end -->
+<p><strong>Retrieve, normalize, and assemble clean longitudinal panels from IRS 990 e-file data.</strong></p>
 <p><code>panel990</code> turns the hundreds of raw IRS 990 e-file tables into analysis-ready organization-by-year panels. It downloads and merges the tables, harmonizes their many blank-encoding conventions, classifies how each organization enters and exits the panel, and fills or smooths gaps — all while keeping a running ledger of everything it did.</p>
 <p>It sits in the middle of the nonprofit open-data pipeline:</p>
 <pre><code>ef2  ──▶  panel990  ──▶  fiscal
@@ -94,27 +96,27 @@
 <col width="50%">
 <col width="50%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Problem</th>
 <th>panel990 answer</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Download, read, merge, and stack the right tables</td>
 <td>
 <code><a href="reference/panelize.html">panelize()</a></code> — one call, automatic filing keys</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Blanks that sometimes mean zero and sometimes mean “not applicable”</td>
 <td>
 <code><a href="reference/panel_normalize.html">panel_normalize()</a></code> — form-scoped, non-filer-safe</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Organizations enter, leave, and skip years</td>
 <td>
 <code><a href="reference/panel_describe.html">panel_describe()</a></code> / <code><a href="reference/panel_filter.html">panel_filter()</a></code> classification</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Missing years and noisy series</td>
 <td>
 <code><a href="reference/panel_impute.html">panel_impute()</a></code> / <code><a href="reference/panel_smooth.html">panel_smooth()</a></code> / <code><a href="reference/panel_complete.html">panel_complete()</a></code>
@@ -149,42 +151,42 @@
 </h2>
 <p><code>panel_type</code> and <code>panel_spell</code> are <strong>orthogonal</strong> — every organization gets one label from each axis.</p>
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th>
 <code>panel_type</code> (boundary)</th>
 <th>Meaning</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code>persistent</code></td>
 <td>present in the <strong>first and last</strong> panel year</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>entrant</code></td>
 <td>absent at the start, present at the end</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>exit</code></td>
 <td>present at the start, absent at the end</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>transient</code></td>
 <td>present only in the interior</td>
 </tr>
 </tbody>
 </table>
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th>
 <code>panel_spell</code> (continuity)</th>
 <th>Meaning</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code>seamless</code></td>
 <td>every year between first and last is present</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>segmented</code></td>
 <td>one or more interior years are missing</td>
 </tr>
@@ -224,16 +226,16 @@
 <h3 id="how-panelize-assembles-the-panel">How <code>panelize()</code> assembles the panel<a class="anchor" aria-label="anchor" href="#how-panelize-assembles-the-panel"></a>
 </h3>
 <p>That one call in step 1 does three things. First, <strong>within each year it merges the five tables into one wide row per filing</strong>. Each table holds one part of the 990 form and carries the same filing keys — <code>EIN2</code> (organization), <code>TAX_YEAR</code> (year), and <code>OBJECTID</code> (one id per filed return). The join is a full outer join, so a filing missing from one part keeps its row (with <code>NA</code>s) instead of being dropped.</p>
-<div class="figure">
-<img src="reference/figures/merge-tables.svg" alt=""><p class="caption">Merging the five core tables within one year</p>
+<div class="float">
+<img src="reference/figures/merge-tables.svg" alt="Merging the five core tables within one year"><div class="figcaption">Merging the five core tables within one year</div>
 </div>
 <p>Second, <strong>the merged per-year tables are stacked into one long panel</strong>. The per-year frames share a harmonized column layout, so they append into a single table with one row per organization-year:</p>
-<div class="figure">
-<img src="reference/figures/stack-years.svg" alt=""><p class="caption">Stacking merged years into a long panel</p>
+<div class="float">
+<img src="reference/figures/stack-years.svg" alt="Stacking merged years into a long panel"><div class="figcaption">Stacking merged years into a long panel</div>
 </div>
 <p>Third, <strong><code>bmf = TRUE</code> appends organization traits from the NCCS Business Master File</strong>. The BMF holds one row per organization — time-invariant traits like name, NTEE code, subsection, and geography — left-joined on <code>EIN2</code> and broadcast to every year that organization appears. Filings without a BMF match are kept, with the BMF columns set to <code>NA</code>.</p>
-<div class="figure">
-<img src="reference/figures/bmf-merge.svg" alt=""><p class="caption">Attaching organization traits with the BMF</p>
+<div class="float">
+<img src="reference/figures/bmf-merge.svg" alt="Attaching organization traits with the BMF"><div class="figcaption">Attaching organization traits with the BMF</div>
 </div>
 <p>Want the raw tables instead of a normalized panel? <code><a href="reference/download_tables.html">download_tables()</a></code>, <code><a href="reference/read_tables.html">read_tables()</a></code>, and <code><a href="reference/merge_tables.html">merge_tables()</a></code> expose each stage of <code><a href="reference/panelize.html">panelize()</a></code>. Want a reusable specification? <code><a href="reference/create_sfw.html">create_sfw()</a></code> builds a <strong>sample frame</strong> of keys and typed rules that you can carry across projects and hand directly to <code><a href="reference/panelize.html">panelize()</a></code>.</p>
 </div>
@@ -302,7 +304,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
