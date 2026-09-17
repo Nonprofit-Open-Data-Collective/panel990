@@ -32,6 +32,7 @@ reference:
   - add_refresh
   - classify_panel
   - apply_sfw
+  - resolve_frame
   - apply_check
   - views
   - conform
@@ -111,6 +112,7 @@ articles:
   contents:
   - downloading-tables
   - sampling-framework
+  - source-requirements
   - panels-and-slices
 - title: Cleaning panels
   navbar: Cleaning panels

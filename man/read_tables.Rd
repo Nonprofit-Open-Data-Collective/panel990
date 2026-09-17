@@ -2,7 +2,7 @@
 % Please edit documentation in R/read.R
 \name{read_tables}
 \alias{read_tables}
-\title{Read acquired efile CSV tables}
+\title{Read acquired efile tables}
 \usage{
 read_tables(
   downloads,
@@ -27,8 +27,24 @@ read_tables(
 An \code{read_result} with named tables and an augmented manifest.
 }
 \description{
+The format of each cached file is detected from its extension, so a CSV
+cache and a parquet cache both read through this function.
+}
+\details{
 Deduplication runs on a \code{data.table}. Base \code{duplicated()} on a wide
 \code{data.frame} pastes every row into a string and dominates the cost of this
 step -- on a 555k x 80 header table it takes roughly 47 seconds against
 under a second here, for identical results.
 }
+\section{Deduplication and pushdown}{
+
+Full-row deduplication needs every column and every row, so it has to
+happen before the projection and cannot be pushed into a parquet scan. With
+\code{unique_rows = FALSE} the \code{columns} projection and the \code{filters} restriction
+are instead pushed into the read, which on a parquet source prunes row
+groups rather than scanning them; the source dimensions reported in the
+manifest still describe the whole file, read from its footer. The efile
+build emits no exact duplicate rows, so on a current release
+\code{unique_rows = FALSE} is both faster and equivalent.
+}
+

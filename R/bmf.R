@@ -129,39 +129,12 @@ bmf_manifest <- function(url = .EFILE_BMF_MANIFEST_URL, timeout = 120,
   as.numeric(entry$bytes)
 }
 
-# Prefer DuckDB (already a Suggests dependency and able to project columns
-# during the scan); fall back to arrow; NA when neither is installed.
-.bmf_parquet_engine <- function() {
-  if (requireNamespace("DBI", quietly = TRUE) &&
-      requireNamespace("duckdb", quietly = TRUE)) return("duckdb")
-  if (requireNamespace("arrow", quietly = TRUE)) return("arrow")
-  NA_character_
-}
+# The BMF and efile paths read parquet the same way; see R/format.R. The BMF
+# release carries its own typed schema, so no .p990_coerce() step here.
+.bmf_parquet_engine <- function() .p990_parquet_engine()
 
-.bmf_read_parquet <- function(path, columns = NULL, engine = .bmf_parquet_engine()) {
-  if (is.na(engine))
-    stop("Reading parquet requires the suggested package `duckdb` or `arrow`.")
-  if (engine == "duckdb") {
-    con <- DBI::dbConnect(duckdb::duckdb())
-    on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
-    quoted <- as.character(DBI::dbQuoteString(con, path))
-    scan <- paste0("read_parquet(", quoted, ")")
-    available <- names(DBI::dbGetQuery(con, paste0("SELECT * FROM ", scan,
-                                                   " LIMIT 0")))
-    keep <- if (is.null(columns)) available else intersect(columns, available)
-    select_sql <- if (length(keep))
-      paste(vapply(keep, function(x)
-        as.character(DBI::dbQuoteIdentifier(con, x)), character(1L)),
-        collapse = ", ") else "*"
-    return(DBI::dbGetQuery(con, paste0("SELECT ", select_sql, " FROM ", scan)))
-  }
-  # Read as an Arrow table and subset by name: `col_select` would pull in
-  # tidyselect, which is not a dependency here.
-  table <- arrow::read_parquet(path, as_data_frame = FALSE)
-  keep <- if (is.null(columns)) names(table) else intersect(columns, names(table))
-  if (length(keep)) table <- table[, keep]
-  as.data.frame(table, stringsAsFactors = FALSE)
-}
+.bmf_read_parquet <- function(path, columns = NULL, engine = .bmf_parquet_engine())
+  .p990_read_parquet(path, columns = columns, engine = engine)
 
 # Read only the requested columns from a BMF CSV (the unified file or a state
 # mart). fread() errors on unknown `select` names, so inspect the header first.

@@ -1,8 +1,8 @@
 ---
-title: "3. Panels and panel slices"
+title: "4. Panels and panel slices"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{3. Panels and panel slices}
+  %\VignetteIndexEntry{4. Panels and panel slices}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -5,6 +5,18 @@
 
 .p990_or <- function(x, y) if (is.null(x)) y else x
 
+# Manifest statuses whose `path` can be read.
+#
+# A "virtual" row is a resource that was never copied into the cache -- the
+# `cache = "none"` scan addresses the published file in place. Only a scanning
+# backend can read one, so the memory backend accepts the cached statuses
+# alone while the DuckDB backend and merge_tables() accept all three. Keeping
+# the two sets here stops them drifting apart: merge_tables() previously
+# recognized only the cached pair, which silently emptied every
+# `cache = "none"` panel at the merge step.
+.EFILE_CACHED <- c("downloaded", "reused")
+.EFILE_READABLE <- c(.EFILE_CACHED, "virtual")
+
 #' Identifier for a single retrieval run
 #'
 #' Timestamp plus a process-unique token, used to name per-run log files so

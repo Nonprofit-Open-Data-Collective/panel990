@@ -2,7 +2,7 @@
 % Please edit documentation in R/download.R
 \name{download_tables}
 \alias{download_tables}
-\title{Download or reuse efile table CSV files}
+\title{Download or reuse efile table files}
 \usage{
 download_tables(
   years,
@@ -42,13 +42,19 @@ An \code{download_result} containing successful file paths, a structured
 table-year manifest, the \code{run_id}, and the per-run \code{log_file}.
 }
 \description{
+The file format follows \code{source$format}, so a cache built from
+\code{data_source(format = "parquet")} holds parquet and one built from the
+default holds CSV. Both are read by \code{\link[=read_tables]{read_tables()}} and
+\code{\link[=read_tables_duckdb]{read_tables_duckdb()}}, which detect the format from the extension, so a
+cache may hold either or both.
+}
+\details{
 Each file is fetched by \code{\link[=.p990_fetch]{.p990_fetch()}}, which raises the download timeout,
 retries with exponential backoff, and discards partial files between
 attempts. Progress is reported as a START line before each transfer begins
 and an OK/FAIL line when it settles, so a stalled file is identifiable while
 it is still running.
-}
-\details{
+
 Every call writes its own log under \verb{<path>/logs} named for the run, so
 repeated runs accumulate rather than overwrite. See \code{\link[=retrieval_log]{retrieval_log()}}.
 }

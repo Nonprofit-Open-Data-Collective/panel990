@@ -4,26 +4,55 @@
 \alias{data_source}
 \title{Create an efile source configuration}
 \usage{
-data_source(root = NULL, version = .EFILE_VERSION, aliases = .EFILE_ALIASES)
+data_source(
+  root = NULL,
+  version = .EFILE_VERSION,
+  format = .EFILE_FORMAT,
+  aliases = .EFILE_ALIASES
+)
 }
 \arguments{
-\item{root}{Base URL or local directory containing table-year CSV files.
-\code{NULL} (default) builds the URL for \code{version}.}
+\item{root}{Base URL or local directory containing table-year files. \code{NULL}
+(default) builds the URL for \code{version}.}
 
 \item{version}{Published release, such as \code{"v2_2"} (the current default) or
 \code{"v2_1"}. Ignored when \code{root} is supplied.}
 
+\item{format}{Source file format: \code{"csv"} (the current default) or
+\code{"parquet"}. See the Source format section.}
+
 \item{aliases}{Named character vector mapping short aliases to table names.}
 }
 \value{
-An \code{data_source} object carrying \code{root}, \code{version}, and \code{aliases}.
+An \code{data_source} object carrying \code{root}, \code{version}, \code{format}, and
+\code{aliases}.
 }
 \description{
 The NCCS efile release is versioned. Leave \code{root} as \code{NULL} to point at a
 published release by \code{version}, or pass \code{root} explicitly to read from a
 local directory or a mirror, in which case \code{version} is recorded as \code{NA}.
 }
+\section{Source format}{
+
+A release publishes each table-year under one stem in two formats, so
+\code{format} is an extension swap on an otherwise identical URL. Parquet pays
+off for \emph{selective} reads and only there: the files are sorted by \code{EIN2}
+with non-overlapping row-group statistics, so an entity restriction prunes
+row groups and a column projection reads only the chunks it needs. Reading a
+whole table is no faster than reading the CSV. The gain is largest without a
+local cache (\code{panelize(cache = "none")}), where pruning turns a whole-file
+transfer into a few range requests.
+
+Parquet stores every efile column as a string. The read paths therefore cast
+numeric fields using the types declared in \link{field_concordance}, rather than
+inferring them the way \code{fread()} and \code{read_csv_auto()} do. Declared types are
+the more reliable of the two, but they are not identical to the inferred
+ones: a parquet read returns \code{ORG_EIN} as text (preserving leading zeros),
+and leaves dates, timestamps, and checkboxes as source strings.
+}
+
 \examples{
-data_source()                   # current release
-data_source(version = "v2_1")   # pin the previous release
+data_source()                          # current release, CSV
+data_source(version = "v2_1")          # pin the previous release
+data_source(format = "parquet")        # same release, parquet files
 }

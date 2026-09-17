@@ -17,6 +17,7 @@ panelize(
   columns = NULL,
   include_many = FALSE,
   collision = c("error", "prefix"),
+  unique_rows = TRUE,
   overwrite = FALSE,
   retry_max = 3L,
   timeout = 1800,
@@ -51,6 +52,11 @@ references a BMF field), \code{FALSE}, \code{TRUE} (the NCCS master), or a BMF s
 
 \item{collision}{Non-key collision policy.}
 
+\item{unique_rows}{Remove exact duplicate source rows during the read.
+\code{TRUE} (default) preserves the historical behaviour but prevents the
+column projection from being pushed into a parquet scan; see
+\code{\link[=read_tables]{read_tables()}}.}
+
 \item{overwrite}{Replace cached files.}
 
 \item{retry_max}{Download attempts.}
@@ -68,13 +74,24 @@ download/table/join manifests and BMF diagnostics.
 }
 \description{
 The workhorse acquisition recipe: resolve tables and years, download (or
-virtually scan) the CSVs, project columns and push the sample frame's entity
-restriction down to read-time, merge the tables within each year, stack the
-years, optionally append BMF organization traits, then apply the frame's
-rules. Returns a \link[=as_panel]{panel} bundling the data with the frame and a
-provenance log.
+virtually scan) the source files, project columns and push the sample
+frame's entity restriction down to read-time, merge the tables within each
+year, stack the years, optionally append BMF organization traits, then apply
+the frame's rules. Returns a \link[=as_panel]{panel} bundling the data with the
+frame and a provenance log.
 }
 \details{
 Keys are set automatically from the efile schema (entity \code{EIN2}, time
 \code{TAX_YEAR}, record \code{OBJECTID}).
 }
+\section{Reading parquet}{
+
+The source format comes from \code{source}, so \code{data_source(format = "parquet")}
+builds the same panel from the parquet release. Parquet only pays off for
+selective reads, and the frame's row and column restrictions are what make a
+read selective -- so the combination that matters is a frame with an entity
+subset or a \code{select} rule, \code{backend = "duckdb"}, \code{cache = "none"}, and
+\code{unique_rows = FALSE}. See \code{\link[=data_source]{data_source()}} for the format's type contract
+and \code{\link[=read_tables]{read_tables()}} for why deduplication blocks the projection.
+}
+

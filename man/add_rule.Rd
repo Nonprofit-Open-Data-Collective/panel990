@@ -27,6 +27,12 @@ payload arguments depend on \code{type}:
 \code{expr} (a predicate string). \code{op} in \verb{in}, \code{not_in}, \code{==}, \code{!=}, \code{>},
 \code{>=}, \code{<}, \code{<=}, \code{between}, \code{is_true}, \code{is_false}.}
 \item{\code{subset}}{\code{subset} -- a vector of entity ids to keep (captured).}
+\item{\code{require}}{a cross-year condition on the \emph{source}, executed by
+\code{\link[=resolve_frame]{resolve_frame()}} rather than \code{\link[=apply_sfw]{apply_sfw()}}. \code{table} (default \code{"P00"}),
+\code{present_in} (\code{"all"} for a balanced frame, \code{"any"}, or a minimum year
+count), and optionally a per-filing predicate as \code{column}/\code{op}/\code{values}
+plus \code{holds} (\code{"every"} year, the default, or \code{"any"} year). An \code{expr}
+string is rejected: it cannot be pushed to the source.}
 \item{\code{label}}{\code{map} (an id-named vector) or \code{from} (a data frame) with
 \code{keys} and \code{label} column names; \code{label} also names the derived column.}
 \item{\code{select}}{\code{vars}, \code{scope}, \code{tables}, \code{drop} (resolved via
