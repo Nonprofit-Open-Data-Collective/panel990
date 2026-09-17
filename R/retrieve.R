@@ -34,6 +34,70 @@
   paste0(" @ ", .p990_bytes(bytes / seconds), "/s")
 }
 
+# Sustained rate assumed when a file size is converted into a timeout.
+# ?download.file observes that "it is unrealistic to require download times of
+# less than 1s/MB"; half that rate leaves headroom on an ordinary connection.
+.P990_MIN_RATE <- 512 * 1024
+
+# R multiplies the `timeout` option by 1000 in C int arithmetic, so a larger
+# value overflows into a short or negative timeout rather than waiting longer.
+.P990_MAX_TIMEOUT <- 2147483L
+
+#' Timeout budget for one transfer attempt
+#'
+#' R's `timeout` option is a budget for the *whole* transfer, not an idle
+#' timeout: [utils::download.file()] aborts once it elapses even while bytes
+#' are still arriving. A fixed value therefore imposes a minimum transfer rate
+#' that rises with file size -- 3.6 GB in 1800 seconds demands a sustained
+#' 2 MB/s. Where the size is known, convert it into the time it needs at
+#' `.P990_MIN_RATE` and keep whichever budget is larger.
+#'
+#' `floor` preserves a timeout the user raised globally, through
+#' `options(timeout =)` or the `R_DEFAULT_INTERNET_TIMEOUT` environment
+#' variable; `?download.file` asks packages not to lower it.
+#'
+#' @param timeout Requested per-attempt timeout in seconds.
+#' @param bytes Expected transfer size in bytes, or `NA`.
+#' @param floor A timeout already in force that must not be reduced.
+#' @return A length-one integer number of seconds.
+#' @keywords internal
+.p990_timeout <- function(timeout, bytes = NA_real_, floor = NULL) {
+  seconds <- suppressWarnings(as.numeric(timeout))
+  if (length(seconds) != 1L || is.na(seconds) || seconds <= 0) seconds <- 60
+  bytes <- suppressWarnings(as.numeric(bytes))
+  if (length(bytes) == 1L && !is.na(bytes) && bytes > 0)
+    seconds <- max(seconds, ceiling(bytes / .P990_MIN_RATE))
+  floor <- suppressWarnings(as.numeric(floor))
+  if (length(floor) == 1L && !is.na(floor)) seconds <- max(seconds, floor)
+  as.integer(min(seconds, .P990_MAX_TIMEOUT))
+}
+
+#' Ask a server how many bytes a resource holds
+#'
+#' Best effort: any failure returns `NA` and the caller falls back to the
+#' requested timeout. The probe runs under its own short timeout so an
+#' unreachable host fails here in seconds rather than consuming the transfer
+#' budget.
+#'
+#' @param url Remote URL.
+#' @param timeout Seconds allowed for the header request.
+#' @return The reported `Content-Length` in bytes, or `NA_real_`.
+#' @keywords internal
+.p990_remote_bytes <- function(url, timeout = 30) {
+  old_timeout <- getOption("timeout")
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  options(timeout = .p990_timeout(timeout))
+  headers <- tryCatch(curlGetHeaders(url), error = function(e) character())
+  # A redirect chain returns one header block per hop; the last Content-Length
+  # describes the resource actually served.
+  found <- grep("^content-length:", headers, ignore.case = TRUE, value = TRUE)
+  if (!length(found)) return(NA_real_)
+  bytes <- suppressWarnings(
+    as.numeric(trimws(sub("^[^:]*:", "", found[[length(found)]])))
+  )
+  if (is.na(bytes) || bytes <= 0) NA_real_ else bytes
+}
+
 # Messages go to stderr; flush so the START line is visible while a multi-GB
 # transfer is still running rather than appearing only once it finishes.
 .p990_say <- function(...) {
@@ -72,9 +136,14 @@
 #' backoff, deletes partial files between attempts, and verifies the byte count
 #' against `expected_bytes` when a published manifest supplies one.
 #'
+#' The requested timeout is a floor, not a ceiling: `.p990_timeout()` extends
+#' it for large files and never lowers a timeout the user raised globally. A
+#' `Content-Length` probe supplies the size when no manifest does, which also
+#' puts a real figure on the START line instead of "unknown size".
+#'
 #' @param url Remote URL or local file path.
 #' @param destination Local destination path.
-#' @param timeout Per-attempt timeout in seconds.
+#' @param timeout Minimum per-attempt timeout in seconds.
 #' @param retry_max Maximum attempts.
 #' @param expected_bytes Optional expected size used as an integrity check.
 #' @param label Human-readable name used in progress messages.
@@ -95,15 +164,21 @@
                 error = NA_character_))
   }
   dir.create(dirname(destination), recursive = TRUE, showWarnings = FALSE)
+  is_remote <- grepl("^https?://", url, ignore.case = TRUE)
+
+  # Size hint for the timeout budget and the progress line. Kept apart from
+  # `expected_bytes` so a probed value never becomes an integrity assertion:
+  # only a published manifest is authoritative enough for that.
+  size <- if (!is.na(expected_bytes)) expected_bytes else
+    if (is_remote) .p990_remote_bytes(url) else NA_real_
   old_timeout <- getOption("timeout")
   on.exit(options(timeout = old_timeout), add = TRUE)
-  options(timeout = timeout)
+  options(timeout = .p990_timeout(timeout, size, old_timeout))
 
-  is_remote <- grepl("^https?://", url, ignore.case = TRUE)
   error <- NA_character_
   overall <- Sys.time()
   for (attempt in seq_len(retry_max)) {
-    .p990_begin(label, expected_bytes, attempt, retry_max, verbose)
+    .p990_begin(label, size, attempt, retry_max, verbose)
     started <- Sys.time()
     # download.file() signals a truncated transfer as a warning, so treat
     # warnings as failures and let the retry loop handle them.

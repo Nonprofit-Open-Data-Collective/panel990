@@ -16,6 +16,16 @@
                  log_file = NA_character_), class = "download_result")
 }
 
+# Apply one DuckDB setting, ignoring builds that do not recognize it.
+.efile_duckdb_set <- function(con, name, value) {
+  tryCatch(
+    DBI::dbExecute(con, paste0("SET ", name, " = ",
+                               format(value, scientific = FALSE))),
+    error = function(e) 0L
+  )
+  invisible(NULL)
+}
+
 .efile_sql_in <- function(con, values) {
   paste(vapply(as.character(values), function(x)
     as.character(DBI::dbQuoteString(con, x)), character(1L)), collapse = ", ")
@@ -25,9 +35,22 @@
 #'
 #' Internal backend used by [panelize()]. Filters and projection are pushed
 #' into DuckDB before results are collected into R.
+#'
+#' Under `cache = "none"` the scan reads the CSVs straight from S3 through the
+#' httpfs extension, which has its own HTTP settings and never sees R's
+#' `timeout` option. `timeout` and `retry_max` are forwarded to httpfs so the
+#' virtual scan honours the same limits as a cached download.
+#'
+#' @param downloads A `download_result`.
+#' @param columns Optional fields to retain.
+#' @param filters Named list of accepted values.
+#' @param unique_rows Remove exact duplicate rows.
+#' @param timeout HTTP timeout in seconds applied to remote scans.
+#' @param retry_max HTTP retries applied to remote scans.
 #' @keywords internal
 read_tables_duckdb <- function(downloads, columns = NULL, filters = NULL,
-                               unique_rows = TRUE) {
+                               unique_rows = TRUE, timeout = 1800,
+                               retry_max = 3L) {
   if (!requireNamespace("DBI", quietly = TRUE) ||
       !requireNamespace("duckdb", quietly = TRUE))
     stop("The DuckDB backend requires the suggested packages `DBI` and `duckdb`.")
@@ -36,6 +59,11 @@ read_tables_duckdb <- function(downloads, columns = NULL, filters = NULL,
   if (any(grepl("^https?://", downloads$manifest$path, ignore.case = TRUE))) {
     DBI::dbExecute(con, "INSTALL httpfs")
     DBI::dbExecute(con, "LOAD httpfs")
+    # httpfs defaults to a 30 second timeout, which no multi-hundred-MB scan
+    # survives. The settings are named differently across DuckDB versions, so
+    # a build that rejects one is left on its own default.
+    .efile_duckdb_set(con, "http_timeout", .p990_timeout(timeout))
+    .efile_duckdb_set(con, "http_retries", max(0L, as.integer(retry_max) - 1L))
   }
   manifest <- downloads$manifest
   for (field in c("rows_source", "cols_source", "rows_selected", "cols_selected",

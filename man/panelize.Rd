@@ -55,7 +55,9 @@ references a BMF field), \code{FALSE}, \code{TRUE} (the NCCS master), or a BMF s
 
 \item{retry_max}{Download attempts.}
 
-\item{timeout}{Download timeout.}
+\item{timeout}{Minimum per-attempt download timeout in seconds. This is a
+budget for a whole transfer rather than an idle timeout, so it is raised
+automatically for large files; see \code{\link[=download_tables]{download_tables()}}.}
 
 \item{verbose}{Print progress.}
 }

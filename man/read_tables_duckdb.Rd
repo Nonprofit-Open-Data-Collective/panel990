@@ -8,11 +8,32 @@ read_tables_duckdb(
   downloads,
   columns = NULL,
   filters = NULL,
-  unique_rows = TRUE
+  unique_rows = TRUE,
+  timeout = 1800,
+  retry_max = 3L
 )
+}
+\arguments{
+\item{downloads}{A \code{download_result}.}
+
+\item{columns}{Optional fields to retain.}
+
+\item{filters}{Named list of accepted values.}
+
+\item{unique_rows}{Remove exact duplicate rows.}
+
+\item{timeout}{HTTP timeout in seconds applied to remote scans.}
+
+\item{retry_max}{HTTP retries applied to remote scans.}
 }
 \description{
 Internal backend used by \code{\link[=panelize]{panelize()}}. Filters and projection are pushed
 into DuckDB before results are collected into R.
+}
+\details{
+Under \code{cache = "none"} the scan reads the CSVs straight from S3 through the
+httpfs extension, which has its own HTTP settings and never sees R's
+\code{timeout} option. \code{timeout} and \code{retry_max} are forwarded to httpfs so the
+virtual scan honours the same limits as a cached download.
 }
 \keyword{internal}

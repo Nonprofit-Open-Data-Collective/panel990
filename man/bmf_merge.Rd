@@ -36,7 +36,8 @@ bmf_merge(
 
 \item{overwrite}{Download again even when a cached file exists.}
 
-\item{timeout}{Download timeout in seconds, per attempt.}
+\item{timeout}{Minimum per-attempt download timeout in seconds; raised
+automatically for large files. See \code{\link[=download_tables]{download_tables()}}.}
 
 \item{retry_max}{Maximum attempts per file.}
 
