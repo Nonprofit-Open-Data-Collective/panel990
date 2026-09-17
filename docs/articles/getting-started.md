@@ -281,6 +281,8 @@ Each step has a task-focused vignette with the full details:
 
 - *Downloading and assembling efile tables* and *the sampling framework*
   — building panels reproducibly
+- *Cross-year requirements on the source* — sampling on conditions that
+  span years, resolved before the read
 - *Panels and panel slices* — the classification vocabulary
 - *Imputing missing years*, *Completing panel spans*, *Smoothing panel
   variables*, *Balancing a panel* — cleaning

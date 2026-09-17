@@ -1,11 +1,13 @@
-# Download or reuse efile table CSV files
+# Download or reuse efile table files
 
-Each file is fetched by
-[`.p990_fetch()`](https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_fetch.md),
-which raises the download timeout, retries with exponential backoff, and
-discards partial files between attempts. Progress is reported as a START
-line before each transfer begins and an OK/FAIL line when it settles, so
-a stalled file is identifiable while it is still running.
+The file format follows `source$format`, so a cache built from
+`data_source(format = "parquet")` holds parquet and one built from the
+default holds CSV. Both are read by
+[`read_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables.md)
+and
+[`read_tables_duckdb()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables_duckdb.md),
+which detect the format from the extension, so a cache may hold either
+or both.
 
 ## Usage
 
@@ -71,6 +73,13 @@ An `download_result` containing successful file paths, a structured
 table-year manifest, the `run_id`, and the per-run `log_file`.
 
 ## Details
+
+Each file is fetched by
+[`.p990_fetch()`](https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_fetch.md),
+which raises the download timeout, retries with exponential backoff, and
+discards partial files between attempts. Progress is reported as a START
+line before each transfer begins and an OK/FAIL line when it settles, so
+a stalled file is identifiable while it is still running.
 
 Every call writes its own log under `<path>/logs` named for the run, so
 repeated runs accumulate rather than overwrite. See

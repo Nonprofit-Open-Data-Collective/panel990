@@ -11,6 +11,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/panels-and-slices.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/sampling-framework.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/smoothing-panels.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/source-requirements.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/authors.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/LICENSE-text.html</loc></url>
@@ -34,7 +35,13 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/conform.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/create_sfw.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-efile_format.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_coerce.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_efile_types.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_fetch.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_parquet_con.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_parquet_dims.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_read_parquet.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_remote_bytes.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_run_id.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_timeout.html</loc></url>
@@ -63,6 +70,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables_duckdb.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/reconcile.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/resolve_frame.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/resolve_tables.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/retrieval_log.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/sfw_config.html</loc></url>

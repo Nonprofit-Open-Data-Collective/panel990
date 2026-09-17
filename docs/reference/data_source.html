@@ -27,7 +27,8 @@ local directory or a mirror, in which case version is recorded as NA."></head><b
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/downloading-tables.html">1. Downloading and assembling efile tables</a></li>
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
-    <li><a class="dropdown-item" href="../articles/panels-and-slices.html">3. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
+    <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -62,7 +63,12 @@ local directory or a mirror, in which case <code>version</code> is recorded as <
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">data_source</span><span class="op">(</span>root <span class="op">=</span> <span class="cn">NULL</span>, version <span class="op">=</span> <span class="va">.EFILE_VERSION</span>, aliases <span class="op">=</span> <span class="va">.EFILE_ALIASES</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">data_source</span><span class="op">(</span></span>
+<span>  root <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  version <span class="op">=</span> <span class="va">.EFILE_VERSION</span>,</span>
+<span>  format <span class="op">=</span> <span class="va">.EFILE_FORMAT</span>,</span>
+<span>  aliases <span class="op">=</span> <span class="va">.EFILE_ALIASES</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,13 +76,18 @@ local directory or a mirror, in which case <code>version</code> is recorded as <
 
 
 <dl><dt id="arg-root">root<a class="anchor" aria-label="anchor" href="#arg-root"></a></dt>
-<dd><p>Base URL or local directory containing table-year CSV files.
-<code>NULL</code> (default) builds the URL for <code>version</code>.</p></dd>
+<dd><p>Base URL or local directory containing table-year files. <code>NULL</code>
+(default) builds the URL for <code>version</code>.</p></dd>
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>Published release, such as <code>"v2_2"</code> (the current default) or
 <code>"v2_1"</code>. Ignored when <code>root</code> is supplied.</p></dd>
+
+
+<dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
+<dd><p>Source file format: <code>"csv"</code> (the current default) or
+<code>"parquet"</code>. See the Source format section.</p></dd>
 
 
 <dt id="arg-aliases">aliases<a class="anchor" aria-label="anchor" href="#arg-aliases"></a></dt>
@@ -85,17 +96,40 @@ local directory or a mirror, in which case <code>version</code> is recorded as <
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An <code>data_source</code> object carrying <code>root</code>, <code>version</code>, and <code>aliases</code>.</p>
+    <p>An <code>data_source</code> object carrying <code>root</code>, <code>version</code>, <code>format</code>, and
+<code>aliases</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="source-format">Source format<a class="anchor" aria-label="anchor" href="#source-format"></a></h2>
+
+
+<p>A release publishes each table-year under one stem in two formats, so
+<code>format</code> is an extension swap on an otherwise identical URL. Parquet pays
+off for <em>selective</em> reads and only there: the files are sorted by <code>EIN2</code>
+with non-overlapping row-group statistics, so an entity restriction prunes
+row groups and a column projection reads only the chunks it needs. Reading a
+whole table is no faster than reading the CSV. The gain is largest without a
+local cache (<code>panelize(cache = "none")</code>), where pruning turns a whole-file
+transfer into a few range requests.</p>
+<p>Parquet stores every efile column as a string. The read paths therefore cast
+numeric fields using the types declared in <a href="field_concordance.html">field_concordance</a>, rather than
+inferring them the way <code>fread()</code> and <code>read_csv_auto()</code> do. Declared types are
+the more reliable of the two, but they are not identical to the inferred
+ones: a parquet read returns <code>ORG_EIN</code> as text (preserving leading zeros),
+and leaves dates, timestamps, and checkboxes as source strings.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">data_source</span><span class="op">(</span><span class="op">)</span>                   <span class="co"># current release</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">data_source</span><span class="op">(</span><span class="op">)</span>                          <span class="co"># current release, CSV</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "v2_2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $format</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "csv"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $aliases</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                P00                                P01 </span>
@@ -109,12 +143,37 @@ local directory or a mirror, in which case <code>version</code> is recorded as <
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "data_source"</span>
-<span class="r-in"><span><span class="fu">data_source</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"v2_1"</span><span class="op">)</span>   <span class="co"># pin the previous release</span></span></span>
+<span class="r-in"><span><span class="fu">data_source</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"v2_1"</span><span class="op">)</span>          <span class="co"># pin the previous release</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_1/"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "v2_1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $format</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $aliases</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                P00                                P01 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                "F9-P00-T00-HEADER"               "F9-P01-T00-SUMMARY" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                P08                                P09 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               "F9-P08-T00-REVENUE"              "F9-P09-T00-EXPENSES" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                P10                                P11 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "F9-P10-T00-BALANCE-SHEET"                "F9-P11-T00-ASSETS" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                P12                                A01 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "F9-P12-T00-FINANCIAL-REPORTING" "SA-P01-T00-PUBLIC-CHARITY-STATUS" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "data_source"</span>
+<span class="r-in"><span><span class="fu">data_source</span><span class="op">(</span>format <span class="op">=</span> <span class="st">"parquet"</span><span class="op">)</span>        <span class="co"># same release, parquet files</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $root</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "v2_2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $format</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $aliases</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                P00                                P01 </span>
