@@ -96,7 +96,10 @@ panelize(
 
 - timeout:
 
-  Download timeout.
+  Minimum per-attempt download timeout in seconds. This is a budget for
+  a whole transfer rather than an idle timeout, so it is raised
+  automatically for large files; see
+  [`download_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/download_tables.md).
 
 - verbose:
 

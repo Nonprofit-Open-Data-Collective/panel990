@@ -34,7 +34,7 @@ manifest supplies one.
 
 - timeout:
 
-  Per-attempt timeout in seconds.
+  Minimum per-attempt timeout in seconds.
 
 - retry_max:
 
@@ -63,3 +63,12 @@ manifest supplies one.
 ## Value
 
 A list with `status`, `attempts`, `bytes`, `seconds`, and `error`.
+
+## Details
+
+The requested timeout is a floor, not a ceiling:
+[`.p990_timeout()`](https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_timeout.md)
+extends it for large files and never lowers a timeout the user raised
+globally. A `Content-Length` probe supplies the size when no manifest
+does, which also puts a real figure on the START line instead of
+"unknown size".

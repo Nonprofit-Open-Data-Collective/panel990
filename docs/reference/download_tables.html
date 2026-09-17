@@ -115,7 +115,8 @@ temporary directory.</p></dd>
 
 
 <dt id="arg-timeout">timeout<a class="anchor" aria-label="anchor" href="#arg-timeout"></a></dt>
-<dd><p>Download timeout in seconds, per attempt.</p></dd>
+<dd><p>Minimum per-attempt download timeout in seconds; raised
+automatically for large files. See the Timeouts section.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -131,6 +132,18 @@ table-year manifest, the <code>run_id</code>, and the per-run <code>log_file</co
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Every call writes its own log under <code>&lt;path&gt;/logs</code> named for the run, so
 repeated runs accumulate rather than overwrite. See <code><a href="retrieval_log.html">retrieval_log()</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="timeouts">Timeouts<a class="anchor" aria-label="anchor" href="#timeouts"></a></h2>
+
+
+<p>R's download timeout is a budget for an entire transfer, not a limit on how
+long the connection may stall, so a fixed value silently imposes a minimum
+transfer rate: the 2023 header table alone is 357 MB. <code>timeout</code> is therefore
+treated as a floor. Each file is given at least <code>timeout</code> seconds and at
+least as long as its <code>Content-Length</code> needs at 0.5 MB/s, and a timeout the
+user raised globally with <code>options(timeout =)</code> or
+<code>R_DEFAULT_INTERNET_TIMEOUT</code> is never lowered.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

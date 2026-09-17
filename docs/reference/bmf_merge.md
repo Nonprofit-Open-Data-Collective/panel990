@@ -58,7 +58,9 @@ bmf_merge(
 
 - timeout:
 
-  Download timeout in seconds, per attempt.
+  Minimum per-attempt download timeout in seconds; raised automatically
+  for large files. See
+  [`download_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/download_tables.md).
 
 - retry_max:
 

@@ -91,7 +91,7 @@ against <code>expected_bytes</code> when a published manifest supplies one.</p>
 
 
 <dt id="arg-timeout">timeout<a class="anchor" aria-label="anchor" href="#arg-timeout"></a></dt>
-<dd><p>Per-attempt timeout in seconds.</p></dd>
+<dd><p>Minimum per-attempt timeout in seconds.</p></dd>
 
 
 <dt id="arg-retry-max">retry_max<a class="anchor" aria-label="anchor" href="#arg-retry-max"></a></dt>
@@ -121,6 +121,13 @@ against <code>expected_bytes</code> when a published manifest supplies one.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list with <code>status</code>, <code>attempts</code>, <code>bytes</code>, <code>seconds</code>, and <code>error</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The requested timeout is a floor, not a ceiling: <code><a href="dot-p990_timeout.html">.p990_timeout()</a></code> extends
+it for large files and never lowers a timeout the user raised globally. A
+<code>Content-Length</code> probe supplies the size when no manifest does, which also
+puts a real figure on the START line instead of "unknown size".</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

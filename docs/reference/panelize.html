@@ -155,7 +155,9 @@ references a BMF field), <code>FALSE</code>, <code>TRUE</code> (the NCCS master)
 
 
 <dt id="arg-timeout">timeout<a class="anchor" aria-label="anchor" href="#arg-timeout"></a></dt>
-<dd><p>Download timeout.</p></dd>
+<dd><p>Minimum per-attempt download timeout in seconds. This is a
+budget for a whole transfer rather than an idle timeout, so it is raised
+automatically for large files; see <code><a href="download_tables.html">download_tables()</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

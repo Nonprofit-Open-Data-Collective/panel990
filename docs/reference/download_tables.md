@@ -58,7 +58,8 @@ download_tables(
 
 - timeout:
 
-  Download timeout in seconds, per attempt.
+  Minimum per-attempt download timeout in seconds; raised automatically
+  for large files. See the Timeouts section.
 
 - verbose:
 
@@ -74,3 +75,13 @@ table-year manifest, the `run_id`, and the per-run `log_file`.
 Every call writes its own log under `<path>/logs` named for the run, so
 repeated runs accumulate rather than overwrite. See
 [`retrieval_log()`](https://nonprofit-open-data-collective.github.io/panel990/reference/retrieval_log.md).
+
+## Timeouts
+
+R's download timeout is a budget for an entire transfer, not a limit on
+how long the connection may stall, so a fixed value silently imposes a
+minimum transfer rate: the 2023 header table alone is 357 MB. `timeout`
+is therefore treated as a floor. Each file is given at least `timeout`
+seconds and at least as long as its `Content-Length` needs at 0.5 MB/s,
+and a timeout the user raised globally with `options(timeout =)` or
+`R_DEFAULT_INTERNET_TIMEOUT` is never lowered.
