@@ -21,7 +21,7 @@
 
 \item{destination}{Local destination path.}
 
-\item{timeout}{Per-attempt timeout in seconds.}
+\item{timeout}{Minimum per-attempt timeout in seconds.}
 
 \item{retry_max}{Maximum attempts.}
 
@@ -43,5 +43,11 @@ Raises the download timeout for the duration of the call (the R default of
 60 seconds is far too short for multi-GB sources), retries with exponential
 backoff, deletes partial files between attempts, and verifies the byte count
 against \code{expected_bytes} when a published manifest supplies one.
+}
+\details{
+The requested timeout is a floor, not a ceiling: \code{.p990_timeout()} extends
+it for large files and never lowers a timeout the user raised globally. A
+\code{Content-Length} probe supplies the size when no manifest does, which also
+puts a real figure on the START line instead of "unknown size".
 }
 \keyword{internal}

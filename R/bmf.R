@@ -320,7 +320,8 @@ bmf_prepare <- function(
 #'   for a session temporary directory.
 #' @param path Cache directory used when `cache = "retain"`.
 #' @param overwrite Download again even when a cached file exists.
-#' @param timeout Download timeout in seconds, per attempt.
+#' @param timeout Minimum per-attempt download timeout in seconds; raised
+#'   automatically for large files. See [download_tables()].
 #' @param retry_max Maximum attempts per file.
 #' @param strict Error when requested fields are unavailable.
 #' @param verbose Print retrieval and preparation messages.
@@ -571,7 +572,8 @@ bmf_retrieve <- function(
 #' @param cache `"retain"` or `"temporary"`.
 #' @param path Cache directory used when `cache = "retain"`.
 #' @param overwrite Download again even when a cached file exists.
-#' @param timeout Download timeout in seconds, per attempt.
+#' @param timeout Minimum per-attempt download timeout in seconds; raised
+#'   automatically for large files. See [download_tables()].
 #' @param retry_max Maximum attempts per file.
 #' @param strict Error when requested fields are unavailable.
 #' @param verbose Print retrieval and join messages.

@@ -49,7 +49,9 @@
 #' @param collision Non-key collision policy.
 #' @param overwrite Replace cached files.
 #' @param retry_max Download attempts.
-#' @param timeout Download timeout.
+#' @param timeout Minimum per-attempt download timeout in seconds. This is a
+#'   budget for a whole transfer rather than an idle timeout, so it is raised
+#'   automatically for large files; see [download_tables()].
 #' @param verbose Print progress.
 #' @return A `panel` (see [as_panel()]) whose `data` is the stacked frame, whose
 #'   `sfw` carries the rules and provenance log ([manifest()]), plus
@@ -96,7 +98,8 @@ panelize <- function(
                      timeout, verbose)
   read_columns <- if (is.null(columns)) NULL else unique(c(keys, columns))
   reads <- if (backend == "duckdb")
-    read_tables_duckdb(downloads, columns = read_columns, filters = filters) else
+    read_tables_duckdb(downloads, columns = read_columns, filters = filters,
+                       timeout = timeout, retry_max = retry_max) else
       read_tables(downloads, columns = read_columns, filters = filters,
                   verbose = verbose)
   merged <- merge_tables(reads, keys = keys, include_many = include_many,

@@ -128,3 +128,35 @@ test_that("data_source resolves a release version or an explicit root", {
   expect_equal(local$root, tempdir())
   expect_error(data_source(version = "2.2"), "must look like")
 })
+
+test_that("the timeout budget scales with size and never lowers a user's own", {
+  # A fixed timeout is a budget for the whole transfer, so it must grow with
+  # the file: the unified BMF CSV is ~3.6 GB.
+  expect_equal(.p990_timeout(1800), 1800L)
+  expect_equal(.p990_timeout(1800, 357057848), 1800L)
+  expect_gt(.p990_timeout(1800, 3592971144), 1800L)
+  expect_equal(.p990_timeout(1800, 3592971144),
+               as.integer(ceiling(3592971144 / .P990_MIN_RATE)))
+
+  # ?download.file asks packages not to reduce a timeout the user raised with
+  # options(timeout =) or R_DEFAULT_INTERNET_TIMEOUT.
+  expect_equal(.p990_timeout(1800, NA_real_, 7200), 7200L)
+  expect_equal(.p990_timeout(1800, NA_real_, 60), 1800L)
+
+  # R multiplies the option by 1000 in int arithmetic, so it has to be capped.
+  expect_equal(.p990_timeout(1e12), .P990_MAX_TIMEOUT)
+  expect_equal(.p990_timeout(NA), 60L)
+})
+
+test_that("a local fetch leaves the session timeout untouched", {
+  source_root <- make_download_source()
+  cache <- tempfile("efile-cache-")
+  on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
+  old <- getOption("timeout")
+  on.exit(options(timeout = old), add = TRUE)
+
+  options(timeout = 7200)
+  download_tables(2022, "P00", source = data_source(source_root), path = cache,
+                  retry_max = 1, timeout = 1800, verbose = FALSE)
+  expect_equal(getOption("timeout"), 7200)
+})

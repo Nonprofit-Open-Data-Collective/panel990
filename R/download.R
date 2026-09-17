@@ -15,6 +15,15 @@
 #' Every call writes its own log under `<path>/logs` named for the run, so
 #' repeated runs accumulate rather than overwrite. See [retrieval_log()].
 #'
+#' @section Timeouts:
+#' R's download timeout is a budget for an entire transfer, not a limit on how
+#' long the connection may stall, so a fixed value silently imposes a minimum
+#' transfer rate: the 2023 header table alone is 357 MB. `timeout` is therefore
+#' treated as a floor. Each file is given at least `timeout` seconds and at
+#' least as long as its `Content-Length` needs at 0.5 MB/s, and a timeout the
+#' user raised globally with `options(timeout =)` or
+#' `R_DEFAULT_INTERNET_TIMEOUT` is never lowered.
+#'
 #' @param years Integer tax years.
 #' @param tables Aliases or literal canonical table names.
 #' @param source An [data_source()] configuration.
@@ -23,7 +32,8 @@
 #'   temporary directory.
 #' @param overwrite Download again even when a cached file exists.
 #' @param retry_max Maximum attempts per remote file.
-#' @param timeout Download timeout in seconds, per attempt.
+#' @param timeout Minimum per-attempt download timeout in seconds; raised
+#'   automatically for large files. See the Timeouts section.
 #' @param verbose Print per-file progress messages.
 #' @return An `download_result` containing successful file paths, a structured
 #'   table-year manifest, the `run_id`, and the per-run `log_file`.
