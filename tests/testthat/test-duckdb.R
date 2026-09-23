@@ -28,7 +28,7 @@ test_that("DuckDB and memory backends agree on local fixtures", {
   duck_cache <- tempfile("duck-cache-")
   on.exit(unlink(c(root, memory_cache, duck_cache), recursive = TRUE), add = TRUE)
   args <- list(
-    years = 2021:2022, tables = c("P00", "P01"), source = data_source(root),
+    years = 2021:2022, tables = c("P00", "P01"), source = data_source(root, format = "csv"),
     verbose = FALSE
   )
   memory <- do.call(panelize, c(args, list(path = memory_cache, backend = "memory")))
@@ -44,7 +44,7 @@ test_that("DuckDB dependency error is actionable", {
   root <- make_duckdb_source()
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
   expect_error(
-    panelize(tables = "P00", years = 2021, source = data_source(root),
+    panelize(tables = "P00", years = 2021, source = data_source(root, format = "csv"),
                 backend = "duckdb", cache = "none", verbose = FALSE),
     "requires.*DBI.*duckdb"
   )

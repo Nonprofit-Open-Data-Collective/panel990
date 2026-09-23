@@ -8,6 +8,22 @@ test_that("data_source carries and validates a source format", {
   expect_error(data_source(format = NA_character_), "must be one of")
 })
 
+test_that("the default format is parquet, falling back to CSV without a reader", {
+  local_mocked_bindings(.p990_parquet_engine = function() "duckdb")
+  expect_equal(.EFILE_FORMAT, "parquet")
+  expect_equal(data_source()$format, "parquet")
+
+  local_mocked_bindings(.p990_parquet_engine = function() NA_character_)
+  op <- options(panel990.format_fallback_said = NULL)
+  on.exit(options(op), add = TRUE)
+  expect_message(src <- data_source(), "No parquet reader found")
+  expect_equal(src$format, "csv")
+  # The fallback is announced once per session, not on every call.
+  expect_silent(data_source())
+  # An explicit request is honoured; it fails at read time, not here.
+  expect_equal(data_source(format = "parquet")$format, "parquet")
+})
+
 test_that("filenames and format detection follow the extension", {
   expect_equal(.efile_filename("F9-P00-T00-HEADER", 2011, "csv"),
                "F9-P00-T00-HEADER-2011.CSV")
@@ -30,6 +46,12 @@ test_that("declared efile types cover structural keys and form variables", {
   # Form variables come from field_concordance$data_type_simple.
   expect_equal(unname(types["F9_01_REV_TOT_CY"]), "numeric")
   expect_true(all(c("numeric", "checkbox", "text", "date") %in% types))
+  # Identifier fields are text whatever the MCF's simple type says: a numeric
+  # cast drops leading zeros (EINs, phones) or yields NA (PTINs, CUSIPs).
+  ids <- c("F9_00_ORG_EIN", "F9_00_ORG_PHONE", "F9_02_PREP_PERS_PTIN",
+           "SI_02_GRANT_US_ORG_EIN", "SK_01_BOND_ISSUE_CUSIP_NUM",
+           "SR_06_UNRLTD_ORG_PTR_EIN", "SD_07_INVEST_SEC_OTH_MOV")
+  expect_equal(unname(types[ids]), rep("text", length(ids)))
   # Restricting to requested fields drops unknown names rather than erroring.
   expect_equal(names(.p990_efile_types(c("EIN2", "NOT_A_FIELD"))), "EIN2")
 })
@@ -39,9 +61,11 @@ test_that("coercion casts declared numerics and leaves everything else alone", {
     EIN2 = "EIN-01-0078060", ORG_EIN = "010078060", TAX_YEAR = "2011",
     RETURN_TYPE = "990EZ", F9_01_REV_TOT_CY = "1234",
     TAX_PERIOD_END_DATE = "2011-12-31", USER_COLUMN = "7",
+    SR_06_UNRLTD_ORG_PTR_EIN = "042958931",
     stringsAsFactors = FALSE
   )
   out <- .p990_coerce(df)
+  expect_equal(out$SR_06_UNRLTD_ORG_PTR_EIN, "042958931")
   expect_type(out$TAX_YEAR, "integer")
   expect_type(out$F9_01_REV_TOT_CY, "double")
   expect_equal(out$F9_01_REV_TOT_CY, 1234)
@@ -224,7 +248,7 @@ test_that("cache = 'none' reaches a merged panel", {
   }
 
   panel <- panelize(tables = c("P00", "P01"), years = 2021:2022,
-                    source = data_source(root), backend = "duckdb",
+                    source = data_source(root, format = "csv"), backend = "duckdb",
                     cache = "none", bmf = FALSE, verbose = FALSE)
   expect_equal(nrow(panel_data(panel)), 2L)
   expect_true(all(panel$download_manifest$status == "virtual"))

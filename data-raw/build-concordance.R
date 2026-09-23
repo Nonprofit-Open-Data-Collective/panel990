@@ -74,6 +74,17 @@ mcf$.current <- is_true(mcf$current_version)
 mcf$data_type_simple[is.na(mcf$data_type_simple) | mcf$data_type_simple == ""] <-
   "text"  # ExplanationType blanks -> text
 
+# The MCF marks some identifier and code fields numeric, but their XSD types
+# are strings: EINs and phone numbers carry leading zeros, PTINs and CUSIPs are
+# alphanumeric, and the Schedule D *_MOV fields hold a valuation-method label.
+# A numeric cast would drop the zeros or turn the value into NA, so a variable
+# whose resolved XSD type is one of these is text, whatever data_type_simple
+# says. Applied per variable rather than per row: older schema versions often
+# carry no XSD type, and overriding row by row would leave those rows numeric
+# and report a spurious type_conflict.
+identifier_xsd <- c("EINType", "PhoneNumberType", "PTINType", "CUSIPNumberType",
+                    "AlphaNumericType", "StringType", "LineExplanationType")
+
 pick <- function(values, priority) {
   values <- values[!is.na(values) & values != ""]
   if (!length(values)) return(NA_character_)
@@ -94,6 +105,7 @@ rows <- lapply(vars, function(v) {
   scope <- xpath_form_scope(sub_all$xpath, scope_mcf)
   dtype <- pick(sub$data_type_simple, type_priority)
   xsd   <- pick(sub$data_type_xsd,    character())
+  if (!is.na(xsd) && xsd %in% identifier_xsd) dtype <- "text"
   is_money <- !is.na(dtype) && dtype == "numeric" &&
     !is.na(xsd) && grepl(money_xsd_pattern, xsd, ignore.case = TRUE)
   tables_all <- sort(unique(sub$rdb_table[!is.na(sub$rdb_table) & sub$rdb_table != ""]))

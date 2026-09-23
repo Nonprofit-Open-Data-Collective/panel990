@@ -2,7 +2,7 @@
 % Please edit documentation in R/format.R
 \name{.p990_parquet_con}
 \alias{.p990_parquet_con}
-\title{Open a DuckDB connection for parquet reads}
+\title{Open a DuckDB connection without duckdb's startup notice}
 \usage{
 .p990_parquet_con()
 }
@@ -10,7 +10,7 @@
 A DBI connection. The caller is responsible for disconnecting.
 }
 \description{
-A read loop should open one connection and pass it down rather than let each
+Used by every DuckDB read, parquet or CSV. A read loop should open one connection and pass it down rather than let each
 file create its own: starting an instance per table-year repeats the setup
 cost and prints duckdb's extension-directory notice once per file.
 }

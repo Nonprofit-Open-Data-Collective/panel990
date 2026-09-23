@@ -42,9 +42,9 @@ An \code{download_result} containing successful file paths, a structured
 table-year manifest, the \code{run_id}, and the per-run \code{log_file}.
 }
 \description{
-The file format follows \code{source$format}, so a cache built from
-\code{data_source(format = "parquet")} holds parquet and one built from the
-default holds CSV. Both are read by \code{\link[=read_tables]{read_tables()}} and
+The file format follows \code{source$format}, so a cache built from the default
+\code{\link[=data_source]{data_source()}} holds parquet and one built from
+\code{data_source(format = "csv")} holds CSV. Both are read by \code{\link[=read_tables]{read_tables()}} and
 \code{\link[=read_tables_duckdb]{read_tables_duckdb()}}, which detect the format from the extension, so a
 cache may hold either or both.
 }

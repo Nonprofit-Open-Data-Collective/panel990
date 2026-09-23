@@ -39,7 +39,7 @@ test_that("local acquisition records downloads, reuse, and unavailable files", {
   source_root <- make_download_source()
   cache <- tempfile("efile-cache-")
   on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
-  source <- data_source(source_root)
+  source <- data_source(source_root, format = "csv")
 
   first <- download_tables(2022, c("P00", "P01"), source = source,
                           path = cache, retry_max = 1, verbose = FALSE)
@@ -57,7 +57,7 @@ test_that("overwrite replaces an existing cached resource", {
   source_root <- make_download_source()
   cache <- tempfile("efile-cache-")
   on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
-  source <- data_source(source_root)
+  source <- data_source(source_root, format = "csv")
   download_tables(2022, "P00", source = source, path = cache, verbose = FALSE)
   out <- download_tables(2022, "P00", source = source, path = cache,
                         overwrite = TRUE, verbose = FALSE)
@@ -67,7 +67,7 @@ test_that("overwrite replaces an existing cached resource", {
 test_that("temporary cache returns readable paths", {
   source_root <- make_download_source()
   on.exit(unlink(source_root, recursive = TRUE), add = TRUE)
-  out <- download_tables(2022, "P00", source = data_source(source_root),
+  out <- download_tables(2022, "P00", source = data_source(source_root, format = "csv"),
                         cache = "temporary", verbose = FALSE)
   expect_true(file.exists(out$files))
   expect_true(file.exists(out$log_file))
@@ -77,7 +77,7 @@ test_that("each run writes its own log and appends to the run index", {
   source_root <- make_download_source()
   cache <- tempfile("efile-cache-")
   on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
-  source <- data_source(source_root)
+  source <- data_source(source_root, format = "csv")
 
   first <- download_tables(2022, "P00", source = source, path = cache,
                            verbose = FALSE)
@@ -109,7 +109,7 @@ test_that("a failing fetch retries up to retry_max and records the attempts", {
   cache <- tempfile("efile-cache-")
   on.exit(unlink(c(source_root, cache), recursive = TRUE), add = TRUE)
 
-  out <- download_tables(2022, "P01", source = data_source(source_root),
+  out <- download_tables(2022, "P01", source = data_source(source_root, format = "csv"),
                          path = cache, retry_max = 3L, verbose = FALSE)
 
   expect_equal(out$manifest$status, "failed")
@@ -156,7 +156,7 @@ test_that("a local fetch leaves the session timeout untouched", {
   on.exit(options(timeout = old), add = TRUE)
 
   options(timeout = 7200)
-  download_tables(2022, "P00", source = data_source(source_root), path = cache,
+  download_tables(2022, "P00", source = data_source(source_root, format = "csv"), path = cache,
                   retry_max = 1, timeout = 1800, verbose = FALSE)
   expect_equal(getOption("timeout"), 7200)
 })

@@ -88,7 +88,7 @@ read_tables_duckdb <- function(downloads, columns = NULL, filters = NULL,
   if (!requireNamespace("DBI", quietly = TRUE) ||
       !requireNamespace("duckdb", quietly = TRUE))
     stop("The DuckDB backend requires the suggested packages `DBI` and `duckdb`.")
-  con <- DBI::dbConnect(duckdb::duckdb())
+  con <- .p990_parquet_con()
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
   if (any(grepl("^https?://", downloads$manifest$path, ignore.case = TRUE))) {
     DBI::dbExecute(con, "INSTALL httpfs")

@@ -33,9 +33,9 @@
 #' `TAX_YEAR`, record `OBJECTID`).
 #'
 #' @section Reading parquet:
-#' The source format comes from `source`, so `data_source(format = "parquet")`
-#' builds the same panel from the parquet release. Parquet only pays off for
-#' selective reads, and the frame's row and column restrictions are what make a
+#' The source format comes from `source`: the default [data_source()] reads the
+#' parquet release, and `data_source(format = "csv")` builds the same panel
+#' from the CSV files. Parquet pays off most for selective reads, and the frame's row and column restrictions are what make a
 #' read selective -- so the combination that matters is a frame with an entity
 #' subset or a `select` rule, `backend = "duckdb"`, `cache = "none"`, and
 #' `unique_rows = FALSE`. See [data_source()] for the format's type contract

@@ -11,7 +11,7 @@ a local directory or a mirror, in which case `version` is recorded as
 data_source(
   root = NULL,
   version = .EFILE_VERSION,
-  format = .EFILE_FORMAT,
+  format = .efile_default_format(),
   aliases = .EFILE_ALIASES
 )
 ```
@@ -30,8 +30,8 @@ data_source(
 
 - format:
 
-  Source file format: `"csv"` (the current default) or `"parquet"`. See
-  the Source format section.
+  Source file format: `"parquet"` (the default, when a parquet reader is
+  installed) or `"csv"`. See the Source format section.
 
 - aliases:
 
@@ -45,28 +45,32 @@ An `data_source` object carrying `root`, `version`, `format`, and
 ## Source format
 
 A release publishes each table-year under one stem in two formats, so
-`format` is an extension swap on an otherwise identical URL. Parquet
-pays off for *selective* reads and only there: the files are sorted by
-`EIN2` with non-overlapping row-group statistics, so an entity
-restriction prunes row groups and a column projection reads only the
-chunks it needs. Reading a whole table is no faster than reading the
-CSV. The gain is largest without a local cache
-(`panelize(cache = "none")`), where pruning turns a whole-file transfer
-into a few range requests.
+`format` is an extension swap on an otherwise identical URL. Parquet is
+the default: it is an eighth of the bytes to transfer, and it pays off
+most for *selective* reads, because the files are sorted by `EIN2` with
+non-overlapping row-group statistics, so an entity restriction prunes
+row groups and a column projection reads only the chunks it needs.
+Reading a whole table is no faster than reading the CSV. The gain is
+largest without a local cache (`panelize(cache = "none")`), where
+pruning turns a whole-file transfer into a few range requests.
 
 Parquet stores every efile column as a string. The read paths therefore
 cast numeric fields using the types declared in
 [field_concordance](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.md),
 rather than inferring them the way `fread()` and `read_csv_auto()` do.
 Declared types are the more reliable of the two, but they are not
-identical to the inferred ones: a parquet read returns `ORG_EIN` as text
-(preserving leading zeros), and leaves dates, timestamps, and checkboxes
-as source strings.
+identical to the inferred ones: a parquet read returns `ORG_EIN` and the
+other EIN, phone, and code fields as text (preserving leading zeros),
+and leaves dates, timestamps, and checkboxes as source strings.
+
+Reading parquet needs the suggested package `duckdb` or `arrow`. When
+neither is installed the default falls back to `"csv"` with a message;
+an explicit `format = "parquet"` is kept and fails at read time instead.
 
 ## Examples
 
 ``` r
-data_source()                          # current release, CSV
+data_source()                          # current release, parquet
 #> $root
 #> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"
 #> 
@@ -74,7 +78,7 @@ data_source()                          # current release, CSV
 #> [1] "v2_2"
 #> 
 #> $format
-#> [1] "csv"
+#> [1] "parquet"
 #> 
 #> $aliases
 #>                                P00                                P01 
@@ -96,7 +100,7 @@ data_source(version = "v2_1")          # pin the previous release
 #> [1] "v2_1"
 #> 
 #> $format
-#> [1] "csv"
+#> [1] "parquet"
 #> 
 #> $aliases
 #>                                P00                                P01 
@@ -110,7 +114,7 @@ data_source(version = "v2_1")          # pin the previous release
 #> 
 #> attr(,"class")
 #> [1] "data_source"
-data_source(format = "parquet")        # same release, parquet files
+data_source(format = "csv")            # same release, CSV files
 #> $root
 #> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"
 #> 
@@ -118,7 +122,7 @@ data_source(format = "parquet")        # same release, parquet files
 #> [1] "v2_2"
 #> 
 #> $format
-#> [1] "parquet"
+#> [1] "csv"
 #> 
 #> $aliases
 #>                                P00                                P01 
