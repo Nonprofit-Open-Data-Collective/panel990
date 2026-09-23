@@ -13,6 +13,18 @@ Appends a typed rule, or replaces the rule with the same `name`
 
   `subset` – a vector of entity ids to keep (captured).
 
+- `require`:
+
+  a cross-year condition on the *source*, executed by
+  [`resolve_frame()`](https://nonprofit-open-data-collective.github.io/panel990/reference/resolve_frame.md)
+  rather than
+  [`apply_sfw()`](https://nonprofit-open-data-collective.github.io/panel990/reference/apply_sfw.md).
+  `table` (default `"P00"`), `present_in` (`"all"` for a balanced frame,
+  `"any"`, or a minimum year count), and optionally a per-filing
+  predicate as `column`/`op`/`values` plus `holds` (`"every"` year, the
+  default, or `"any"` year). An `expr` string is rejected: it cannot be
+  pushed to the source.
+
 - `label`:
 
   `map` (an id-named vector) or `from` (a data frame) with `keys` and

@@ -27,13 +27,13 @@ merge_tables <- function(
   if (!inherits(reads, "read_result"))
     stop("`reads` must be returned by read_tables().")
   manifest <- reads$manifest
-  years <- sort(unique(manifest$year[manifest$status %in% c("downloaded", "reused")]))
+  years <- sort(unique(manifest$year[manifest$status %in% .EFILE_READABLE]))
   panels <- list()
   joins <- list()
   j <- 0L
   for (year in years) {
     rows <- which(manifest$year == year &
-                    manifest$status %in% c("downloaded", "reused"))
+                    manifest$status %in% .EFILE_READABLE)
     if (!length(rows)) next
     selected <- rows[include_many |
       manifest$cardinality[rows] == "1x1"]

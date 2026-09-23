@@ -11,7 +11,9 @@
   tables](https://nonprofit-open-data-collective.github.io/panel990/articles/downloading-tables.md):
 - [2. The sampling
   framework](https://nonprofit-open-data-collective.github.io/panel990/articles/sampling-framework.md):
-- [3. Panels and panel
+- [3. Cross-year requirements on the
+  source](https://nonprofit-open-data-collective.github.io/panel990/articles/source-requirements.md):
+- [4. Panels and panel
   slices](https://nonprofit-open-data-collective.github.io/panel990/articles/panels-and-slices.md):
 
 ### Cleaning panels

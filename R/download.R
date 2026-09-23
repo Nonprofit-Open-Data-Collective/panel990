@@ -4,7 +4,13 @@
   else file.path(root, filename)
 }
 
-#' Download or reuse efile table CSV files
+#' Download or reuse efile table files
+#'
+#' The file format follows `source$format`, so a cache built from
+#' `data_source(format = "parquet")` holds parquet and one built from the
+#' default holds CSV. Both are read by [read_tables()] and
+#' [read_tables_duckdb()], which detect the format from the extension, so a
+#' cache may hold either or both.
 #'
 #' Each file is fetched by [.p990_fetch()], which raises the download timeout,
 #' retries with exponential backoff, and discards partial files between
@@ -69,7 +75,7 @@ download_tables <- function(
   row <- 0L
   for (year in years) for (i in seq_len(nrow(resolved))) {
     table <- resolved$table[[i]]
-    filename <- paste0(table, "-", year, ".CSV")
+    filename <- .efile_filename(table, year, source$format)
     destination <- file.path(base_path, as.character(year), filename)
     resource <- .efile_resource(source$root, filename)
     row <- row + 1L

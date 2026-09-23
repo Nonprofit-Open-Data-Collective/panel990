@@ -179,18 +179,39 @@
 #' published release by `version`, or pass `root` explicitly to read from a
 #' local directory or a mirror, in which case `version` is recorded as `NA`.
 #'
-#' @param root Base URL or local directory containing table-year CSV files.
-#'   `NULL` (default) builds the URL for `version`.
+#' @section Source format:
+#' A release publishes each table-year under one stem in two formats, so
+#' `format` is an extension swap on an otherwise identical URL. Parquet pays
+#' off for *selective* reads and only there: the files are sorted by `EIN2`
+#' with non-overlapping row-group statistics, so an entity restriction prunes
+#' row groups and a column projection reads only the chunks it needs. Reading a
+#' whole table is no faster than reading the CSV. The gain is largest without a
+#' local cache (`panelize(cache = "none")`), where pruning turns a whole-file
+#' transfer into a few range requests.
+#'
+#' Parquet stores every efile column as a string. The read paths therefore cast
+#' numeric fields using the types declared in [field_concordance], rather than
+#' inferring them the way `fread()` and `read_csv_auto()` do. Declared types are
+#' the more reliable of the two, but they are not identical to the inferred
+#' ones: a parquet read returns `ORG_EIN` as text (preserving leading zeros),
+#' and leaves dates, timestamps, and checkboxes as source strings.
+#'
+#' @param root Base URL or local directory containing table-year files. `NULL`
+#'   (default) builds the URL for `version`.
 #' @param version Published release, such as `"v2_2"` (the current default) or
 #'   `"v2_1"`. Ignored when `root` is supplied.
+#' @param format Source file format: `"csv"` (the current default) or
+#'   `"parquet"`. See the Source format section.
 #' @param aliases Named character vector mapping short aliases to table names.
-#' @return An `data_source` object carrying `root`, `version`, and `aliases`.
+#' @return An `data_source` object carrying `root`, `version`, `format`, and
+#'   `aliases`.
 #' @examples
-#' data_source()                   # current release
-#' data_source(version = "v2_1")   # pin the previous release
+#' data_source()                          # current release, CSV
+#' data_source(version = "v2_1")          # pin the previous release
+#' data_source(format = "parquet")        # same release, parquet files
 #' @export
 data_source <- function(root = NULL, version = .EFILE_VERSION,
-                        aliases = .EFILE_ALIASES) {
+                        format = .EFILE_FORMAT, aliases = .EFILE_ALIASES) {
   if (is.null(root)) {
     if (!is.character(version) || length(version) != 1L || is.na(version) ||
         !nzchar(version))
@@ -206,7 +227,8 @@ data_source <- function(root = NULL, version = .EFILE_VERSION,
   }
   if (!is.character(aliases) || is.null(names(aliases)) || any(!nzchar(names(aliases))))
     stop("`aliases` must be a named character vector.")
-  structure(list(root = root, version = version, aliases = aliases),
+  structure(list(root = root, version = version,
+                 format = .efile_format(format), aliases = aliases),
             class = "data_source")
 }
 

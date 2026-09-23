@@ -1,10 +1,10 @@
 # Download, filter, merge, append BMF, and stack a panel
 
 The workhorse acquisition recipe: resolve tables and years, download (or
-virtually scan) the CSVs, project columns and push the sample frame's
-entity restriction down to read-time, merge the tables within each year,
-stack the years, optionally append BMF organization traits, then apply
-the frame's rules. Returns a
+virtually scan) the source files, project columns and push the sample
+frame's entity restriction down to read-time, merge the tables within
+each year, stack the years, optionally append BMF organization traits,
+then apply the frame's rules. Returns a
 [panel](https://nonprofit-open-data-collective.github.io/panel990/reference/as_panel.md)
 bundling the data with the frame and a provenance log.
 
@@ -24,6 +24,7 @@ panelize(
   columns = NULL,
   include_many = FALSE,
   collision = c("error", "prefix"),
+  unique_rows = TRUE,
   overwrite = FALSE,
   retry_max = 3L,
   timeout = 1800,
@@ -86,6 +87,13 @@ panelize(
 
   Non-key collision policy.
 
+- unique_rows:
+
+  Remove exact duplicate source rows during the read. `TRUE` (default)
+  preserves the historical behaviour but prevents the column projection
+  from being pushed into a parquet scan; see
+  [`read_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables.md).
+
 - overwrite:
 
   Replace cached files.
@@ -118,3 +126,17 @@ plus download/table/join manifests and BMF diagnostics.
 
 Keys are set automatically from the efile schema (entity `EIN2`, time
 `TAX_YEAR`, record `OBJECTID`).
+
+## Reading parquet
+
+The source format comes from `source`, so
+`data_source(format = "parquet")` builds the same panel from the parquet
+release. Parquet only pays off for selective reads, and the frame's row
+and column restrictions are what make a read selective – so the
+combination that matters is a frame with an entity subset or a `select`
+rule, `backend = "duckdb"`, `cache = "none"`, and `unique_rows = FALSE`.
+See
+[`data_source()`](https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.md)
+for the format's type contract and
+[`read_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables.md)
+for why deduplication blocks the projection.

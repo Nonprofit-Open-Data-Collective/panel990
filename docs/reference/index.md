@@ -26,6 +26,8 @@ to, or validate it against, any data frame.
   : Classify panel membership and store it as label rules
 - [`apply_sfw()`](https://nonprofit-open-data-collective.github.io/panel990/reference/apply_sfw.md)
   : Apply a sample frame to a data frame
+- [`resolve_frame()`](https://nonprofit-open-data-collective.github.io/panel990/reference/resolve_frame.md)
+  : Resolve a sample frame's cross-year requirements against the source
 - [`apply_check()`](https://nonprofit-open-data-collective.github.io/panel990/reference/apply_check.md)
   : Run a sample frame's check rules
 - [`views()`](https://nonprofit-open-data-collective.github.io/panel990/reference/views.md)
@@ -61,9 +63,9 @@ Download, read, merge, and stack efile tables into a panel.
 - [`resolve_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/resolve_tables.md)
   : Resolve aliases and literal efile table names
 - [`download_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/download_tables.md)
-  : Download or reuse efile table CSV files
+  : Download or reuse efile table files
 - [`read_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables.md)
-  : Read acquired efile CSV tables
+  : Read acquired efile tables
 - [`merge_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/merge_tables.md)
   : Merge efile tables using explicit filing keys
 - [`retrieval_log()`](https://nonprofit-open-data-collective.github.io/panel990/reference/retrieval_log.md)

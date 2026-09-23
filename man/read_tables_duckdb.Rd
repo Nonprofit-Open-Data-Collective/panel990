@@ -2,7 +2,7 @@
 % Please edit documentation in R/duckdb.R
 \name{read_tables_duckdb}
 \alias{read_tables_duckdb}
-\title{Read efile CSVs through DuckDB}
+\title{Read efile tables through DuckDB}
 \usage{
 read_tables_duckdb(
   downloads,
@@ -28,12 +28,26 @@ read_tables_duckdb(
 }
 \description{
 Internal backend used by \code{\link[=panelize]{panelize()}}. Filters and projection are pushed
-into DuckDB before results are collected into R.
+into DuckDB before results are collected into R. The scan expression follows
+the file extension, so a CSV and a parquet cache read through the same code
+path; see \code{.efile_duckdb_scan()}.
 }
 \details{
-Under \code{cache = "none"} the scan reads the CSVs straight from S3 through the
-httpfs extension, which has its own HTTP settings and never sees R's
-\code{timeout} option. \code{timeout} and \code{retry_max} are forwarded to httpfs so the
-virtual scan honours the same limits as a cached download.
+Under \code{cache = "none"} the scan reads straight from S3 through the httpfs
+extension, which has its own HTTP settings and never sees R's \code{timeout}
+option. \code{timeout} and \code{retry_max} are forwarded to httpfs so the virtual
+scan honours the same limits as a cached download. This is where parquet
+earns its keep: projection and an \code{EIN2} restriction become column-chunk and
+row-group range requests instead of a whole-file transfer.
 }
+\section{Deduplication and projection}{
+
+\code{unique_rows = TRUE} compiles to \verb{SELECT DISTINCT *}, which needs every
+column and therefore prevents the projection from being pushed into the
+scan. On a parquet source that is the difference between reading the columns
+you asked for and reading all of them. The efile build emits no exact
+duplicate rows, so \code{unique_rows = FALSE} is the faster and equivalent
+choice on a current release.
+}
+
 \keyword{internal}

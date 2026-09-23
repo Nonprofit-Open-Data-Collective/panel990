@@ -7,6 +7,8 @@
 #  The sfw is just a registry of rules. Each rule is a typed record; the engine
 #  knows how to execute each type. Rule types:
 #    subset  (row)     restrict to a captured set of entity ids
+#    require (row)     a cross-year condition on the SOURCE; resolve_frame()
+#                      runs it and lowers the answer into a `subset` rule
 #    filter  (row)     structured {column, op, values} OR an {expr} string
 #    dedup   (row)     one filing per entity x time (via deduplicate())
 #    label   (derived) an id -> value map; filterable like a column
@@ -21,7 +23,7 @@
 #  Value semantics: every mutator returns a NEW frame and re-stamps `updated`.
 # =============================================================================
 
-.SFW_RULE_TYPES <- c("subset", "filter", "dedup", "label", "refresh",
+.SFW_RULE_TYPES <- c("subset", "require", "filter", "dedup", "label", "refresh",
                      "select", "check", "view", "function")
 .SFW_OPS <- c("in", "not_in", "==", "!=", ">", ">=", "<", "<=",
               "between", "is_true", "is_false")
@@ -106,6 +108,41 @@
     if (length(values) != 1L) stop("`", op, "` needs length-1 `values`.")
   } else if (is.null(values) || !length(values)) stop("`", op, "` needs `values`.")
   list(column = column, op = op, values = values, expr = NULL)
+}
+
+# A `require` rule states a condition that spans table-years, so unlike every
+# other row rule it cannot be evaluated against a single data frame: whether an
+# entity filed in all three years is a fact about the source, not about the
+# rows in hand. resolve_frame() executes it and lowers the answer into a
+# `subset` rule, which apply_sfw() already knows how to run.
+.SFW_PRESENT <- c("all", "any")
+.SFW_HOLDS <- c("every", "any")
+
+.sfw_require_payload <- function(dots) {
+  present_in <- dots$present_in %||% "all"
+  if (is.character(present_in)) {
+    present_in <- tolower(trimws(present_in))
+    if (length(present_in) != 1L || !present_in %in% .SFW_PRESENT)
+      stop("`present_in` must be \"all\", \"any\", or a minimum year count.")
+  } else {
+    present_in <- suppressWarnings(as.integer(present_in))
+    if (length(present_in) != 1L || is.na(present_in) || present_in < 1L)
+      stop("`present_in` must be \"all\", \"any\", or a minimum year count.")
+  }
+  # The predicate is optional: presence alone is a complete condition.
+  predicate <- NULL
+  if (!is.null(dots$column) || !is.null(dots$expr))
+    predicate <- .sfw_filter_payload(dots)
+  holds <- tolower(trimws(dots$holds %||% "every"))
+  if (length(holds) != 1L || !holds %in% .SFW_HOLDS)
+    stop("`holds` must be \"every\" (true in every year) or \"any\".")
+  if (!is.null(predicate) && !is.null(predicate$expr))
+    stop("`require` rules need a structured `column`/`op`/`values` predicate; ",
+         "an `expr` string cannot be pushed to the source.")
+  list(table = dots$table %||% "P00", present_in = present_in,
+       column = predicate$column %||% NA_character_,
+       op = predicate$op %||% NA_character_,
+       values = predicate$values, holds = holds)
 }
 
 .sfw_label_payload <- function(dots) {
@@ -232,6 +269,12 @@ get_keys <- function(sfw) {
 #'     `expr` (a predicate string). `op` in `in`, `not_in`, `==`, `!=`, `>`,
 #'     `>=`, `<`, `<=`, `between`, `is_true`, `is_false`.}
 #'   \item{`subset`}{`subset` -- a vector of entity ids to keep (captured).}
+#'   \item{`require`}{a cross-year condition on the *source*, executed by
+#'     [resolve_frame()] rather than [apply_sfw()]. `table` (default `"P00"`),
+#'     `present_in` (`"all"` for a balanced frame, `"any"`, or a minimum year
+#'     count), and optionally a per-filing predicate as `column`/`op`/`values`
+#'     plus `holds` (`"every"` year, the default, or `"any"` year). An `expr`
+#'     string is rejected: it cannot be pushed to the source.}
 #'   \item{`label`}{`map` (an id-named vector) or `from` (a data frame) with
 #'     `keys` and `label` column names; `label` also names the derived column.}
 #'   \item{`select`}{`vars`, `scope`, `tables`, `drop` (resolved via
@@ -261,6 +304,7 @@ add_rule <- function(sfw, name = NULL, type, ...) {
     check  = .sfw_filter_payload(dots),
     subset = list(ids = as.character(dots$subset %||% dots$ids %||%
                                        stop("subset rule needs `subset`."))),
+    require = .sfw_require_payload(dots),
     label  = .sfw_label_payload(dots),
     select = Filter(Negate(is.null),
                     list(vars = dots$vars, scope = dots$scope,
@@ -325,6 +369,11 @@ remove_rule <- function(sfw, name) update_rule(sfw, name, drop = TRUE)
     filter = , check = if (!is.null(r$expr)) paste0("expr: ", r$expr) else
       paste(r$column, r$op, paste(utils::head(as.character(r$values), 4L), collapse = ",")),
     subset = paste0(length(r$ids), " ids"),
+    require = paste(c(
+      paste0(r$table, ": present in ", r$present_in),
+      if (!is.na(r$column)) paste0(r$holds, " year ", r$column, " ", r$op, " ",
+                                   paste(utils::head(as.character(r$values), 4L),
+                                         collapse = ","))), collapse = "; "),
     label  = paste0("-> ", r$column, " (", length(r$map), " ids)"),
     select = paste(c(
       if (!is.null(r$scope)) paste0("scope=", paste(r$scope, collapse = ",")),

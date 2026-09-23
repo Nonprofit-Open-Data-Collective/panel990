@@ -1,0 +1,217 @@
+---
+title: "3. Cross-year requirements on the source"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{3. Cross-year requirements on the source}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+Every rule in the previous tutorial is a statement about rows you already
+have. `state = "GA"` can be checked one row at a time; so can
+`filter_501c = "3"`. `apply_sfw()` evaluates them against a data frame and
+that is the end of it.
+
+Some sampling criteria are not like that:
+
+> Which organizations filed in **all three** of 2019, 2020 and 2021?
+
+> Which were **990EZ filers every year**, never switching to the full 990?
+
+Neither question can be answered from a single row, or even from a single
+table-year. They are facts about the *source*. Worse, the obvious way to
+answer them — build the panel, then filter it — reads exactly the data you
+were hoping to avoid reading. You download three years of every column to
+discover that you wanted 5,560 organizations out of 241,552.
+
+A `require` rule states such a condition, and `resolve_frame()` answers it
+against the source before the real read happens.
+
+## Declaring a requirement
+
+`require` is a rule type like any other, so it goes on the frame the same way:
+
+```{r}
+frame <- create_sfw("balanced 990EZ filers", record = "OBJECTID")
+frame <- add_rule(frame, "balanced", type = "require", present_in = "all")
+frame <- add_rule(frame, "always_ez", type = "require", present_in = "any",
+                  column = "RETURN_TYPE", op = "in", values = "990EZ",
+                  holds = "every")
+get_rules(frame)
+```
+
+Two arguments carry the cross-year meaning:
+
+`present_in` — how many of the requested years the organization must appear in.
+`"all"` (the default) gives a balanced frame, `"any"` imposes no presence
+requirement, and an integer sets a minimum: `present_in = 2` accepts anything
+observed in at least two years.
+
+`holds` — how a per-filing predicate folds over the years. `"every"` (the
+default) requires `RETURN_TYPE == "990EZ"` in *every* year observed; `"any"`
+requires it in at least one. The predicate itself is the ordinary structured
+`column`/`op`/`values` triple used by `filter` rules.
+
+The two combine, so `present_in` and `holds` are independent choices:
+
+| `present_in` | `holds` | Reads as |
+|---|---|---|
+| `"all"` | `"every"` | in every year, and a 990EZ filer in each |
+| `"any"` | `"every"` | a 990EZ filer in every year it *did* file |
+| `"all"` | `"any"` | in every year, and a 990EZ filer at least once |
+
+An `expr` string is refused rather than quietly ignored, because an opaque
+predicate cannot be pushed to the source:
+
+```{r, error = TRUE}
+add_rule(frame, type = "require", expr = "RETURN_TYPE == '990EZ'")
+```
+
+## Resolving against the source
+
+`resolve_frame()` executes the requirements and rewrites the frame:
+
+```{r, eval = FALSE}
+frame <- resolve_frame(frame, years = 2009:2011,
+                       source = data_source(format = "parquet"))
+#> <- REQUIRE  balanced [F9-P00-T00-HEADER x 3 year(s)]: 33,946 EIN2 in 0.04s
+#> <- REQUIRE  always_ez [F9-P00-T00-HEADER x 3 year(s)]: 94,422 EIN2 in 0.06s
+#> resolve_frame: 5,560 EIN2 satisfy 2 requirement(s).
+```
+
+Multiple requirements intersect: an organization must satisfy all of them.
+33,946 organizations filed in all three years, and 94,422 never filed anything
+other than a 990EZ — 5,560 satisfy both.
+
+What comes back is an ordinary frame whose sample is now concrete:
+
+```{r, eval = FALSE}
+get_rules(frame)
+#>        name    type active                                               detail
+#> 1  balanced require  FALSE                                  P00: present in all
+#> 2 always_ez require  FALSE P00: present in any; every year RETURN_TYPE in 990EZ
+#> 3  resolved  subset   TRUE                                             5560 ids
+```
+
+The requirements are **deactivated, not dropped**, and the answer arrives as a
+captured `subset` rule. That is the whole design:
+
+- The frame stays declarative and source-agnostic. `apply_sfw()` never learns
+  about years or files — it only ever sees a `subset`, which it already knows
+  how to execute against any data frame.
+- The sample is reproducible and auditable. The ids are captured by value, and
+  the frame still records the *question* next to the answer.
+
+`manifest()` logs the resolution, so a panel built this way explains where its
+sample came from:
+
+```{r, eval = FALSE}
+manifest(frame)
+#>                step                                               detail rows_after
+#> 1  require: balanced                                  P00: present in all      33946
+#> 2 require: always_ez P00: present in any; every year RETURN_TYPE in 990EZ      94422
+#> 3      resolve_frame                         2 requirement(s) intersected       5560
+```
+
+## Why it is cheap
+
+Resolution reads the entity key, the time key, and any column a predicate
+names — nothing else. The financial columns are never touched, because the
+question does not involve them.
+
+On a parquet release that is two or three columns of one table. Answering
+"who filed in all three years" over the 2009–2011 header table reads **1.4 MB**
+of `EIN2` and `TAX_YEAR`. The same three files as CSV are **273 MB**, and a CSV
+scan has to read all of it because a text file has no column boundaries to
+seek to.
+
+```{r, eval = FALSE}
+# Both resolve to the same 5,560 ids.
+data_source(format = "parquet")   # 0.17s
+data_source(format = "csv")       # 1.10s locally, far worse over the network
+```
+
+The requirement is answered the same way on either format — `resolve_frame()`
+works on a CSV release too. Parquet just makes it nearly free, and the gap
+widens without a local cache, where column pruning becomes a handful of HTTP
+range requests instead of a whole-file transfer. See `data_source()` for the
+format's type contract.
+
+## Handing it to panelize()
+
+`panelize()` resolves an outstanding requirement on its own, before the read
+it is meant to narrow:
+
+```{r, eval = FALSE}
+panel <- panelize(
+  frame, tables = c("P00", "P01"), years = 2009:2011,
+  source  = data_source(format = "parquet"),
+  backend = "duckdb",       # pushes the subset into the scan
+  cache   = "none",         # read the published files in place
+  unique_rows = FALSE       # let the column projection reach the scan
+)
+```
+
+There is no need to call `resolve_frame()` first — the frame above would work
+passed straight to `panelize()`. Resolving it by hand is useful when you want
+to inspect the sample, reuse one id set across several builds, or pin it for
+reproducibility.
+
+The three acquisition arguments are what turn the resolved subset into a
+narrow read rather than a filter after the fact. `unique_rows = FALSE`
+matters more than it looks: deduplication compiles to `SELECT DISTINCT *`,
+which needs every column and so blocks the projection from reaching the scan.
+The efile build emits no exact duplicate rows, so switching it off is both
+faster and equivalent.
+
+## Coverage is not one row per year
+
+A requirement guarantees that an organization *appears* in each year. It does
+not guarantee one row per year, because an amended return is a second filing
+for the same tax year:
+
+```{r, eval = FALSE}
+table(table(panel_data(panel)$EIN2))
+#>    3    4    5
+#> 5508   49    3
+```
+
+That is a different job, and there is already a rule for it. Add a `dedup`
+rule and each organization-year collapses to one filing:
+
+```{r, eval = FALSE}
+panel <- panelize(add_rule(frame, type = "dedup"), tables = c("P00", "P01"),
+                  years = 2009:2011, source = data_source(format = "parquet"),
+                  backend = "duckdb", cache = "none", unique_rows = FALSE)
+table(table(panel_data(panel)$EIN2))
+#>    3
+#> 5560
+```
+
+Keep the two concerns separate: `require` decides *who is in the sample*,
+`dedup` decides *which filing represents an organization-year*. See
+`deduplicate()` for how the winning filing is chosen.
+
+## Choosing between require and filter
+
+A `filter` rule is the right tool whenever the criterion can be read off one
+row. Reach for `require` only when the condition spans years:
+
+| Criterion | Rule |
+|---|---|
+| filed a 990EZ *this* year | `filter` on `RETURN_TYPE` |
+| a 990EZ filer *every* year | `require`, `holds = "every"` |
+| in Georgia | `filter` on `geo_state_abbr` (BMF) |
+| present in all requested years | `require`, `present_in = "all"` |
+| observed at least twice | `require`, `present_in = 2` |
+
+`require` also overlaps with `panel_balance()`, and the difference is when the
+work happens. `panel_balance()` balances a panel you have already built;
+`require` resolves the balanced sample first and never reads the rows it is
+going to drop. Use `panel_balance()` when the panel is already in memory, and
+`require` when you are about to acquire it.

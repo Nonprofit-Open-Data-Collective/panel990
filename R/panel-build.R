@@ -23,14 +23,23 @@
 #' Download, filter, merge, append BMF, and stack a panel
 #'
 #' The workhorse acquisition recipe: resolve tables and years, download (or
-#' virtually scan) the CSVs, project columns and push the sample frame's entity
-#' restriction down to read-time, merge the tables within each year, stack the
-#' years, optionally append BMF organization traits, then apply the frame's
-#' rules. Returns a [panel][as_panel] bundling the data with the frame and a
-#' provenance log.
+#' virtually scan) the source files, project columns and push the sample
+#' frame's entity restriction down to read-time, merge the tables within each
+#' year, stack the years, optionally append BMF organization traits, then apply
+#' the frame's rules. Returns a [panel][as_panel] bundling the data with the
+#' frame and a provenance log.
 #'
 #' Keys are set automatically from the efile schema (entity `EIN2`, time
 #' `TAX_YEAR`, record `OBJECTID`).
+#'
+#' @section Reading parquet:
+#' The source format comes from `source`, so `data_source(format = "parquet")`
+#' builds the same panel from the parquet release. Parquet only pays off for
+#' selective reads, and the frame's row and column restrictions are what make a
+#' read selective -- so the combination that matters is a frame with an entity
+#' subset or a `select` rule, `backend = "duckdb"`, `cache = "none"`, and
+#' `unique_rows = FALSE`. See [data_source()] for the format's type contract
+#' and [read_tables()] for why deduplication blocks the projection.
 #'
 #' @param sfw Optional [create_sfw()] sample frame governing the build. Filters
 #'   prefilter reads and merges; `select` rules project columns.
@@ -47,6 +56,10 @@
 #' @param columns Optional source fields to retain (union with the frame's).
 #' @param include_many Join one-to-many and supplemental tables.
 #' @param collision Non-key collision policy.
+#' @param unique_rows Remove exact duplicate source rows during the read.
+#'   `TRUE` (default) preserves the historical behaviour but prevents the
+#'   column projection from being pushed into a parquet scan; see
+#'   [read_tables()].
 #' @param overwrite Replace cached files.
 #' @param retry_max Download attempts.
 #' @param timeout Minimum per-attempt download timeout in seconds. This is a
@@ -62,7 +75,7 @@ panelize <- function(
     bmf = "auto", backend = "memory",
     cache = c("retain", "temporary", "none"), path = "PANEL990",
     filters = NULL, columns = NULL, include_many = FALSE,
-    collision = c("error", "prefix"), overwrite = FALSE,
+    collision = c("error", "prefix"), unique_rows = TRUE, overwrite = FALSE,
     retry_max = 3L, timeout = 1800, verbose = TRUE
 ) {
   cache <- match.arg(cache)
@@ -87,6 +100,12 @@ panelize <- function(
       sfw <- add_key(sfw, "record", "unique_record", "OBJECTID")
   }
 
+  # A `require` rule states a cross-year condition on the source, so it has to
+  # be answered before the read it is meant to narrow. Resolving it here turns
+  # it into a captured `subset`, which .sfw_to_acquire() then pushes down.
+  if (.sfw_has_require(sfw))
+    sfw <- resolve_frame(sfw, years = years, source = source, verbose = verbose)
+
   acq <- .sfw_to_acquire(sfw, columns)
   keys <- acq$keys
   if (is.null(columns)) columns <- acq$read_columns
@@ -99,9 +118,10 @@ panelize <- function(
   read_columns <- if (is.null(columns)) NULL else unique(c(keys, columns))
   reads <- if (backend == "duckdb")
     read_tables_duckdb(downloads, columns = read_columns, filters = filters,
-                       timeout = timeout, retry_max = retry_max) else
+                       unique_rows = unique_rows, timeout = timeout,
+                       retry_max = retry_max) else
       read_tables(downloads, columns = read_columns, filters = filters,
-                  verbose = verbose)
+                  unique_rows = unique_rows, verbose = verbose)
   merged <- merge_tables(reads, keys = keys, include_many = include_many,
                         collision = collision, verbose = verbose)
   if (!length(merged$years)) stop("No table-year data were available for the panel.")

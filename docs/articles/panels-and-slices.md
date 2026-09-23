@@ -1,4 +1,4 @@
-# 3. Panels and panel slices
+# 4. Panels and panel slices
 
 With several years assembled, `panel990` classifies each organization by
 *how its observations sit in the panel window*, so you can slice out
