@@ -65,7 +65,7 @@ test_that("present_in resolves balanced, minimum-count, and any frames", {
   skip_if_not_installed("duckdb")
   root <- make_require_source()
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
-  source <- data_source(root)
+  source <- data_source(root, format = "csv")
   ids_of <- function(frame) {
     subset <- Filter(function(r) identical(r$type, "subset"), frame$rules)
     sort(subset[[1L]]$ids)
@@ -89,7 +89,7 @@ test_that("holds distinguishes 'every year' from 'any year'", {
   skip_if_not_installed("duckdb")
   root <- make_require_source()
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
-  source <- data_source(root)
+  source <- data_source(root, format = "csv")
   ids_of <- function(frame) {
     subset <- Filter(function(r) identical(r$type, "subset"), frame$rules)
     sort(subset[[1L]]$ids)
@@ -119,7 +119,7 @@ test_that("several require rules intersect and are recorded, not discarded", {
   frame <- add_rule(frame, "balanced", type = "require", present_in = "all")
   frame <- add_rule(frame, "always_ez", type = "require", present_in = "any",
                     column = "RETURN_TYPE", op = "in", values = "990EZ")
-  resolved <- resolve_frame(frame, 2021:2023, data_source(root),
+  resolved <- resolve_frame(frame, 2021:2023, data_source(root, format = "csv"),
                             verbose = FALSE)
 
   rules <- get_rules(resolved)
@@ -149,18 +149,18 @@ test_that("resolution needs entity and time keys and a real column", {
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
 
   keyless <- add_rule(create_sfw("f", time = NULL), type = "require")
-  expect_error(resolve_frame(keyless, 2021:2023, data_source(root),
+  expect_error(resolve_frame(keyless, 2021:2023, data_source(root, format = "csv"),
                              verbose = FALSE),
                "needs both an entity and a time key")
 
   absent <- add_rule(create_sfw("f"), type = "require", column = "NOPE",
                      op = "in", values = "1")
-  expect_error(resolve_frame(absent, 2021:2023, data_source(root),
+  expect_error(resolve_frame(absent, 2021:2023, data_source(root, format = "csv"),
                              verbose = FALSE),
                "column not found")
 
   expect_error(resolve_frame(add_rule(create_sfw("f"), type = "require"),
-                             years = character(), data_source(root)),
+                             years = character(), data_source(root, format = "csv")),
                "must be a non-empty numeric vector")
 })
 
@@ -174,7 +174,7 @@ test_that("panelize resolves a require rule and pushes the result down", {
   frame <- add_rule(frame, "balanced", type = "require", present_in = "all",
                     column = "RETURN_TYPE", op = "in", values = "990EZ")
   panel <- panelize(frame, tables = c("P00", "P01"), years = 2021:2023,
-                    source = data_source(root), backend = "duckdb",
+                    source = data_source(root, format = "csv"), backend = "duckdb",
                     cache = "none", bmf = FALSE, verbose = FALSE)
 
   data <- panel_data(panel)
@@ -213,7 +213,7 @@ test_that("a require rule guarantees year coverage, not one row per year", {
   }
   frame <- create_sfw("balanced", record = "OBJECTID")
   frame <- add_rule(frame, type = "require", present_in = "all")
-  args <- list(tables = "P00", years = 2021:2023, source = data_source(root),
+  args <- list(tables = "P00", years = 2021:2023, source = data_source(root, format = "csv"),
                backend = "duckdb", cache = "none", bmf = FALSE, verbose = FALSE)
 
   expect_equal(nrow(panel_data(do.call(panelize,

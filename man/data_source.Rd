@@ -7,7 +7,7 @@
 data_source(
   root = NULL,
   version = .EFILE_VERSION,
-  format = .EFILE_FORMAT,
+  format = .efile_default_format(),
   aliases = .EFILE_ALIASES
 )
 }
@@ -18,8 +18,8 @@ data_source(
 \item{version}{Published release, such as \code{"v2_2"} (the current default) or
 \code{"v2_1"}. Ignored when \code{root} is supplied.}
 
-\item{format}{Source file format: \code{"csv"} (the current default) or
-\code{"parquet"}. See the Source format section.}
+\item{format}{Source file format: \code{"parquet"} (the default, when a parquet
+reader is installed) or \code{"csv"}. See the Source format section.}
 
 \item{aliases}{Named character vector mapping short aliases to table names.}
 }
@@ -35,8 +35,9 @@ local directory or a mirror, in which case \code{version} is recorded as \code{N
 \section{Source format}{
 
 A release publishes each table-year under one stem in two formats, so
-\code{format} is an extension swap on an otherwise identical URL. Parquet pays
-off for \emph{selective} reads and only there: the files are sorted by \code{EIN2}
+\code{format} is an extension swap on an otherwise identical URL. Parquet is the
+default: it is an eighth of the bytes to transfer, and it pays off most for
+\emph{selective} reads, because the files are sorted by \code{EIN2}
 with non-overlapping row-group statistics, so an entity restriction prunes
 row groups and a column projection reads only the chunks it needs. Reading a
 whole table is no faster than reading the CSV. The gain is largest without a
@@ -47,12 +48,17 @@ Parquet stores every efile column as a string. The read paths therefore cast
 numeric fields using the types declared in \link{field_concordance}, rather than
 inferring them the way \code{fread()} and \code{read_csv_auto()} do. Declared types are
 the more reliable of the two, but they are not identical to the inferred
-ones: a parquet read returns \code{ORG_EIN} as text (preserving leading zeros),
-and leaves dates, timestamps, and checkboxes as source strings.
+ones: a parquet read returns \code{ORG_EIN} and the other EIN, phone, and code
+fields as text (preserving leading zeros), and leaves dates, timestamps, and
+checkboxes as source strings.
+
+Reading parquet needs the suggested package \code{duckdb} or \code{arrow}. When
+neither is installed the default falls back to \code{"csv"} with a message; an
+explicit \code{format = "parquet"} is kept and fails at read time instead.
 }
 
 \examples{
-data_source()                          # current release, CSV
+data_source()                          # current release, parquet
 data_source(version = "v2_1")          # pin the previous release
-data_source(format = "parquet")        # same release, parquet files
+data_source(format = "csv")            # same release, CSV files
 }

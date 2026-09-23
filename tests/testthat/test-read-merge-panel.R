@@ -29,7 +29,7 @@ test_that("read layer records table counts and applies filters", {
   root <- make_panel_source()
   cache <- tempfile("panel-cache-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
-  downloads <- download_tables(2021, c("P00", "P01"), data_source(root),
+  downloads <- download_tables(2021, c("P00", "P01"), data_source(root, format = "csv"),
                               path = cache, verbose = FALSE)
   reads <- read_tables(downloads, filters = list(EIN2 = "EIN-12-3456789"),
                       verbose = FALSE)
@@ -43,7 +43,7 @@ test_that("explicit-key merge produces row diagnostics", {
   cache <- tempfile("panel-cache-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
   reads <- read_tables(download_tables(
-    2021, c("P00", "P01"), data_source(root), path = cache, verbose = FALSE
+    2021, c("P00", "P01"), data_source(root, format = "csv"), path = cache, verbose = FALSE
   ), verbose = FALSE)
   merged <- merge_tables(reads, keys = c("EIN2", "OBJECTID", "TAX_YEAR"),
                          verbose = FALSE)
@@ -57,7 +57,7 @@ test_that("one-to-many tables are skipped unless explicitly enabled", {
   cache <- tempfile("panel-cache-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
   reads <- read_tables(download_tables(
-    2021, c("P00", "CUSTOM-P01-T01-ROWS"), data_source(root),
+    2021, c("P00", "CUSTOM-P01-T01-ROWS"), data_source(root, format = "csv"),
     path = cache, verbose = FALSE
   ), verbose = FALSE)
   safe <- merge_tables(reads, keys = c("EIN2", "OBJECTID", "TAX_YEAR"),
@@ -74,7 +74,7 @@ test_that("multi-year panel aligns schemas and exposes manifests", {
   cache <- tempfile("panel-cache-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
   result <- panelize(
-    tables = c("P00", "P01"), years = 2021:2022, source = data_source(root),
+    tables = c("P00", "P01"), years = 2021:2022, source = data_source(root, format = "csv"),
     path = cache, verbose = FALSE
   )
   expect_s3_class(result, "panel")
@@ -95,7 +95,7 @@ test_that("non-key collisions are rejected or prefixed", {
   summary$ORG_NAME_L1 <- c("A2", "B2")
   utils::write.csv(summary, path, row.names = FALSE)
   reads <- read_tables(download_tables(
-    2021, c("P00", "P01"), data_source(root), path = cache, verbose = FALSE
+    2021, c("P00", "P01"), data_source(root, format = "csv"), path = cache, verbose = FALSE
   ), verbose = FALSE)
   expect_error(merge_tables(reads, keys = c("EIN2", "OBJECTID", "TAX_YEAR"), verbose = FALSE),
                "collision")
@@ -127,7 +127,7 @@ test_that("dedup filters rows, not columns, when rows exceed columns", {
                    row.names = FALSE)
 
   reads <- read_tables(
-    download_tables(2021, "P00", data_source(root), path = cache,
+    download_tables(2021, "P00", data_source(root, format = "csv"), path = cache,
                     verbose = FALSE),
     verbose = FALSE
   )

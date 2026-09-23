@@ -86,9 +86,9 @@ Keys are set automatically from the efile schema (entity \code{EIN2}, time
 }
 \section{Reading parquet}{
 
-The source format comes from \code{source}, so \code{data_source(format = "parquet")}
-builds the same panel from the parquet release. Parquet only pays off for
-selective reads, and the frame's row and column restrictions are what make a
+The source format comes from \code{source}: the default \code{\link[=data_source]{data_source()}} reads the
+parquet release, and \code{data_source(format = "csv")} builds the same panel
+from the CSV files. Parquet pays off most for selective reads, and the frame's row and column restrictions are what make a
 read selective -- so the combination that matters is a frame with an entity
 subset or a \code{select} rule, \code{backend = "duckdb"}, \code{cache = "none"}, and
 \code{unique_rows = FALSE}. See \code{\link[=data_source]{data_source()}} for the format's type contract

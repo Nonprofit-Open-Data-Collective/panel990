@@ -6,9 +6,9 @@
 
 #' Download or reuse efile table files
 #'
-#' The file format follows `source$format`, so a cache built from
-#' `data_source(format = "parquet")` holds parquet and one built from the
-#' default holds CSV. Both are read by [read_tables()] and
+#' The file format follows `source$format`, so a cache built from the default
+#' [data_source()] holds parquet and one built from
+#' `data_source(format = "csv")` holds CSV. Both are read by [read_tables()] and
 #' [read_tables_duckdb()], which detect the format from the extension, so a
 #' cache may hold either or both.
 #'

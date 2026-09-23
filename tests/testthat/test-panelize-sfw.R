@@ -26,7 +26,7 @@ test_that("panelize returns a panel, pushes down the entity, and applies rules",
                   values = 2121)
 
   res <- panelize(sfw, tables = c("P00", "P01"), years = 2020:2021,
-                  source = data_source(root), path = cache, verbose = FALSE)
+                  source = data_source(root, format = "csv"), path = cache, verbose = FALSE)
 
   expect_s3_class(res, "panel")
   keep <- res$table_manifest$status %in% c("downloaded", "reused")
@@ -48,7 +48,7 @@ test_that("panelize applies a BMF trait filter after a BMF merge", {
 
   res <- suppressWarnings(panelize(
     sfw, tables = c("P00", "P01"), years = 2020:2021,
-    source = data_source(root), bmf = bmf, path = cache, verbose = FALSE))
+    source = data_source(root, format = "csv"), bmf = bmf, path = cache, verbose = FALSE))
 
   expect_setequal(unique(res$data$EIN2), "EIN-12-3456789")
   expect_true("geo_state_abbr" %in% names(res$data))
@@ -59,7 +59,7 @@ test_that("panelize works without a sample frame (auto keys/frame)", {
   root <- make_sfw_panel_source(); cache <- tempfile("sfw-cache3-")
   on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
   res <- panelize(tables = c("P00", "P01"), years = 2020:2021,
-                  source = data_source(root), path = cache, verbose = FALSE)
+                  source = data_source(root, format = "csv"), path = cache, verbose = FALSE)
   expect_s3_class(res, "panel")
   expect_equal(nrow(res$data), 4L)
   expect_s3_class(sample_frame(res), "sfw")          # a default frame is created
