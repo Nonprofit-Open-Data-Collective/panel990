@@ -1,9 +1,9 @@
-# Open a DuckDB connection for parquet reads
+# Open a DuckDB connection without duckdb's startup notice
 
-A read loop should open one connection and pass it down rather than let
-each file create its own: starting an instance per table-year repeats
-the setup cost and prints duckdb's extension-directory notice once per
-file.
+Used by every DuckDB read, parquet or CSV. A read loop should open one
+connection and pass it down rather than let each file create its own:
+starting an instance per table-year repeats the setup cost and prints
+duckdb's extension-directory notice once per file.
 
 ## Usage
 

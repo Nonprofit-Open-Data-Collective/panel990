@@ -1,8 +1,10 @@
 # Download or reuse efile table files
 
-The file format follows `source$format`, so a cache built from
-`data_source(format = "parquet")` holds parquet and one built from the
-default holds CSV. Both are read by
+The file format follows `source$format`, so a cache built from the
+default
+[`data_source()`](https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.md)
+holds parquet and one built from `data_source(format = "csv")` holds
+CSV. Both are read by
 [`read_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables.md)
 and
 [`read_tables_duckdb()`](https://nonprofit-open-data-collective.github.io/panel990/reference/read_tables_duckdb.md),
