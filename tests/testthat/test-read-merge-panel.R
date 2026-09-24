@@ -161,3 +161,42 @@ test_that("the package is data.table aware so fast S3 methods are used", {
   expect_equal(out, c(FALSE, TRUE, FALSE))
   expect_length(seen, 0L)   # the data.frame fallback was never reached
 })
+
+test_that("ORG_EXEMPT_TYPE merges as a key rather than a collision", {
+  # Regression: ORG_EXEMPT_TYPE joins ef2's KEYS block, so it lands in EVERY
+  # published table. Any shared column that is not a candidate join key counts
+  # as a non-key collision, so before it was added to .EFILE_FILING_KEYS the
+  # DEFAULT merge_tables() call stopped on the first join.
+  root <- make_panel_source()
+  cache <- tempfile("panel-cache-")
+  on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
+  for (tb in c("F9-P00-T00-HEADER", "F9-P01-T00-SUMMARY")) {
+    path <- file.path(root, paste0(tb, "-2021.CSV"))
+    d <- utils::read.csv(path)
+    d$ORG_EXEMPT_TYPE <- c("501c3", "501c6")
+    utils::write.csv(d, path, row.names = FALSE)
+  }
+  reads <- read_tables(download_tables(
+    2021, c("P00", "P01"), data_source(root, format = "csv"), path = cache, verbose = FALSE
+  ), verbose = FALSE)
+  merged <- merge_tables(reads, verbose = FALSE)$years[["2021"]]
+  # Joined on, not prefixed and not duplicated.
+  expect_equal(sum(names(merged) == "ORG_EXEMPT_TYPE"), 1L)
+  expect_false(any(grepl("__ORG_EXEMPT_TYPE$", names(merged))))
+  expect_setequal(merged$ORG_EXEMPT_TYPE, c("501c3", "501c6"))
+})
+
+test_that("the key block degrades to the old columns on pre-rebuild tables", {
+  # Tables built before ef2 added ORG_EXEMPT_TYPE do not carry it. Candidate
+  # keys are intersected with the columns actually present, so those releases
+  # must keep merging unchanged.
+  root <- make_panel_source()
+  cache <- tempfile("panel-cache-")
+  on.exit(unlink(c(root, cache), recursive = TRUE), add = TRUE)
+  reads <- read_tables(download_tables(
+    2021, c("P00", "P01"), data_source(root, format = "csv"), path = cache, verbose = FALSE
+  ), verbose = FALSE)
+  merged <- merge_tables(reads, verbose = FALSE)$years[["2021"]]
+  expect_false("ORG_EXEMPT_TYPE" %in% names(merged))
+  expect_true(all(c("EIN2", "OBJECTID") %in% names(merged)))
+})

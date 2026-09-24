@@ -1,5 +1,15 @@
+# ORG_EXEMPT_TYPE joins the key block in ef2's rebuild. It has to be listed
+# here rather than left to the collision check: it is a KEYS column, so it
+# appears in every table, and any shared column that is not a candidate join key
+# counts as a non-key collision and stops merge_tables() under the default
+# collision = "error". Listing it is also right on the merits -- it is
+# filing-level and constant within an OBJECTID, like the other sixteen.
+#
+# Tables built before that ef2 change do not carry it, and nothing special is
+# needed for them: the candidates are intersected with the columns actually
+# present, so the key block degrades to the old sixteen on older releases.
 .EFILE_FILING_KEYS <- c(
-  "EIN2", "OBJECTID", "ORG_EIN", "ORG_NAME_L1", "ORG_NAME_L2",
+  "EIN2", "OBJECTID", "ORG_EIN", "ORG_EXEMPT_TYPE", "ORG_NAME_L1", "ORG_NAME_L2",
   "RETURN_AMENDED_X", "RETURN_GROUP_X", "RETURN_PARTIAL_X",
   "RETURN_TAXPER_DAYS", "RETURN_TIME_STAMP", "RETURN_TYPE",
   "TAX_PERIOD_BEGIN_DATE", "TAX_PERIOD_END_DATE", "TAX_YEAR", "URL", "VERSION"
