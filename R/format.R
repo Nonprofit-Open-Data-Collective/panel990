@@ -79,10 +79,16 @@
 #
 # ORG_EIN is deliberately text: fread() infers integer and silently drops the
 # leading zero from EINs such as 010078060.
+#
+# ORG_EXEMPT_TYPE is text for the same class of reason: its values are "501c3",
+# "501c6", "4947a1" and so on, so nothing should try to read them as numbers.
+# Declaring it is belt-and-braces -- an undeclared column is already left as
+# read -- but it keeps the structural block a complete statement of itself.
 .EFILE_KEY_TYPES <- c(
   EIN2                  = "text",
   OBJECTID              = "text",
   ORG_EIN               = "text",
+  ORG_EXEMPT_TYPE       = "text",
   ORG_NAME_L1           = "text",
   ORG_NAME_L2           = "text",
   RETURN_AMENDED_X      = "checkbox",
