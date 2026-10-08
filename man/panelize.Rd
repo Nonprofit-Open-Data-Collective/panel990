@@ -32,7 +32,9 @@ prefilter reads and merges; \code{select} rules project columns.}
 
 \item{years}{Tax years.}
 
-\item{source}{Efile source configuration.}
+\item{source}{Efile source configuration. Its form family decides which
+release is read: the default reads Form 990 and 990EZ filers; see
+\code{\link[=panelize_pf]{panelize_pf()}} for private foundations.}
 
 \item{bmf}{Append BMF fields: \code{"auto"} (default -- attach when the frame
 references a BMF field), \code{FALSE}, \code{TRUE} (the NCCS master), or a BMF source

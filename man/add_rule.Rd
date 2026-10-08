@@ -36,7 +36,11 @@ string is rejected: it cannot be pushed to the source.}
 \item{\code{label}}{\code{map} (an id-named vector) or \code{from} (a data frame) with
 \code{keys} and \code{label} column names; \code{label} also names the derived column.}
 \item{\code{select}}{\code{vars}, \code{scope}, \code{tables}, \code{drop} (resolved via
-\link{field_concordance}).}
+\link{field_concordance} and \link{field_concordance_pf}). \code{scope} takes a
+\code{\link[=fields_in_scope]{fields_in_scope()}} value or a \code{variable_scope} code; the 990-vs-990EZ
+scopes do not apply to a 990PF panel, which \code{\link[=panelize_pf]{panelize_pf()}} rejects.
+\code{tables} takes table-name prefixes, a part code such as \code{"P08"}, or a
+990PF part code such as \code{"PF01"}.}
 \item{\code{dedup}}{\code{group}, \code{partial}, \code{amended}, \code{timestamp} column overrides
 for \code{\link[=deduplicate]{deduplicate()}}.}
 \item{\code{refresh}}{\code{fn} -- a function taking and returning a data frame.}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/accounting.R
 \name{accounting_check}
 \alias{accounting_check}
-\title{Check 990 rows against accounting identities}
+\title{Check 990 or 990PF rows against accounting identities}
 \usage{
 accounting_check(
   data,
@@ -14,10 +14,12 @@ accounting_check(
 )
 }
 \arguments{
-\item{data}{A data frame of 990 financial fields (e.g. a merged panel).}
+\item{data}{A data frame of 990 or 990PF financial fields (e.g. a merged
+panel). Only identities whose fields are all present are evaluated.}
 
 \item{section}{Identity sections to check (\code{"revenue"}, \code{"expenses"},
-\code{"balance_sheet"}). \code{NULL} (default) checks all.}
+\code{"balance_sheet"}, and for the 990PF \code{"net_assets"}). \code{NULL} (default)
+checks all.}
 
 \item{id, time}{Identifier columns carried onto the report (if present).}
 

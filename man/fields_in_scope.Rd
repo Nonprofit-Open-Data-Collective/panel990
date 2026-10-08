@@ -4,12 +4,13 @@
 \alias{fields_in_scope}
 \title{Select efile fields by form scope}
 \usage{
-fields_in_scope(form = c("both", "990", "990EZ", "all"))
+fields_in_scope(form = c("both", "990", "990EZ", "all", "990PF"))
 }
 \arguments{
 \item{form}{One of \code{"both"} (present on the full 990 and the 990EZ),
-\code{"990"} (present on the full 990), \code{"990EZ"} (present on the 990EZ), or
-\code{"all"}. Header and signature fields count as present on every form.}
+\code{"990"} (present on the full 990), \code{"990EZ"} (present on the 990EZ),
+\code{"all"} (every 990-release variable), or \code{"990PF"} (every 990PF-release
+variable). Header and signature fields count as present on every form.}
 }
 \value{
 A character vector of \code{variable_name} values.
@@ -20,6 +21,11 @@ Returns the variable names present on a given return form, using the built-in
 both the full 990 and the 990EZ, which avoids conflating a structural blank
 (field absent from the 990EZ) with a reported blank.
 }
+\details{
+Form scope is a 990-release concept. A 990PF return is one form, so the
+990PF release has no structural blanks of this kind; \code{"990PF"} simply
+returns every variable in \link{field_concordance_pf}.
+}
 \seealso{
-\code{\link[=concordance]{concordance()}}, \link{field_concordance}.
+\code{\link[=concordance]{concordance()}}, \link{field_concordance}, \link{field_concordance_pf}.
 }

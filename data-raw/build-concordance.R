@@ -7,7 +7,9 @@
 #   https://github.com/Nonprofit-Open-Data-Collective/concordance990
 #   file: concordance.csv  (one row per xpath, 990/990EZ and 990PF combined)
 #
-# Output: data/field_concordance.rda  (one row per RDB variable_name)
+# Output (one row per RDB variable_name each):
+#   data/field_concordance.rda     990/990EZ release (efile_)
+#   data/field_concordance_pf.rda  990PF release (efilepf_)
 #
 # Run with:  Rscript data-raw/build-concordance.R
 
@@ -18,13 +20,18 @@ source_url <- paste0(
   "concordance990/main/concordance.csv"
 )
 src <- if (file.exists(local_csv)) local_csv else source_url
-mcf <- data.table::fread(src, data.table = FALSE, colClasses = "character",
-                         encoding = "UTF-8")
+src_all <- data.table::fread(src, data.table = FALSE, colClasses = "character",
+                             encoding = "UTF-8")
 
-# The 990PF release (efilepf_) is a separate database. Its PF-* tables stay out
-# of this 990/990EZ concordance; the shared header, signature, and Schedule B
-# tables keep their rows.
-mcf <- mcf[!grepl("^PF-", mcf$rdb_table), , drop = FALSE]
+# The 990/990EZ (efile_) and 990PF (efilepf_) releases are separate databases.
+# Each gets its own concordance, built from the tables its release publishes:
+# the 990 release has no PF-* tables, and the PF release carries only the PF-*
+# tables plus copies of the shared header, signature, and Schedule B tables.
+pf_shared_tables <- c("F9-P00-T00-HEADER", "F9-P02-T00-SIGNATURE")
+is_pf_table <- grepl("^PF-", src_all$rdb_table)
+mcf_990 <- src_all[!is_pf_table, , drop = FALSE]
+mcf_pf  <- src_all[is_pf_table | grepl("^SB-", src_all$rdb_table) |
+                     src_all$rdb_table %in% pf_shared_tables, , drop = FALSE]
 
 # --- 2. Mapping rules (REVIEW THESE) ------------------------------------------
 # blank_meaning: how to read a blank on a form where the field IS in scope.
@@ -46,11 +53,13 @@ blank_meaning_for <- function(dtype, is_money) {
 }
 
 # variable_scope -> applicable return forms (used by normalize()).
-# PC = full 990 only; EZ = 990EZ only; PZ = both; HD/SG = structural (all forms).
+# PC = full 990 only; EZ = 990EZ only; PZ = both; PF = 990PF; HD/SG =
+# structural (all forms).
 scope_to_forms <- list(
   PC = "990",
   EZ = "990EZ",
   PZ = c("990", "990EZ"),
+  PF = "990PF",
   HD = "*",
   SG = "*"
 )
@@ -71,13 +80,16 @@ xpath_form_scope <- function(xpaths, mcf_scope) {
   on_ez <- any(grepl("^/Return/ReturnData/IRS990EZ/", xpaths))
   if (on_pc && on_ez) "PZ" else if (on_pc) "PC" else if (on_ez) "EZ" else mcf_scope
 }
+
+# In the PF release every non-structural field, Schedule B included, is filed
+# on a 990PF return, so it is PF-scoped whatever the source says.
+pf_form_scope <- function(xpaths, mcf_scope) {
+  if (!is.na(mcf_scope) && mcf_scope %in% c("HD", "SG")) mcf_scope else "PF"
+}
 type_priority  <- c("numeric", "checkbox", "date", "text")
 
 # --- 3. Collapse to one row per variable_name ---------------------------------
 is_true <- function(x) toupper(trimws(x)) %in% c("T", "TRUE", "1", "YES")
-mcf$.current <- is_true(mcf$current_version)
-mcf$data_type_simple[is.na(mcf$data_type_simple) | mcf$data_type_simple == ""] <-
-  "text"  # ExplanationType blanks -> text
 
 # The MCF marks some identifier and code fields numeric, but their XSD types
 # are strings: EINs and phone numbers carry leading zeros, PTINs and CUSIPs are
@@ -100,75 +112,91 @@ pick <- function(values, priority) {
   if (length(hit)) hit[[1]] else sort(top)[[1]]
 }
 
-vars <- sort(unique(mcf$variable_name))
-vars <- vars[!is.na(vars) & vars != ""]
-
-rows <- lapply(vars, function(v) {
-  sub_all <- mcf[mcf$variable_name == v, , drop = FALSE]
-  sub <- if (any(sub_all$.current)) sub_all[sub_all$.current, , drop = FALSE] else sub_all
-  scope_mcf <- pick(sub$variable_scope, scope_priority)
-  scope <- xpath_form_scope(sub_all$xpath, scope_mcf)
-  dtype <- pick(sub$data_type_simple, type_priority)
-  xsd   <- pick(sub$data_type_xsd,    character())
-  if (!is.na(xsd) && xsd %in% identifier_xsd) dtype <- "text"
-  is_money <- !is.na(dtype) && dtype == "numeric" &&
-    !is.na(xsd) && grepl(money_xsd_pattern, xsd, ignore.case = TRUE)
-  tables_all <- sort(unique(sub$rdb_table[!is.na(sub$rdb_table) & sub$rdb_table != ""]))
-  data.frame(
-    variable_name    = v,
-    description      = pick(sub$description, character()),
-    variable_scope   = scope,
-    scope_mcf        = scope_mcf,
-    form_type        = pick(sub$form_type, character()),
-    data_type_simple = dtype,
-    data_type_xsd    = xsd,
-    money_field      = is_money,
-    blank_meaning    = blank_meaning_for(dtype, is_money),
-    forms            = paste(scope_to_forms[[scope]], collapse = "|"),
-    rdb_table        = pick(sub$rdb_table, character()),
-    rdb_tables_all   = paste(tables_all, collapse = ";"),
-    rdb_relationship = pick(sub$rdb_relationship, c("MANY", "ONE")),
-    current_version  = any(sub_all$.current),
-    n_xpaths         = nrow(sub_all),
-    scope_conflict   = length(unique(sub_all$variable_scope[!is.na(sub_all$variable_scope) &
-                                                              sub_all$variable_scope != ""])) > 1L,
-    type_conflict    = length(unique(sub_all$data_type_simple)) > 1L,
-    stringsAsFactors = FALSE
-  )
-})
-field_concordance <- do.call(rbind, rows)
-rownames(field_concordance) <- NULL
-
-# Transliterate text to ASCII (source uses Windows-1252 smart quotes/dashes)
-# so the bundled dataset passes R CMD check's non-ASCII test.
+# Transliterate text to ASCII so the bundled dataset passes R CMD check's
+# non-ASCII test.
 to_ascii <- function(x) {
   out <- iconv(x, from = "latin1", to = "ASCII//TRANSLIT", sub = "")
   bad <- is.na(out) & !is.na(x)
   out[bad] <- iconv(x[bad], to = "ASCII", sub = "")
   out
 }
-char_cols <- names(field_concordance)[vapply(field_concordance, is.character, logical(1L))]
-for (col in char_cols) field_concordance[[col]] <- to_ascii(field_concordance[[col]])
+
+# `form_scope` derives a variable's scope from its xpaths and source scope:
+# xpath_form_scope() for the 990 release, pf_form_scope() for the PF release.
+collapse_concordance <- function(mcf, form_scope) {
+  mcf$.current <- is_true(mcf$current_version)
+  mcf$data_type_simple[is.na(mcf$data_type_simple) | mcf$data_type_simple == ""] <-
+    "text"  # ExplanationType blanks -> text
+  vars <- sort(unique(mcf$variable_name))
+  vars <- vars[!is.na(vars) & vars != ""]
+
+  rows <- lapply(vars, function(v) {
+    sub_all <- mcf[mcf$variable_name == v, , drop = FALSE]
+    sub <- if (any(sub_all$.current)) sub_all[sub_all$.current, , drop = FALSE] else sub_all
+    scope_mcf <- pick(sub$variable_scope, scope_priority)
+    scope <- form_scope(sub_all$xpath, scope_mcf)
+    dtype <- pick(sub$data_type_simple, type_priority)
+    xsd   <- pick(sub$data_type_xsd,    character())
+    if (!is.na(xsd) && xsd %in% identifier_xsd) dtype <- "text"
+    is_money <- !is.na(dtype) && dtype == "numeric" &&
+      !is.na(xsd) && grepl(money_xsd_pattern, xsd, ignore.case = TRUE)
+    tables_all <- sort(unique(sub$rdb_table[!is.na(sub$rdb_table) & sub$rdb_table != ""]))
+    data.frame(
+      variable_name    = v,
+      description      = pick(sub$description, character()),
+      variable_scope   = scope,
+      scope_mcf        = scope_mcf,
+      form_type        = pick(sub$form_type, character()),
+      data_type_simple = dtype,
+      data_type_xsd    = xsd,
+      money_field      = is_money,
+      blank_meaning    = blank_meaning_for(dtype, is_money),
+      forms            = paste(scope_to_forms[[scope]], collapse = "|"),
+      rdb_table        = pick(sub$rdb_table, character()),
+      rdb_tables_all   = paste(tables_all, collapse = ";"),
+      rdb_relationship = pick(sub$rdb_relationship, c("MANY", "ONE")),
+      current_version  = any(sub_all$.current),
+      n_xpaths         = nrow(sub_all),
+      scope_conflict   = length(unique(sub_all$variable_scope[!is.na(sub_all$variable_scope) &
+                                                                sub_all$variable_scope != ""])) > 1L,
+      type_conflict    = length(unique(sub_all$data_type_simple)) > 1L,
+      stringsAsFactors = FALSE
+    )
+  })
+  out <- do.call(rbind, rows)
+  rownames(out) <- NULL
+  char_cols <- names(out)[vapply(out, is.character, logical(1L))]
+  for (col in char_cols) out[[col]] <- to_ascii(out[[col]])
+  out
+}
 
 # --- 4. Report ----------------------------------------------------------------
-fc <- field_concordance
-cat("field_concordance:", nrow(fc), "variables\n\n")
-cat("scope:\n");   print(table(fc$variable_scope))
-cat("\ndata_type_simple:\n"); print(table(fc$data_type_simple))
-cat("\nblank_meaning:\n"); print(table(fc$blank_meaning))
-cat("\nnumeric split (money -> zero, non-money -> missing):\n")
-print(table(numeric_type = fc$data_type_simple == "numeric", money = fc$money_field))
-cat("\nscope x blank_meaning:\n")
-print(table(fc$variable_scope, fc$blank_meaning))
-cat("\nconflicts resolved  scope:", sum(fc$scope_conflict),
-    " type:", sum(fc$type_conflict), "\n")
-cat("both-forms (PZ) fields:", sum(fc$variable_scope == "PZ"), "\n")
-cat("\nscope corrected from xpaths (MCF -> derived):\n")
-print(table(mcf = fc$scope_mcf, derived = fc$variable_scope))
+report <- function(fc, name) {
+  cat("\n==========", name, ":", nrow(fc), "variables\n\n")
+  cat("scope:\n");   print(table(fc$variable_scope))
+  cat("\ndata_type_simple:\n"); print(table(fc$data_type_simple))
+  cat("\nblank_meaning:\n"); print(table(fc$blank_meaning))
+  cat("\nnumeric split (money -> zero, non-money -> missing):\n")
+  print(table(numeric_type = fc$data_type_simple == "numeric", money = fc$money_field))
+  cat("\nscope x blank_meaning:\n")
+  print(table(fc$variable_scope, fc$blank_meaning))
+  cat("\nconflicts resolved  scope:", sum(fc$scope_conflict),
+      " type:", sum(fc$type_conflict), "\n")
+  cat("\nscope derived from source (MCF -> derived):\n")
+  print(table(mcf = fc$scope_mcf, derived = fc$variable_scope))
+}
+
+field_concordance    <- collapse_concordance(mcf_990, xpath_form_scope)
+field_concordance_pf <- collapse_concordance(mcf_pf,  pf_form_scope)
+report(field_concordance, "field_concordance")
+report(field_concordance_pf, "field_concordance_pf")
 
 # --- 5. Save ------------------------------------------------------------------
 if (!dir.exists("data")) dir.create("data")
 save(field_concordance, file = "data/field_concordance.rda", compress = "xz")
+save(field_concordance_pf, file = "data/field_concordance_pf.rda", compress = "xz")
 utils::write.csv(field_concordance, "data-raw/field_concordance_review.csv",
                  row.names = FALSE, na = "")
-cat("\nwrote data/field_concordance.rda and data-raw/field_concordance_review.csv\n")
+utils::write.csv(field_concordance_pf, "data-raw/field_concordance_pf_review.csv",
+                 row.names = FALSE, na = "")
+cat("\nwrote data/field_concordance{,_pf}.rda and data-raw/*_review.csv\n")

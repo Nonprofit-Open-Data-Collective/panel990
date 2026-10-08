@@ -3,14 +3,18 @@
 \docType{data}
 \name{accounting_identities}
 \alias{accounting_identities}
-\title{Accounting-identity registry for IRS 990 financial fields}
+\title{Accounting-identity registry for IRS 990 and 990PF financial fields}
 \format{
 A data frame with one row per (identity, variable):
 \describe{
-\item{identity}{Identity name, e.g. \code{rev_contributions_subtotal}.}
-\item{section}{\code{"revenue"}, \code{"expenses"}, or \code{"balance_sheet"}.}
-\item{form_scope}{Form the identity applies to (\code{"PC"}, the full 990).}
-\item{type}{\code{column}, \code{subtotal}, \code{net}, or \code{grand_total}.}
+\item{identity}{Identity name, e.g. \code{rev_contributions_subtotal}. 990PF
+identities are prefixed \code{pf_}.}
+\item{section}{\code{"revenue"}, \code{"expenses"}, \code{"balance_sheet"}, or (990PF
+Part III) \code{"net_assets"}.}
+\item{form_scope}{Form the identity applies to: \code{"PC"} (the full 990) or
+\code{"PF"} (the 990PF).}
+\item{type}{\code{column}, \code{subtotal}, \code{net}, \code{grand_total}, \code{balance}, or
+\code{tie} (an equality between parts of the 990PF).}
 \item{description}{Human-readable statement of the identity.}
 \item{variable}{An ef2 \code{variable_name} appearing in the identity.}
 \item{coefficient}{Its coefficient (identity holds when the weighted sum is 0).}
@@ -20,21 +24,34 @@ A data frame with one row per (identity, variable):
 accounting_identities
 }
 \description{
-The linear accounting identities that hold among 990 financial fields across
-the revenue (Part VIII), functional-expenses (Part IX), and balance-sheet
-(Part X) sections -- column splits, subtotals, net-of-expense lines, the
-revenue grand total, and the balance-sheet equation. Each identity is a
-linear combination of fields that must equal zero; the registry is stored in
-long form and drives \code{\link[=accounting_check]{accounting_check()}} and \code{\link[=reconcile]{reconcile()}}.
+The linear accounting identities that hold among the financial fields of
+the full Form 990 -- the revenue (Part VIII), functional-expenses (Part IX),
+and balance-sheet (Part X) sections -- and of the Form 990PF financial
+statements (Parts I-III): column splits, subtotals, net-of-expense lines,
+grand totals, the balance-sheet equation, and the ties between parts. Each
+identity is a linear combination of fields that must equal zero; the
+registry is stored in long form and drives \code{\link[=accounting_check]{accounting_check()}} and
+\code{\link[=reconcile]{reconcile()}}. An identity is evaluated only when all of its fields are
+columns of the data, so 990 identities never apply to a 990PF panel and the
+reverse.
 }
 \details{
-A curated, high-confidence set of 58 identities over 214 fields (21 revenue,
-32 expense, 5 balance-sheet), built by
-\code{data-raw/build-accounting-identities.R} and validated against
-\link{field_concordance}. Only identities whose structure is unambiguous from the
-ef2 naming are included; vertical sums that would require 1xm write-in detail
-(expense line 24) or that hit form-version variants (balance-sheet cash
-lines) are deliberately omitted.
+A curated, high-confidence set built by
+\code{data-raw/build-accounting-identities.R}, with every variable validated
+against the concordance for its form:
+\itemize{
+\item Form 990: 58 identities over 214 fields of \link{field_concordance} (21
+revenue, 32 expense, 5 balance-sheet). Only identities whose structure
+is unambiguous from the ef2 naming are included; vertical sums that
+would require 1xm write-in detail (expense line 24) or that hit
+form-version variants (balance-sheet cash lines) are deliberately
+omitted.
+\item Form 990PF: 29 identities over 174 fields of \link{field_concordance_pf}
+(5 revenue, 8 expense, 11 balance-sheet, 5 net-asset), each holding for
+at least 98\% of 2021-2022 filings after \code{\link[=panel_normalize]{panel_normalize()}}. Net
+investment income and adjusted net income are omitted because the form
+floors them at zero.
+}
 }
 \seealso{
 \code{\link[=accounting_check]{accounting_check()}}, \code{\link[=reconcile]{reconcile()}}

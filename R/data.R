@@ -48,37 +48,83 @@
 #'   for Charitable Statistics, distributed under the Open Data Commons
 #'   Attribution License (ODC-By) v1.0.
 #'   <https://github.com/Nonprofit-Open-Data-Collective/concordance990>
-#' @seealso [concordance()], [fields_in_scope()]
+#' @seealso [concordance()], [fields_in_scope()], [field_concordance_pf]
 "field_concordance"
 
-#' Accounting-identity registry for IRS 990 financial fields
+#' Field normalization concordance for IRS 990PF efile variables
 #'
-#' The linear accounting identities that hold among 990 financial fields across
-#' the revenue (Part VIII), functional-expenses (Part IX), and balance-sheet
-#' (Part X) sections -- column splits, subtotals, net-of-expense lines, the
-#' revenue grand total, and the balance-sheet equation. Each identity is a
-#' linear combination of fields that must equal zero; the registry is stored in
-#' long form and drives [accounting_check()] and [reconcile()].
+#' The 990PF counterpart of [field_concordance]: one row per research-database
+#' variable in the separate 990PF release (`efilepf_`), covering the `PF-*`
+#' tables and the release's copies of the shared header (`F9-P00`), signature
+#' (`F9-P02`), and Schedule B (`SB-*`) tables. It is the basis for
+#' `concordance(form = "990PF")`.
+#'
+#' @format A data frame with the same columns as [field_concordance]. Here
+#'   `variable_scope` is `PF` for every form field (Schedule B included, since
+#'   in this release it is filed with a 990PF), or `HD`/`SG` for header and
+#'   signature fields; `forms` is accordingly `"990PF"` or `"*"`.
+#'
+#' @details
+#' Built by `data-raw/build-concordance.R` from the same concordance990 source
+#' and with the same type, money, and blank-meaning rules as
+#' [field_concordance]. Money fields are detected from the XSD amount types;
+#' every numeric field in the 990PF financial statements (Parts I-III) is a
+#' money field. Some numeric fields whose source rows carry no XSD type -- a
+#' handful of supporting-statement amounts among them -- are treated
+#' conservatively as `literal_missing`.
+#'
+#' @source concordance990, Nonprofit Open Data Collective / National Center
+#'   for Charitable Statistics, distributed under the Open Data Commons
+#'   Attribution License (ODC-By) v1.0.
+#'   <https://github.com/Nonprofit-Open-Data-Collective/concordance990>
+#' @seealso [concordance()], [field_concordance], [financial_fields()]
+"field_concordance_pf"
+
+#' Accounting-identity registry for IRS 990 and 990PF financial fields
+#'
+#' The linear accounting identities that hold among the financial fields of
+#' the full Form 990 -- the revenue (Part VIII), functional-expenses (Part IX),
+#' and balance-sheet (Part X) sections -- and of the Form 990PF financial
+#' statements (Parts I-III): column splits, subtotals, net-of-expense lines,
+#' grand totals, the balance-sheet equation, and the ties between parts. Each
+#' identity is a linear combination of fields that must equal zero; the
+#' registry is stored in long form and drives [accounting_check()] and
+#' [reconcile()]. An identity is evaluated only when all of its fields are
+#' columns of the data, so 990 identities never apply to a 990PF panel and the
+#' reverse.
 #'
 #' @format A data frame with one row per (identity, variable):
 #' \describe{
-#'   \item{identity}{Identity name, e.g. `rev_contributions_subtotal`.}
-#'   \item{section}{`"revenue"`, `"expenses"`, or `"balance_sheet"`.}
-#'   \item{form_scope}{Form the identity applies to (`"PC"`, the full 990).}
-#'   \item{type}{`column`, `subtotal`, `net`, or `grand_total`.}
+#'   \item{identity}{Identity name, e.g. `rev_contributions_subtotal`. 990PF
+#'     identities are prefixed `pf_`.}
+#'   \item{section}{`"revenue"`, `"expenses"`, `"balance_sheet"`, or (990PF
+#'     Part III) `"net_assets"`.}
+#'   \item{form_scope}{Form the identity applies to: `"PC"` (the full 990) or
+#'     `"PF"` (the 990PF).}
+#'   \item{type}{`column`, `subtotal`, `net`, `grand_total`, `balance`, or
+#'     `tie` (an equality between parts of the 990PF).}
 #'   \item{description}{Human-readable statement of the identity.}
 #'   \item{variable}{An ef2 `variable_name` appearing in the identity.}
 #'   \item{coefficient}{Its coefficient (identity holds when the weighted sum is 0).}
 #' }
 #'
 #' @details
-#' A curated, high-confidence set of 58 identities over 214 fields (21 revenue,
-#' 32 expense, 5 balance-sheet), built by
-#' `data-raw/build-accounting-identities.R` and validated against
-#' [field_concordance]. Only identities whose structure is unambiguous from the
-#' ef2 naming are included; vertical sums that would require 1xm write-in detail
-#' (expense line 24) or that hit form-version variants (balance-sheet cash
-#' lines) are deliberately omitted.
+#' A curated, high-confidence set built by
+#' `data-raw/build-accounting-identities.R`, with every variable validated
+#' against the concordance for its form:
+#' \itemize{
+#'   \item Form 990: 58 identities over 214 fields of [field_concordance] (21
+#'     revenue, 32 expense, 5 balance-sheet). Only identities whose structure
+#'     is unambiguous from the ef2 naming are included; vertical sums that
+#'     would require 1xm write-in detail (expense line 24) or that hit
+#'     form-version variants (balance-sheet cash lines) are deliberately
+#'     omitted.
+#'   \item Form 990PF: 29 identities over 174 fields of [field_concordance_pf]
+#'     (5 revenue, 8 expense, 11 balance-sheet, 5 net-asset), each holding for
+#'     at least 98% of 2021-2022 filings after [panel_normalize()]. Net
+#'     investment income and adjusted net income are omitted because the form
+#'     floors them at zero.
+#' }
 #'
 #' @seealso [accounting_check()], [reconcile()]
 "accounting_identities"

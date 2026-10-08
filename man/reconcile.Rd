@@ -2,7 +2,7 @@
 % Please edit documentation in R/accounting.R
 \name{reconcile}
 \alias{reconcile}
-\title{Reconcile 990 rows to accounting identities with the least change}
+\title{Reconcile 990 or 990PF rows to accounting identities with the least change}
 \usage{
 reconcile(
   data,
@@ -15,7 +15,7 @@ reconcile(
 )
 }
 \arguments{
-\item{data}{A data frame of 990 financial fields.}
+\item{data}{A data frame of 990 or 990PF financial fields.}
 
 \item{section}{Identity sections to enforce. \code{NULL} (default) uses all.}
 

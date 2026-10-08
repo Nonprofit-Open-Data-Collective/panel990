@@ -9,7 +9,8 @@ concordance(
   blank_meaning = NULL,
   forms = "*",
   table = NA_character_,
-  notes = NA_character_
+  notes = NA_character_,
+  form = "990"
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ as a separator. Use \code{"*"} for every form.}
 \item{table}{Optional source-table name for auditing.}
 
 \item{notes}{Optional explanatory notes.}
+
+\item{form}{Form family of the built-in concordance returned when \code{field}
+is \code{NULL}: \code{"990"} (default) or \code{"990PF"}. Ignored otherwise.}
 }
 \value{
 A \code{concordance} data frame with a list-column named \code{forms}.
@@ -37,8 +41,10 @@ encoding only and never creates missing organization-year rows.
 
 Called with no arguments, \code{concordance()} returns the package's built-in
 concordance for IRS 990 efile variables, derived from the concordance990
-xpath concordance (see \link{field_concordance}). Supply \code{field} and
-\code{blank_meaning} to build a custom concordance instead.
+xpath concordance (see \link{field_concordance}). \code{concordance(form = "990PF")}
+returns the built-in concordance for the 990PF release instead (see
+\link{field_concordance_pf}). Supply \code{field} and \code{blank_meaning} to build a custom
+concordance instead.
 }
 \seealso{
 \link{field_concordance} for the underlying data, \code{\link[=fields_in_scope]{fields_in_scope()}} to

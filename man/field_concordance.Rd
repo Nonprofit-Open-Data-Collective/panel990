@@ -60,6 +60,6 @@ money fields (by XSD type) become \code{implicit_zero}; checkboxes become
 current schema version, then the most frequent value.
 }
 \seealso{
-\code{\link[=concordance]{concordance()}}, \code{\link[=fields_in_scope]{fields_in_scope()}}
+\code{\link[=concordance]{concordance()}}, \code{\link[=fields_in_scope]{fields_in_scope()}}, \link{field_concordance_pf}
 }
 \keyword{datasets}

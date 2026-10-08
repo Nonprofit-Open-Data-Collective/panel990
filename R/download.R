@@ -4,6 +4,17 @@
   else file.path(root, filename)
 }
 
+# Cache location of one table-year file. The 990PF release publishes its own
+# copies of the shared header, signature, and Schedule B tables under the same
+# filenames as the 990 release, so PF files live in a `990PF` subdirectory.
+# 990 files keep the original `<path>/<year>/` layout, so existing caches are
+# reused as they are.
+.efile_cache_file <- function(base_path, source, year, filename) {
+  if (identical(.efile_source_form(source), "990PF"))
+    file.path(base_path, "990PF", as.character(year), filename)
+  else file.path(base_path, as.character(year), filename)
+}
+
 #' Download or reuse efile table files
 #'
 #' The file format follows `source$format`, so a cache built from the default
@@ -20,6 +31,10 @@
 #'
 #' Every call writes its own log under `<path>/logs` named for the run, so
 #' repeated runs accumulate rather than overwrite. See [retrieval_log()].
+#'
+#' Files are cached as `<path>/<year>/<table>-<year>.<ext>`. A 990PF source
+#' ([data_source()] with `form = "990PF"`) caches under `<path>/990PF/<year>/`
+#' instead, because the 990PF release reuses the shared table names.
 #'
 #' @section Timeouts:
 #' R's download timeout is a budget for an entire transfer, not a limit on how
@@ -76,7 +91,7 @@ download_tables <- function(
   for (year in years) for (i in seq_len(nrow(resolved))) {
     table <- resolved$table[[i]]
     filename <- .efile_filename(table, year, source$format)
-    destination <- file.path(base_path, as.character(year), filename)
+    destination <- .efile_cache_file(base_path, source, year, filename)
     resource <- .efile_resource(source$root, filename)
     row <- row + 1L
     outcome <- .p990_fetch(

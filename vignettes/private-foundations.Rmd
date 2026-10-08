@@ -1,0 +1,133 @@
+---
+title: "5. Private foundations (990PF)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{5. Private foundations (990PF)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(panel990)
+```
+
+Private foundations file Form 990PF rather than the Form 990 or 990EZ. NCCS
+publishes their efile data as a separate release with its own tables, and
+`panel990` reads it through the same machinery as the 990 release. This
+tutorial covers what is different.
+
+> The download chunks below are shown but **not executed** in this vignette;
+> they require network access to the NCCS bucket. Run them in a live session.
+
+## One release per source
+
+Each NCCS release is published as two databases:
+
+| Form family | Filers | S3 prefix |
+|---|---|---|
+| `"990"` | Form 990 and 990EZ, told apart by `RETURN_TYPE` | `efile_` |
+| `"990PF"` | Form 990PF | `efilepf_` |
+
+A `data_source()` reads exactly one of them, chosen with `form`:
+
+```{r}
+data_source(form = "990PF")$root
+```
+
+A panel never mixes the two. The 990PF financial statements are a different
+structure from the 990 parts, not a relabelled copy of them, so there is no
+single set of columns on which a foundation and a public charity line up. Build
+990 and 990PF panels separately.
+
+## 990PF tables
+
+The 990PF release has its own catalog. Its parts get their own `PF` aliases, so
+no short name means one table in a 990 source and another in a 990PF source:
+
+```{r}
+pf <- table_catalog(form = "990PF")
+pf[!is.na(pf$alias), ]
+```
+
+`P00` is the one alias the two releases share, because both publish the
+filing header under the same name, `F9-P00-T00-HEADER`. The 990PF release also
+carries its own copies of the signature and Schedule B tables.
+
+Asking for a table from the other release is an error, raised before any
+download starts:
+
+```{r, error = TRUE}
+resolve_tables("PF01", data_source())          # a 990 source
+resolve_tables("P08", data_source(form = "990PF"))
+```
+
+## Building a panel
+
+`panelize_pf()` is `panelize()` with a 990PF source. It defaults to the 990PF
+header and the Part I and Part II financial statements:
+
+```{r, eval = FALSE}
+pf <- panelize_pf(years = 2021:2022, backend = "duckdb", cache = "none")
+```
+
+Everything else works as it does for a 990 panel: sample frames, the BMF
+join, deduplication, and the provenance log. Retained downloads are cached under
+`<path>/990PF/<year>/`, because the 990PF release reuses the shared table
+names and its files must not overwrite the 990 release's.
+
+## Reading the 990PF financial statements
+
+Part I (`PF01`) reports each line in up to four columns, marked by the suffix:
+
+| Suffix | Column |
+|---|---|
+| `_BOOKS` | (a) revenue and expenses per books |
+| `_NET` | (b) net investment income |
+| `_ADJ_NET` | (c) adjusted net income |
+| `_DISBMT` | (d) disbursements for charitable purposes |
+
+Part II (`PF02`) reports the balance sheet at beginning- and end-of-year book
+value (`_BOY_BV`, `_EOY_BV`) and end-of-year fair market value (`_EOY_FMV`).
+Part III (`PF03`) reconciles net assets from the beginning to the end of the
+year.
+
+The bundled `field_concordance_pf` describes every 990PF field, and
+`financial_fields(form = "990PF")` lists the money fields in Parts I-III:
+
+```{r}
+head(financial_fields(form = "990PF"))
+```
+
+## Blanks and form scope
+
+A 990PF return is one form, so form scope, which separates full-990 from
+990EZ fields, does not apply. A sample frame that selects columns by a 990
+scope such as `"both"` is an error in a 990PF panel; select by `tables` or
+`vars` instead.
+
+Blanks are common in the 990PF financial statements, and `panel_normalize()`
+reads them the same way it does for the 990: a blank money field on a filed
+return is zero, while a row with no financial data at all is left untouched.
+The same call works for either kind of panel:
+
+```{r, eval = FALSE}
+pf <- panel_normalize(pf)
+```
+
+## Accounting identities
+
+`accounting_identities` includes 29 990PF identities, marked
+`form_scope == "PF"`. They cover the Part I column totals, the Part II
+balance-sheet equation and subtotals, and the Part III reconciliation and its
+ties to Parts I and II. `accounting_check()` evaluates whichever identities
+have all their fields in the data, so the call is the same as for a 990 panel:
+
+```{r, eval = FALSE}
+accounting_check(panel_data(pf), section = "balance_sheet")
+```
+
+```{r}
+ids <- accounting_identities[accounting_identities$form_scope == "PF", ]
+unique(ids[, c("identity", "section", "description")])[1:6, ]
+```

@@ -7,8 +7,10 @@
 #'
 #' Called with no arguments, `concordance()` returns the package's built-in
 #' concordance for IRS 990 efile variables, derived from the concordance990
-#' xpath concordance (see [field_concordance]). Supply `field` and
-#' `blank_meaning` to build a custom concordance instead.
+#' xpath concordance (see [field_concordance]). `concordance(form = "990PF")`
+#' returns the built-in concordance for the 990PF release instead (see
+#' [field_concordance_pf]). Supply `field` and `blank_meaning` to build a custom
+#' concordance instead.
 #'
 #' @param field Character vector of source field names. `NULL` (the default)
 #'   returns the built-in 990 concordance.
@@ -19,6 +21,8 @@
 #'   as a separator. Use `"*"` for every form.
 #' @param table Optional source-table name for auditing.
 #' @param notes Optional explanatory notes.
+#' @param form Form family of the built-in concordance returned when `field`
+#'   is `NULL`: `"990"` (default) or `"990PF"`. Ignored otherwise.
 #'
 #' @return A `concordance` data frame with a list-column named `forms`.
 #' @seealso [field_concordance] for the underlying data, [fields_in_scope()] to
@@ -29,10 +33,11 @@ concordance <- function(
     blank_meaning = NULL,
     forms = "*",
     table = NA_character_,
-    notes = NA_character_
+    notes = NA_character_,
+    form = "990"
 ) {
   if (is.null(field)) {
-    fc <- .field_concordance()
+    fc <- .field_concordance(.efile_form(form))
     return(.concordance_build(
       field = fc$variable_name,
       blank_meaning = fc$blank_meaning,
@@ -97,12 +102,25 @@ concordance <- function(
   out
 }
 
-# Load the bundled field concordance without relying on lazy-data binding,
+# Load a bundled field concordance without relying on lazy-data binding,
 # keeping R CMD check free of "no visible binding" notes.
-.field_concordance <- function() {
+.field_concordance <- function(form = "990") {
+  name <- if (identical(form, "990PF")) "field_concordance_pf" else "field_concordance"
   env <- new.env(parent = emptyenv())
-  utils::data("field_concordance", package = "panel990", envir = env)
-  env$field_concordance
+  utils::data(list = name, package = "panel990", envir = env)
+  env[[name]]
+}
+
+# Every known efile variable across both releases, one row per name. The
+# releases share the header, signature, and Schedule B fields; those rows are
+# taken from the 990 concordance (the two agree on their types). Used where a
+# variable only has to be recognized -- type casting and sample-frame column
+# resolution -- rather than interpreted under one form's rules.
+.field_dictionary <- function() {
+  cols <- c("variable_name", "variable_scope", "data_type_simple", "rdb_table")
+  fc <- .field_concordance("990")[, cols]
+  pf <- .field_concordance("990PF")[, cols]
+  rbind(fc, pf[!pf$variable_name %in% fc$variable_name, , drop = FALSE])
 }
 
 #' Select efile fields by form scope
@@ -112,14 +130,21 @@ concordance <- function(
 #' both the full 990 and the 990EZ, which avoids conflating a structural blank
 #' (field absent from the 990EZ) with a reported blank.
 #'
+#' Form scope is a 990-release concept. A 990PF return is one form, so the
+#' 990PF release has no structural blanks of this kind; `"990PF"` simply
+#' returns every variable in [field_concordance_pf].
+#'
 #' @param form One of `"both"` (present on the full 990 and the 990EZ),
-#'   `"990"` (present on the full 990), `"990EZ"` (present on the 990EZ), or
-#'   `"all"`. Header and signature fields count as present on every form.
+#'   `"990"` (present on the full 990), `"990EZ"` (present on the 990EZ),
+#'   `"all"` (every 990-release variable), or `"990PF"` (every 990PF-release
+#'   variable). Header and signature fields count as present on every form.
 #' @return A character vector of `variable_name` values.
-#' @seealso [concordance()], [field_concordance].
+#' @seealso [concordance()], [field_concordance], [field_concordance_pf].
 #' @export
-fields_in_scope <- function(form = c("both", "990", "990EZ", "all")) {
+fields_in_scope <- function(form = c("both", "990", "990EZ", "all", "990PF")) {
   form <- match.arg(form)
+  if (form == "990PF")
+    return(sort(unique(.field_concordance("990PF")$variable_name)))
   fc <- .field_concordance()
   keep <- switch(
     form,

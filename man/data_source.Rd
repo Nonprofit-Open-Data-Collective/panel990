@@ -8,7 +8,8 @@ data_source(
   root = NULL,
   version = .EFILE_VERSION,
   format = .efile_default_format(),
-  aliases = .EFILE_ALIASES
+  aliases = NULL,
+  form = "990"
 )
 }
 \arguments{
@@ -21,17 +22,38 @@ data_source(
 \item{format}{Source file format: \code{"parquet"} (the default, when a parquet
 reader is installed) or \code{"csv"}. See the Source format section.}
 
-\item{aliases}{Named character vector mapping short aliases to table names.}
+\item{aliases}{Named character vector mapping short aliases to table names.
+\code{NULL} (default) uses the form family's aliases: \code{P00}, \code{P01}, \code{P08}-\code{P12}
+and \code{A01} for \code{"990"}; \code{P00} and \code{PF00}-\code{PF03} for \code{"990PF"}.}
+
+\item{form}{Form family: \code{"990"} (default, Form 990 and 990EZ filers) or
+\code{"990PF"} (private foundations). See the Form family section.}
 }
 \value{
-An \code{data_source} object carrying \code{root}, \code{version}, \code{format}, and
-\code{aliases}.
+An \code{data_source} object carrying \code{root}, \code{version}, \code{format},
+\code{aliases}, and \code{form}.
 }
 \description{
 The NCCS efile release is versioned. Leave \code{root} as \code{NULL} to point at a
 published release by \code{version}, or pass \code{root} explicitly to read from a
 local directory or a mirror, in which case \code{version} is recorded as \code{NA}.
 }
+\section{Form family}{
+
+Each release is published as two separate databases, and a source reads
+exactly one of them:
+\itemize{
+\item \code{form = "990"} (the default): full Form 990 and 990EZ filers
+together, told apart by \code{RETURN_TYPE}.
+\item \code{form = "990PF"}: private foundations filing Form 990PF.
+}
+The two are not combined in one panel: the 990PF financial statements have
+a different structure from the 990 parts. The form family sets the URL
+prefix (\code{efile_} or \code{efilepf_}), the default \code{aliases}, the
+\code{\link[=table_catalog]{table_catalog()}}, and the cache subdirectory used by \code{\link[=download_tables]{download_tables()}}.
+\code{\link[=panelize_pf]{panelize_pf()}} builds a panel from the 990PF release.
+}
+
 \section{Source format}{
 
 A release publishes each table-year under one stem in two formats, so
@@ -61,4 +83,5 @@ explicit \code{format = "parquet"} is kept and fails at read time instead.
 data_source()                          # current release, parquet
 data_source(version = "v2_2")          # pin the previous release
 data_source(format = "csv")            # same release, CSV files
+data_source(form = "990PF")            # the 990PF release
 }

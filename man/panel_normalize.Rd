@@ -25,12 +25,14 @@ panel_normalize(
 \code{"normalize_audit"} attribute records what was changed.
 }
 \description{
-Interprets blank core-990 financial cells as zero, respecting form scope and
+Interprets blank core financial cells as zero, respecting form scope and
 protecting non-filer rows:
 \itemize{
-\item both-form (\code{PZ}) fields are zeroed for every filer;
-\item full-990-only (\code{PC}) fields are zeroed only for non-990EZ filers (they
+\item both-form (\code{PZ}) fields are zeroed for every 990 and 990EZ filer;
+\item full-990-only (\code{PC}) fields are zeroed only for full 990 filers (they
 are out of scope on the 990EZ and left \code{NA});
+\item 990PF (\code{PF}) fields are zeroed only for 990PF filers, so the same
+call serves a panel from either release (see \code{\link[=panelize_pf]{panelize_pf()}});
 \item rows with \strong{no} financial data at all (a non-filer / shell record)
 are left untouched -- no fabricated zeros.
 }

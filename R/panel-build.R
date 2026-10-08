@@ -45,7 +45,9 @@
 #'   prefilter reads and merges; `select` rules project columns.
 #' @param tables Aliases or literal table names.
 #' @param years Tax years.
-#' @param source Efile source configuration.
+#' @param source Efile source configuration. Its form family decides which
+#'   release is read: the default reads Form 990 and 990EZ filers; see
+#'   [panelize_pf()] for private foundations.
 #' @param bmf Append BMF fields: `"auto"` (default -- attach when the frame
 #'   references a BMF field), `FALSE`, `TRUE` (the NCCS master), or a BMF source
 #'   (data frame, path, or URL).
@@ -99,6 +101,9 @@ panelize <- function(
     if (is.na(.sfw_key(sfw, "record")))
       sfw <- add_key(sfw, "record", "unique_record", "OBJECTID")
   }
+  .sfw_check_form_scope(sfw, .efile_source_form(source))
+  # Fail on a table from the other form family before any download starts.
+  resolve_tables(tables, source)
 
   # A `require` rule states a cross-year condition on the source, so it has to
   # be answered before the read it is meant to narrow. Resolving it here turns
@@ -175,4 +180,61 @@ panelize <- function(
     bmf_diagnostics = bmf_diagnostics,
     source = source, backend = backend
   ), class = "panel")
+}
+
+#' Build a panel of 990PF filers
+#'
+#' [panelize()] for the 990PF release: private foundations, which file Form
+#' 990PF and are published separately from Form 990 and 990EZ filers. The
+#' source is `data_source(form = "990PF")`; every other argument passes through
+#' to [panelize()], so the panel is built, filtered, and logged the same way.
+#'
+#' The 990PF release has its own tables and aliases -- see
+#' `table_catalog(form = "990PF")`:
+#' \itemize{
+#'   \item `PF00` -- `PF-P00-T00-HEADER` (990PF-specific header items).
+#'   \item `PF01` -- `PF-P01-T00-REVENUE-EXPENSE` (Part I). Each line is
+#'     reported in up to four columns: `_BOOKS` (revenue and expenses per
+#'     books), `_NET` (net investment income), `_ADJ_NET` (adjusted net
+#'     income), and `_DISBMT` (disbursements for charitable purposes).
+#'   \item `PF02` -- `PF-P02-T00-BALANCE-SHEET` (Part II), with beginning- and
+#'     end-of-year book value (`_BOY_BV`, `_EOY_BV`) and end-of-year fair
+#'     market value (`_EOY_FMV`).
+#'   \item `PF03` -- `PF-P03-T00-NET-ASSET-FUND-BALANCE-CHANGE` (Part III).
+#'   \item `P00` -- `F9-P00-T00-HEADER`, the header shared with the 990 release.
+#' }
+#'
+#' A 990PF panel cannot be combined with 990 or 990EZ filers in one call, and
+#' form scope does not apply: a frame whose `select` rule uses a 990 scope
+#' such as `"both"` is an error.
+#'
+#' @param sfw Optional [create_sfw()] sample frame.
+#' @param tables Aliases or literal 990PF table names. Defaults to the
+#'   990PF header and the Part I and Part II financial statements.
+#' @param years Tax years.
+#' @param version Published release, such as `"v2_3"`.
+#' @param format Source file format, `"parquet"` or `"csv"`.
+#' @param root Optional base URL or local directory holding a copy of the
+#'   990PF release; overrides `version`.
+#' @param ... Further arguments to [panelize()], such as `backend`, `cache`,
+#'   `path`, or `bmf`.
+#' @return A `panel` (see [panelize()]).
+#' @seealso [panelize()], [data_source()], [financial_fields()].
+#' @examples
+#' \dontrun{
+#' pf <- panelize_pf(years = 2021:2022, backend = "duckdb", cache = "none")
+#' pf <- panel_normalize(pf)
+#' accounting_check(pf$data, section = "balance_sheet")
+#' }
+#' @export
+panelize_pf <- function(sfw = NULL, tables = c("PF00", "PF01", "PF02"), years,
+                        version = efile_version(),
+                        format = .efile_default_format(), root = NULL, ...) {
+  if ("source" %in% names(match.call(expand.dots = FALSE)$...))
+    stop("panelize_pf() builds its own 990PF source; pass `version`, `format`, ",
+         "or `root`, or call panelize() with ",
+         "`source = data_source(form = \"990PF\")`.", call. = FALSE)
+  panelize(sfw = sfw, tables = tables, years = years,
+           source = data_source(root = root, version = version, format = format,
+                                form = "990PF"), ...)
 }
