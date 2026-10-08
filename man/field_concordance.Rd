@@ -36,10 +36,10 @@ scope or type and a value was chosen by the build rule.}
 }
 }
 \source{
-IRS Efile Master Concordance File, Nonprofit Open Data Collective /
-National Center for Charitable Statistics, distributed under the Open Data
-Commons Attribution License (ODC-By) v1.0.
-\url{https://github.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file}
+concordance990, Nonprofit Open Data Collective / National Center
+for Charitable Statistics, distributed under the Open Data Commons
+Attribution License (ODC-By) v1.0.
+\url{https://github.com/Nonprofit-Open-Data-Collective/concordance990}
 }
 \usage{
 field_concordance
@@ -51,8 +51,9 @@ interpretation of a blank source value, and is the basis for the built-in
 concordance returned by \code{\link[=concordance]{concordance()}}.
 }
 \details{
-Built from the IRS Efile Master Concordance File by
-\code{data-raw/build-concordance.R}. Blank meanings are assigned by type: numeric
+Built from the concordance990 xpath concordance (the successor to the IRS
+Efile Master Concordance File) by \code{data-raw/build-concordance.R}, keeping
+the 990/990EZ tables and excluding the separate 990PF (\verb{PF-*}) tables. Blank meanings are assigned by type: numeric
 money fields (by XSD type) become \code{implicit_zero}; checkboxes become
 \code{implicit_false}; text, dates, and non-money numerics become
 \code{literal_missing}. Conflicting source metadata is resolved by preferring the

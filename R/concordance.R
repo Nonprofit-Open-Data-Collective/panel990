@@ -6,8 +6,8 @@
 #' encoding only and never creates missing organization-year rows.
 #'
 #' Called with no arguments, `concordance()` returns the package's built-in
-#' concordance for IRS 990 efile variables, derived from the IRS Efile Master
-#' Concordance File (see [field_concordance]). Supply `field` and
+#' concordance for IRS 990 efile variables, derived from the concordance990
+#' xpath concordance (see [field_concordance]). Supply `field` and
 #' `blank_meaning` to build a custom concordance instead.
 #'
 #' @param field Character vector of source field names. `NULL` (the default)
