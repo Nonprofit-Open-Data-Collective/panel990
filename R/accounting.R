@@ -29,16 +29,18 @@
   s$v[, k, drop = FALSE] %*% (diag(1 / s$d[k], sum(k)) %*% t(s$u[, k, drop = FALSE]))
 }
 
-#' Check 990 rows against accounting identities
+#' Check 990 or 990PF rows against accounting identities
 #'
 #' Evaluates the bundled [accounting_identities] against each row of a panel and
 #' reports the residual of every identity that can be evaluated (all of its
 #' variables present as columns). A residual is `total - sum(parts)`; it should
 #' be zero.
 #'
-#' @param data A data frame of 990 financial fields (e.g. a merged panel).
+#' @param data A data frame of 990 or 990PF financial fields (e.g. a merged
+#'   panel). Only identities whose fields are all present are evaluated.
 #' @param section Identity sections to check (`"revenue"`, `"expenses"`,
-#'   `"balance_sheet"`). `NULL` (default) checks all.
+#'   `"balance_sheet"`, and for the 990PF `"net_assets"`). `NULL` (default)
+#'   checks all.
 #' @param id,time Identifier columns carried onto the report (if present).
 #' @param tol Absolute tolerance for calling a residual a violation.
 #' @param violations_only Return only the rows that violate an identity
@@ -71,7 +73,7 @@ accounting_check <- function(data, section = NULL, id = "EIN2",
   report
 }
 
-#' Reconcile 990 rows to accounting identities with the least change
+#' Reconcile 990 or 990PF rows to accounting identities with the least change
 #'
 #' Adjusts values as little as possible (weighted least squares) so that each
 #' row satisfies the bundled [accounting_identities]. Columns named in `fixed`
@@ -79,7 +81,7 @@ accounting_check <- function(data, section = NULL, id = "EIN2",
 #' to change (larger = moves less). Only rows with no missing values in the
 #' relevant fields are reconciled.
 #'
-#' @param data A data frame of 990 financial fields.
+#' @param data A data frame of 990 or 990PF financial fields.
 #' @param section Identity sections to enforce. `NULL` (default) uses all.
 #' @param fixed Character vector of columns to hold fixed (e.g. reported totals).
 #' @param weights Optional named vector of per-variable weights (default equal).

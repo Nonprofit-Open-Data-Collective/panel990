@@ -102,8 +102,9 @@ Other years were spot-checked only.
   - `PF-P01-T00-REVENUE-EXPENSE` has four columns for each line: `_BOOKS`,
     `_NET` (net investment income), `_ADJ_NET`, and `_DISBMT`.
   - `PF-P02-T00-BALANCE-SHEET` has `_BOY_BV`, `_EOY_BV`, and `_EOY_FMV`.
-- **PF type metadata.** In concordance990 `data_type_xsd` is blank for
-  2,407 of the 2,524 PF rows, and no PF row is typed `USAmount*`.
+- **PF type metadata.** concordance990 types 513 PF rows as `USAmount*`, so the
+  XSD money rule panel990 uses for the 990 works for PF too. (An earlier
+  draft of this plan said otherwise; that came from a misread of the PF file.)
 
 ### What breaks or misbehaves for PF data today
 
@@ -183,47 +184,47 @@ Where behavior really differs, dispatch on the form family:
 
 ### Implementation steps
 
-1. **Refresh for v2.3, 990 side only.** Bump the version, rebuild
-   `field_concordance` from concordance990, regenerate the table catalog, and
-   fix the tests. Then run the existing test suite and one live
-   `panelize(tables = c("P00","P01","P08"), years = 2021:2022)` for each
-   format.
-2. **Upstream, in concordance990.** Add `money_field` and `blank_meaning` to
-   the data dictionary for both forms. PF has no `USAmount*` XSD types, so
-   money detection for PF must be decided there, for example from
-   `data_type_simple` plus the column suffixes `_BOOKS`, `_NET`, `_ADJ_NET`,
-   `_DISBMT`, `_BV`, `_FMV`, and `_AMT`.
-   - Mark the shaded PF cells as structurally missing.
-   - panel990's build script then consumes these columns instead of deriving
-     them, for both the 990 and the PF concordance.
-3. **Make `data_source()` form-aware.**
-   - Add the `form` field and the prefix mapping.
-   - Add a PF alias set with no names reused from the 990 aliases:
-     - `PF00` maps to `PF-P00-T00-HEADER`.
-     - `PF01` maps to `PF-P01-T00-REVENUE-EXPENSE`.
-     - `PF02` maps to `PF-P02-T00-BALANCE-SHEET`.
-     - `PF03` maps to `PF-P03-T00-NET-ASSET-FUND-BALANCE-CHANGE`.
-   - `P00` keeps meaning `F9-P00-T00-HEADER` in both sources. It is the same
-     table name in both releases, so the alias does not change meaning.
-   - Add a PF catalog, generated from `concordance990::table_names()`.
-   - Change the cache path to `path/<efile|efilepf>/<year>/...`. Keep a
-     fallback that reads the old 990 layout. This fixes the collision on the
-     shared header, signature, and Schedule B filenames.
-4. **Add a PF concordance.** Build `field_concordance_pf` from
-   `concordance990::data_dictionary("F990PF")`. The type authority and
-   `normalize()` select the 990 or PF concordance by the source's form.
-5. **PF financial helpers and `panelize_pf()`.**
-   - Core PF financials are `PF-P01`, `PF-P02`, and `PF-P03`.
-   - Write a PF accounting-identity registry:
-     - P01 total revenue
-     - P01 total operating expenses for each column
-     - the P01 excess of revenue over expenses
-     - P02 total assets = total liabilities + net assets, at BOY and EOY
-   - Validate the registry on one year of data.
-   - Add the `panelize_pf()` wrapper.
-6. **Scope and sample frame.** Error on `scope` for PF sources.
-7. **Documentation.** Write a vignette, "Working with private foundations".
-   Add a `table_catalog(form = "990PF")` example.
+1. **Done: refresh for v2.3, 990 side only.** See
+   [Nonprofit-Open-Data-Collective/panel990#5](https://github.com/Nonprofit-Open-Data-Collective/panel990/pull/5).
+2. **Done: 990PF integration in panel990** (branch `feat/990pf`).
+   - **Source.** `data_source(form = "990PF")` reads the `efilepf_` prefix and
+     carries its own aliases. The aliases are `P00`, `PF00`, `PF01`, `PF02`,
+     and `PF03`; no 990 alias is reused with a different meaning. The source
+     also carries its own 84-table catalog.
+   - **Wrong-release requests.** `resolve_tables()` stops when a table from
+     the other release is requested, before any download starts.
+   - **Cache.** PF files are cached under `<path>/990PF/<year>/`. The 990
+     layout is unchanged, so existing caches still work.
+   - **Concordance.** `field_concordance_pf` has 1,093 variables. It is built
+     by the same script and with the same rules as `field_concordance`.
+     - **Correction to the earlier finding:** concordance990 *does* type most
+       PF amounts as `USAmount*` (513 rows). The XSD money rule therefore
+       works for PF, and every numeric field in Parts I-III is a money field.
+   - **Types.** Parquet types come from one lookup over both concordances.
+     The read paths do not need to know the form family.
+   - **Financial helpers.**
+     - `financial_fields(form = "990PF")` returns the PF core fields.
+     - `panel_normalize()` zeroes PF fields for 990PF rows only.
+   - **Accounting identities.** There are 29 PF identities, with
+     `form_scope == "PF"`. Each one holds for at least 98% of 2021-2022
+     filings.
+   - **`panelize_pf()`.** The wrapper is added. A 990 form scope in a PF
+     frame is an error.
+   - **Vignette.** Added a fifth tutorial, "Private foundations (990PF)".
+   - **Bug fix.** `panel_normalize()` always reported 0 values zeroed. The
+     data was zeroed correctly; only the count in the message and audit was
+     wrong.
+3. **Next, upstream in concordance990.** Add `money_field` and
+   `blank_meaning` to the data dictionary for both forms, so the rule lives in
+   one place. panel990's build script would then read these columns instead
+   of deriving them.
+   - **Money flags.** These can start from the XSD rule panel990 uses now.
+     Review the PF numeric fields that have no XSD type and are therefore
+     treated as `literal_missing`, such as the `PF_AX19`/`PF_AX21` sale
+     amounts and `PF_13_UNDIST_INCOME_PY_*`.
+   - **Missing PF fields.** Five PF text fields are published in v2.3 but
+     absent from the concordance: `PF_AX09_COMP_*`, `PF_AX14_COMP_EMPL_*`,
+     and `PF_AX44_CAUSE_EXPLANATION`.
 
 ### Deferred
 

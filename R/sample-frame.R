@@ -278,7 +278,11 @@ get_keys <- function(sfw) {
 #'   \item{`label`}{`map` (an id-named vector) or `from` (a data frame) with
 #'     `keys` and `label` column names; `label` also names the derived column.}
 #'   \item{`select`}{`vars`, `scope`, `tables`, `drop` (resolved via
-#'     [field_concordance]).}
+#'     [field_concordance] and [field_concordance_pf]). `scope` takes a
+#'     [fields_in_scope()] value or a `variable_scope` code; the 990-vs-990EZ
+#'     scopes do not apply to a 990PF panel, which [panelize_pf()] rejects.
+#'     `tables` takes table-name prefixes, a part code such as `"P08"`, or a
+#'     990PF part code such as `"PF01"`.}
 #'   \item{`dedup`}{`group`, `partial`, `amended`, `timestamp` column overrides
 #'     for [deduplicate()].}
 #'   \item{`refresh`}{`fn` -- a function taking and returning a data frame.}
@@ -511,16 +515,19 @@ views <- function(df, sfw, verbose = TRUE) {
     tu <- toupper(trimws(t))
     if (grepl("^P[0-9]{2}$", tu))
       res <- c(res, all_tables[grepl(paste0("-", tu, "-"), all_tables)])
+    else if (grepl("^PF[0-9]{2}$", tu))
+      res <- c(res, all_tables[startsWith(all_tables,
+                                          paste0("PF-P", substr(tu, 3L, 4L), "-"))])
     else res <- c(res, all_tables[startsWith(toupper(all_tables), tu)])
   }
   unique(res)
 }
 
 .sfw_resolve_columns <- function(cs, df_names) {
-  fc <- .field_concordance()
+  fc <- .field_dictionary()
   dict_vars <- fc$variable_name
   hd_vars   <- fc$variable_name[fc$variable_scope == "HD"]
-  form_vals <- c("both", "990", "990EZ", "all")
+  form_vals <- c("both", "990", "990EZ", "all", "990PF")
   scope_vars <- if (is.null(cs$scope)) dict_vars else if (all(cs$scope %in% form_vals))
     unique(unlist(lapply(cs$scope, fields_in_scope), use.names = FALSE)) else
       fc$variable_name[fc$variable_scope %in% toupper(cs$scope)]
@@ -851,17 +858,34 @@ summary.sfw <- function(object, ...) {
   sels <- Filter(function(r) identical(r$type, "select") && isTRUE(r$active),
                  sfw$rules)
   if (!length(sels)) return(character(0))
-  fc <- .field_concordance()
+  fc <- .field_dictionary()
   scope <- unique(unlist(lapply(sels, `[[`, "scope")))
   tables <- unique(unlist(lapply(sels, `[[`, "tables")))
   keep <- unique(unlist(lapply(sels, `[[`, "vars")))
-  form_vals <- c("both", "990", "990EZ", "all")
+  form_vals <- c("both", "990", "990EZ", "all", "990PF")
   scope_vars <- if (!length(scope)) character(0) else if (all(scope %in% form_vals))
     unique(unlist(lapply(scope, fields_in_scope), use.names = FALSE)) else
       fc$variable_name[fc$variable_scope %in% toupper(scope)]
   table_vars <- if (!length(tables)) character(0) else
     fc$variable_name[fc$rdb_table %in% .sfw_expand_tables(tables, fc)]
   unique(c(fc$variable_name[fc$variable_scope == "HD"], scope_vars, table_vars, keep))
+}
+
+# Form scope separates full-990 from 990EZ fields. A 990PF panel has one form,
+# so a frame that selects by a 990 scope is a mistake there: it would silently
+# drop every 990PF field. Only "990PF", "PF", and the structural HD/SG codes
+# make sense.
+.sfw_check_form_scope <- function(sfw, form) {
+  if (!identical(form, "990PF")) return(invisible(TRUE))
+  sels <- Filter(function(r) identical(r$type, "select") && isTRUE(r$active),
+                 sfw$rules)
+  scope <- unique(unlist(lapply(sels, `[[`, "scope")))
+  bad <- scope[!toupper(scope) %in% c("990PF", "PF", "HD", "SG")]
+  if (length(bad))
+    stop("Form scope ", paste0("\"", bad, "\"", collapse = ", "),
+         " does not apply to a 990PF panel: a 990PF return is a single form. ",
+         "Select 990PF columns with `tables` or `vars` instead.", call. = FALSE)
+  invisible(TRUE)
 }
 
 # Does the frame reference any BMF *trait* field? Drives bmf="auto". The join

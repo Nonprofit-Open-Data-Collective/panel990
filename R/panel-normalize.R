@@ -8,6 +8,14 @@
   is.na(x) | trimws(as.character(x)) == ""
 }
 
+# Rows filed on a given return type. Without the return-type column, `fallback`
+# decides.
+.pn_is_form <- function(data, form, type, fallback) {
+  if (form %in% names(data))
+    return(toupper(trimws(as.character(data[[form]]))) == type)
+  fallback
+}
+
 # 990EZ filers: RETURN_TYPE == "990EZ", or (fallback) Part I revenue present
 # while the Part VIII total is absent.
 .pn_detect_ez <- function(data, form) {
@@ -23,34 +31,52 @@
 #' Core 990 financial fields
 #'
 #' Money fields eligible for zero-imputation. `"core"` (default) restricts to the
-#' primary financial statements -- Part I summary and Parts VIII--XI (revenue,
-#' expenses, balance sheet, reconciliation) -- where a blank on the filed form
-#' unambiguously means zero. `"all"` returns every money field (including
-#' schedules), where a blank may instead mean "schedule not filed".
+#' primary financial statements, where a blank on the filed form unambiguously
+#' means zero. `"all"` returns every money field (including schedules), where a
+#' blank may instead mean "schedule not filed".
+#'
+#' The core statements depend on the form family:
+#' \itemize{
+#'   \item `"990"`: Part I summary and Parts VIII--XI (revenue, expenses,
+#'     balance sheet, reconciliation).
+#'   \item `"990PF"`: Parts I--III (revenue and expenses, balance sheet,
+#'     changes in net assets), in every column the form reports (books, net
+#'     investment income, adjusted net income, disbursements; book and fair
+#'     market value).
+#' }
 #'
 #' @param fields `"core"` (default) or `"all"`.
 #' @param scope Optional form-scope filter (`"PC"`, `"PZ"`, `"EZ"`, `"HD"`,
-#'   `"SG"`).
+#'   `"SG"`, or `"PF"`).
+#' @param form Form family: `"990"` (default) or `"990PF"`.
 #' @return A character vector of `variable_name`s.
-#' @seealso [panel_normalize()], [field_concordance].
+#' @seealso [panel_normalize()], [field_concordance], [field_concordance_pf].
+#' @examples
+#' length(financial_fields())
+#' head(financial_fields(form = "990PF"))
 #' @export
-financial_fields <- function(fields = c("core", "all"), scope = NULL) {
+financial_fields <- function(fields = c("core", "all"), scope = NULL,
+                             form = "990") {
   fields <- match.arg(fields)
-  fc <- .field_concordance()
+  form <- .efile_form(form)
+  fc <- .field_concordance(form)
+  core <- if (form == "990PF") "^PF-P0[1-3]-" else "^F9-P(01|08|09|10|11)-"
   keep <- fc$money_field
-  if (fields == "core") keep <- keep & grepl("^F9-P(01|08|09|10|11)-", fc$rdb_table)
+  if (fields == "core") keep <- keep & grepl(core, fc$rdb_table)
   if (!is.null(scope)) keep <- keep & fc$variable_scope %in% scope
   fc$variable_name[keep]
 }
 
 #' Normalize blank financial fields to zero, form-scoped
 #'
-#' Interprets blank core-990 financial cells as zero, respecting form scope and
+#' Interprets blank core financial cells as zero, respecting form scope and
 #' protecting non-filer rows:
 #' \itemize{
-#'   \item both-form (`PZ`) fields are zeroed for every filer;
-#'   \item full-990-only (`PC`) fields are zeroed only for non-990EZ filers (they
+#'   \item both-form (`PZ`) fields are zeroed for every 990 and 990EZ filer;
+#'   \item full-990-only (`PC`) fields are zeroed only for full 990 filers (they
 #'     are out of scope on the 990EZ and left `NA`);
+#'   \item 990PF (`PF`) fields are zeroed only for 990PF filers, so the same
+#'     call serves a panel from either release (see [panelize_pf()]);
 #'   \item rows with **no** financial data at all (a non-filer / shell record)
 #'     are left untouched -- no fabricated zeros.
 #' }
@@ -83,8 +109,15 @@ panel_normalize <- function(data, fields = c("core", "all"),
   pz  <- intersect(financial_fields(fields, scope = c("PZ", "HD", "SG")), names(data))
   pc  <- intersect(financial_fields(fields, scope = "PC"), names(data))
   ezf <- intersect(financial_fields(fields, scope = "EZ"), names(data))
+  pff <- intersect(financial_fields(fields, scope = "PF", form = "990PF"),
+                   names(data))
+  # Without a return-type column, a frame carrying 990PF fields and no 990
+  # fields is a 990PF frame.
+  pf <- .pn_is_form(data, form, "990PF",
+                    rep(length(pff) > 0L && !length(c(pz, pc, ezf)), nrow(data)))
+  ez <- ez & !pf
 
-  present <- unique(c(pz, pc, ezf))
+  present <- unique(c(pz, pc, ezf, pff))
   all_na <- if (length(present))
     rowSums(!is.na(data[, present, drop = FALSE])) == 0 else rep(FALSE, nrow(data))
 
@@ -92,17 +125,18 @@ panel_normalize <- function(data, fields = c("core", "all"),
   zero_group <- function(vars, applicable) {
     for (v in vars) {
       r <- .pn_is_blank(data[[v]]) & applicable & !all_na
-      if (any(r)) { data[r, v] <- 0; n_zeroed <- n_zeroed + sum(r) }
+      if (any(r)) { data[r, v] <- 0; n_zeroed <<- n_zeroed + sum(r) }
     }
     data
   }
-  data <- zero_group(pz, rep(TRUE, nrow(data)))
-  data <- zero_group(pc, !ez)
+  data <- zero_group(pz, !pf)
+  data <- zero_group(pc, !ez & !pf)
   data <- zero_group(ezf, ez)
+  data <- zero_group(pff, pf)
 
   attr(data, "normalize_audit") <- list(
     fields = fields, financial_fields = length(present), values_zeroed = n_zeroed,
-    all_missing_rows = sum(all_na), ez_rows = sum(ez))
+    all_missing_rows = sum(all_na), ez_rows = sum(ez), pf_rows = sum(pf))
   if (verbose)
     message("panel_normalize: zeroed ", n_zeroed, " blank(s) across ",
             length(present), " financial field(s); ", sum(all_na),

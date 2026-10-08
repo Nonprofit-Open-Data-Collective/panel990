@@ -57,6 +57,10 @@ it is still running.
 
 Every call writes its own log under \verb{<path>/logs} named for the run, so
 repeated runs accumulate rather than overwrite. See \code{\link[=retrieval_log]{retrieval_log()}}.
+
+Files are cached as \verb{<path>/<year>/<table>-<year>.<ext>}. A 990PF source
+(\code{\link[=data_source]{data_source()}} with \code{form = "990PF"}) caches under \verb{<path>/990PF/<year>/}
+instead, because the 990PF release reuses the shared table names.
 }
 \section{Timeouts}{
 

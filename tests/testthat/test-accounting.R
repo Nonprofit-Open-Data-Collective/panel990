@@ -17,10 +17,15 @@ make_revenue_row <- function() data.frame(
 test_that("the identity registry is well-formed and validated", {
   data("accounting_identities", package = "panel990")
   data("field_concordance", package = "panel990")
+  data("field_concordance_pf", package = "panel990")
   expect_true(all(c("identity", "variable", "coefficient", "type") %in%
                     names(accounting_identities)))
-  expect_true(all(accounting_identities$variable %in%
+  expect_setequal(unique(accounting_identities$form_scope), c("PC", "PF"))
+  f9 <- accounting_identities$form_scope == "PC"
+  expect_true(all(accounting_identities$variable[f9] %in%
                     field_concordance$variable_name))
+  expect_true(all(accounting_identities$variable[!f9] %in%
+                    field_concordance_pf$variable_name))
   expect_gte(length(unique(accounting_identities$identity)), 20L)
 })
 

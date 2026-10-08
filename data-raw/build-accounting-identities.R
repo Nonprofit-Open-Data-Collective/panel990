@@ -18,9 +18,9 @@ sum_to <- function(total, parts)                # total = sum(parts)
 net_of <- function(net, gross, cost)            # net = gross - cost
   stats::setNames(c(1, -1, 1), c(net, gross, cost))
 
-expand <- function(defs, section) do.call(rbind, lapply(defs, function(d) {
+expand <- function(defs, section, form_scope = "PC") do.call(rbind, lapply(defs, function(d) {
   coef <- d[[4]]
-  data.frame(identity = d[[1]], section = section, form_scope = "PC",
+  data.frame(identity = d[[1]], section = section, form_scope = form_scope,
              type = d[[2]], description = d[[3]],
              variable = names(coef), coefficient = as.numeric(coef),
              stringsAsFactors = FALSE)
@@ -114,26 +114,128 @@ bs_defs <- c(bs_defs, list(list("bs_land_bldg_net", "net",
   net_of(paste0(B, "ASSET_LAND_BLDG_NET_EOY"), paste0(B, "ASSET_LAND_BLDG"),
          paste0(B, "ASSET_LAND_BLDG_DEPREC")))))
 
+# ===================== 990PF FINANCIAL STATEMENTS (Parts I-III) ===============
+# The 990PF reports Part I in up to four columns -- (a) books, (b) net
+# investment income, (c) adjusted net income, (d) disbursements -- and Part II
+# at beginning- and end-of-year book value plus end-of-year fair market value.
+# Every identity below held for at least 98% of 2021-2022 990PF filings after
+# panel_normalize(). Two plausible ones are deliberately omitted: net
+# investment income and adjusted net income (Part I lines 27b/27c) are floored
+# at zero on the form, so they do not equal revenue minus expenses.
+P1 <- "PF_01_"; P2 <- "PF_02_"; P3 <- "PF_03_"
+
+pf_rev_defs <- list(
+  list("pf_rev_total_books", "subtotal", "Part I total revenue (books) = sum of revenue lines",
+       sum_to(paste0(P1, "REV_TOT_BOOKS"), paste0(P1, c("REV_CONTR_REC_BOOKS", "REV_INT_SAVING_BOOKS",
+         "REV_DIVIDEND_BOOKS", "REV_RENT_GRO_BOOKS", "REV_SALE_ASSET_NET_BOOKS", "REV_GRO_PROFIT_BOOKS",
+         "REV_OTH_INCOME_BOOKS")))),
+  list("pf_rev_total_net", "subtotal", "Part I total revenue (net investment income) = sum of revenue lines",
+       sum_to(paste0(P1, "REV_TOT_NET"), paste0(P1, c("REV_INT_SAVING_NET", "REV_DIVIDEND_NET",
+         "REV_RENT_GRO_NET", "REV_CAP_GAIN_NET", "REV_OTH_INCOME_NET")))),
+  list("pf_rev_total_adj_net", "subtotal", "Part I total revenue (adjusted net income) = sum of revenue lines",
+       sum_to(paste0(P1, "REV_TOT_ADJ_NET"), paste0(P1, c("REV_INT_SAVING_ADJ_NET", "REV_DIVIDEND_ADJ_NET",
+         "REV_RENT_GRO_ADJ_NET", "REV_CAP_GAIN_ADJ_NET", "REV_INCOME_MOD_ADJ_NET", "REV_GRO_PROFIT_ADJ_NET",
+         "REV_OTH_INCOME_ADJ_NET")))),
+  list("pf_rev_gross_profit", "net", "Gross profit (books) = gross sales less returns - cost of goods sold",
+       net_of(paste0(P1, "REV_GRO_PROFIT_BOOKS"), paste0(P1, "REV_GRO_SALE_LESS_RETURN"),
+              paste0(P1, "REV_LESS_COST_GOODS_SOLD"))),
+  list("pf_excess_rev_over_exp", "net", "Excess of revenue over expenses (books) = total revenue - total expenses",
+       net_of(paste0(P1, "EXCESS_REV_OVER_EXP_BOOKS"), paste0(P1, "REV_TOT_BOOKS"),
+              paste0(P1, "EXP_TOT_EXP_DISBMT_BOOKS")))
+)
+
+pf_exp_lines <- c("COMP_OFF", "OTH_EMPL_SAL", "PENSION_EMPL", "LEGAL_BEN", "ACC_FEE",
+                  "OTH_PROF_FEE", "INT", "TAXES", "DEPREC", "OCCUPANCY", "TRAVEL_CONF",
+                  "PRINT_PUBLICA", "OTH")
+pf_columns <- c(BOOKS = "books", NET = "net investment income",
+                ADJ_NET = "adjusted net income", DISBMT = "disbursements")
+pf_exp_defs <- lapply(names(pf_columns), function(col) {
+  lines <- if (col == "DISBMT") setdiff(pf_exp_lines, "DEPREC") else pf_exp_lines
+  list(paste0("pf_exp_operating_", tolower(col)), "subtotal",
+       paste0("Part I total operating expenses (", pf_columns[[col]], ") = sum of expense lines"),
+       sum_to(paste0(P1, "EXP_TOT_OPERATING_", col), paste0(P1, "EXP_", lines, "_", col)))
+})
+pf_exp_defs <- c(pf_exp_defs, lapply(names(pf_columns), function(col) {
+  parts <- paste0(P1, "EXP_TOT_OPERATING_", col)
+  if (col %in% c("BOOKS", "DISBMT")) parts <- c(parts, paste0(P1, "EXP_CONTR_PAID_", col))
+  list(paste0("pf_exp_total_", tolower(col)), "grand_total",
+       paste0("Part I total expenses and disbursements (", pf_columns[[col]],
+              ") = operating expenses", if (length(parts) > 1L) " + contributions paid" else ""),
+       sum_to(paste0(P1, "EXP_TOT_EXP_DISBMT_", col), parts))
+}))
+
+pf_asset_lines <- c("CASH", "SAVING", "ACC", "PLEDGE", "GRANT", "RECVB_OFF", "OTH_NOTE",
+                    "INV_SALE", "EXP_PREPAID", "INVEST_GOV", "INVEST_STCK", "INVEST_BOND",
+                    "INVEST_LAND", "INVEST_MTG", "INVEST_OTH", "LAND", "OTH")
+pf_liab_lines <- c("ACC", "GRANT", "REV_DEFERRED", "LOAN_OFF", "MTG_NOTE", "OTH")
+pf_na_lines <- c("UNRESTRICT", "RESTRICT", "CAP_STCK", "CAP_SURPLUS", "EARNING_RETAIN")
+pf_bs_defs <- list(list("pf_bs_assets_eoy_fmv", "subtotal",
+  "Part II total assets (EOY fair market value) = sum of asset lines",
+  sum_to(paste0(P2, "ASSET_TOT_EOY_FMV"), paste0(P2, "ASSET_", pf_asset_lines, "_EOY_FMV"))))
+for (per in c("BOY", "EOY")) {
+  v <- paste0("_", per, "_BV"); lab <- paste0(" (", per, " book value)")
+  pf_bs_defs <- c(pf_bs_defs, list(
+    list(paste0("pf_bs_balance_", tolower(per)), "balance",
+         paste0("Total assets = total liabilities and net assets", lab),
+         sum_to(paste0(P2, "ASSET_TOT", v), paste0(P2, "NAFB_TOT_LIAB_NAFB", v))),
+    list(paste0("pf_bs_assets_", tolower(per)), "subtotal",
+         paste0("Total assets = sum of asset lines", lab),
+         sum_to(paste0(P2, "ASSET_TOT", v), paste0(P2, "ASSET_", pf_asset_lines, v))),
+    list(paste0("pf_bs_liabilities_", tolower(per)), "subtotal",
+         paste0("Total liabilities = sum of liability lines", lab),
+         sum_to(paste0(P2, "LIAB_TOT", v), paste0(P2, "LIAB_", pf_liab_lines, v))),
+    list(paste0("pf_bs_net_assets_", tolower(per)), "subtotal",
+         paste0("Total net assets = sum of net asset and fund balance lines", lab),
+         sum_to(paste0(P2, "NAFB_TOT", v), paste0(P2, "NAFB_", pf_na_lines, v))),
+    list(paste0("pf_bs_liab_net_assets_", tolower(per)), "subtotal",
+         paste0("Total liabilities and net assets = liabilities + net assets", lab),
+         sum_to(paste0(P2, "NAFB_TOT_LIAB_NAFB", v), paste0(P2, c("LIAB_TOT", "NAFB_TOT"), v)))))
+}
+
+# Part III reconciles beginning to ending net assets and ties back to Parts I
+# and II. The ties span tables, so they are evaluated only when all three
+# parts are in the panel.
+pf_na_defs <- list(
+  list("pf_na_subtotal", "subtotal", "Part III line 4 = BOY net assets + excess revenue + other increases",
+       sum_to(paste0(P3, "NAFB_CHANGE_SUBTOT"), paste0(P3, c("NAFB_TOT_BOY_BV", "EXCESS_REV_OVER_EXP_BOOKS",
+         "NAFB_OTH_INCREASE")))),
+  list("pf_na_eoy", "net", "Part III EOY net assets = line 4 - other decreases",
+       net_of(paste0(P3, "NAFB_TOT_EOY"), paste0(P3, "NAFB_CHANGE_SUBTOT"), paste0(P3, "NAFB_OTH_DECREASE"))),
+  list("pf_na_tie_excess", "tie", "Part III excess revenue = Part I excess revenue (books)",
+       sum_to(paste0(P3, "EXCESS_REV_OVER_EXP_BOOKS"), paste0(P1, "EXCESS_REV_OVER_EXP_BOOKS"))),
+  list("pf_na_tie_boy", "tie", "Part III BOY net assets = Part II BOY total net assets",
+       sum_to(paste0(P3, "NAFB_TOT_BOY_BV"), paste0(P2, "NAFB_TOT_BOY_BV"))),
+  list("pf_na_tie_eoy", "tie", "Part III EOY net assets = Part II EOY total net assets",
+       sum_to(paste0(P3, "NAFB_TOT_EOY"), paste0(P2, "NAFB_TOT_EOY_BV")))
+)
+
 # ============================== assemble & save ==============================
 accounting_identities <- rbind(
   expand(rev_defs, "revenue"),
   expand(exp_defs, "expenses"),
-  expand(bs_defs,  "balance_sheet")
+  expand(bs_defs,  "balance_sheet"),
+  expand(pf_rev_defs, "revenue", "PF"),
+  expand(pf_exp_defs, "expenses", "PF"),
+  expand(pf_bs_defs,  "balance_sheet", "PF"),
+  expand(pf_na_defs,  "net_assets", "PF")
 )
 rownames(accounting_identities) <- NULL
 
 load("data/field_concordance.rda")
-unknown <- setdiff(unique(accounting_identities$variable), field_concordance$variable_name)
+load("data/field_concordance_pf.rda")
+known <- function(scope) if (scope == "PF") field_concordance_pf$variable_name else
+  field_concordance$variable_name
+unknown <- unlist(lapply(split(accounting_identities, accounting_identities$form_scope),
+                         function(x) setdiff(unique(x$variable), known(x$form_scope[[1]]))))
 if (length(unknown))
-  stop("Unknown variable(s) not in field_concordance:\n  ", paste(unknown, collapse = "\n  "))
+  stop("Unknown variable(s) not in the concordance for their form:\n  ",
+       paste(unknown, collapse = "\n  "))
 
-n_by_sec <- tapply(accounting_identities$identity, accounting_identities$section,
-                   function(x) length(unique(x)))
-cat("identities:", length(unique(accounting_identities$identity)),
-    " rows:", nrow(accounting_identities),
+ids <- unique(accounting_identities[, c("identity", "form_scope", "section")])
+cat("identities:", nrow(ids), " rows:", nrow(accounting_identities),
     " variables:", length(unique(accounting_identities$variable)), "\n")
-print(n_by_sec)
-cat("all variables validated against field_concordance.\n")
+print(table(ids$form_scope, ids$section))
+cat("all variables validated against the concordance for their form.\n")
 
 save(accounting_identities, file = "data/accounting_identities.rda", compress = "xz")
 cat("wrote data/accounting_identities.rda\n")

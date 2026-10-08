@@ -4,24 +4,40 @@
 \alias{financial_fields}
 \title{Core 990 financial fields}
 \usage{
-financial_fields(fields = c("core", "all"), scope = NULL)
+financial_fields(fields = c("core", "all"), scope = NULL, form = "990")
 }
 \arguments{
 \item{fields}{\code{"core"} (default) or \code{"all"}.}
 
 \item{scope}{Optional form-scope filter (\code{"PC"}, \code{"PZ"}, \code{"EZ"}, \code{"HD"},
-\code{"SG"}).}
+\code{"SG"}, or \code{"PF"}).}
+
+\item{form}{Form family: \code{"990"} (default) or \code{"990PF"}.}
 }
 \value{
 A character vector of \code{variable_name}s.
 }
 \description{
 Money fields eligible for zero-imputation. \code{"core"} (default) restricts to the
-primary financial statements -- Part I summary and Parts VIII--XI (revenue,
-expenses, balance sheet, reconciliation) -- where a blank on the filed form
-unambiguously means zero. \code{"all"} returns every money field (including
-schedules), where a blank may instead mean "schedule not filed".
+primary financial statements, where a blank on the filed form unambiguously
+means zero. \code{"all"} returns every money field (including schedules), where a
+blank may instead mean "schedule not filed".
+}
+\details{
+The core statements depend on the form family:
+\itemize{
+\item \code{"990"}: Part I summary and Parts VIII--XI (revenue, expenses,
+balance sheet, reconciliation).
+\item \code{"990PF"}: Parts I--III (revenue and expenses, balance sheet,
+changes in net assets), in every column the form reports (books, net
+investment income, adjusted net income, disbursements; book and fair
+market value).
+}
+}
+\examples{
+length(financial_fields())
+head(financial_fields(form = "990PF"))
 }
 \seealso{
-\code{\link[=panel_normalize]{panel_normalize()}}, \link{field_concordance}.
+\code{\link[=panel_normalize]{panel_normalize()}}, \link{field_concordance}, \link{field_concordance_pf}.
 }

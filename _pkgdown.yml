@@ -50,6 +50,7 @@ reference:
   desc: Download, read, merge, and stack efile tables into a panel.
   contents:
   - panelize
+  - panelize_pf
   - data_source
   - efile_version
   - table_catalog
@@ -93,7 +94,7 @@ reference:
   - panel_smooth
 
 - title: Accounting consistency
-  desc: Check and reconcile 990 rows against accounting identities.
+  desc: Check and reconcile 990 and 990PF rows against accounting identities.
   contents:
   - accounting_check
   - reconcile
@@ -101,6 +102,7 @@ reference:
 - title: Data
   contents:
   - field_concordance
+  - field_concordance_pf
   - accounting_identities
 
 articles:
@@ -114,6 +116,7 @@ articles:
   - sampling-framework
   - source-requirements
   - panels-and-slices
+  - private-foundations
 - title: Cleaning panels
   navbar: Cleaning panels
   contents:

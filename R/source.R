@@ -4,11 +4,35 @@
 .EFILE_BUCKET <- "https://nccs-efile.s3.us-east-1.amazonaws.com/public/"
 .EFILE_VERSION <- "v2_3"
 
-.efile_version_root <- function(version) {
-  paste0(.EFILE_BUCKET, "efile_", version, "/")
+# Each release is published as two databases under sibling prefixes: Form 990
+# and 990EZ filers together under efile_, and 990PF filers under efilepf_. A
+# source reads exactly one of them; the two are never mixed in one panel.
+.EFILE_FORMS <- c("990", "990PF")
+.EFILE_PREFIX <- c("990" = "efile_", "990PF" = "efilepf_")
+
+.efile_version_root <- function(version, form = "990") {
+  paste0(.EFILE_BUCKET, .EFILE_PREFIX[[form]], version, "/")
 }
 
 .EFILE_ROOT <- .efile_version_root(.EFILE_VERSION)
+
+#' Normalize a form-family string
+#'
+#' @param form User-supplied form family.
+#' @return `"990"` or `"990PF"`.
+#' @keywords internal
+.efile_form <- function(form) {
+  if (!is.character(form) || length(form) != 1L || is.na(form) || !nzchar(form))
+    stop("`form` must be one of: ", paste(.EFILE_FORMS, collapse = ", "))
+  out <- toupper(gsub("[[:space:]-]", "", form))
+  if (out %in% c("PF", "990PF")) return("990PF")
+  if (out == "990") return("990")
+  if (out == "990EZ")
+    stop("990EZ filers are published with full 990 filers; use `form = \"990\"` ",
+         "and filter on RETURN_TYPE.")
+  stop("`form` must be one of: ", paste(.EFILE_FORMS, collapse = ", "),
+       "; received \"", form, "\".")
+}
 
 .EFILE_ALIASES <- c(
   P00 = "F9-P00-T00-HEADER",
@@ -181,11 +205,138 @@
   "SR-P07-T99-SUPPLEMENTAL-INFO"
 )
 
+# Aliases for the 990PF release. PF parts get their own PF-prefixed names so
+# that no alias means one table in a 990 source and another in a PF source.
+# P00 is the exception that proves the rule: F9-P00-T00-HEADER is published
+# under the same name in both releases, so the alias means the same table.
+.EFILE_ALIASES_PF <- c(
+  P00  = "F9-P00-T00-HEADER",
+  PF00 = "PF-P00-T00-HEADER",
+  PF01 = "PF-P01-T00-REVENUE-EXPENSE",
+  PF02 = "PF-P02-T00-BALANCE-SHEET",
+  PF03 = "PF-P03-T00-NET-ASSET-FUND-BALANCE-CHANGE"
+)
+
+# Canonical NCCS efile table names in the 990PF release: the PF-* tables plus
+# the release's own copies of the shared header, signature, and Schedule B
+# tables.
+.EFILE_TABLES_PF <- c(
+  # Shared with the 990 release
+  "F9-P00-T00-HEADER",
+  "F9-P02-T00-SIGNATURE",
+  "SB-P00-T00-HEADER",
+  "SB-P01-T01-CONTRIBUTORS",
+  "SB-P02-T01-NONCASH-PROPERTY",
+  "SB-P03-T00-EXCLUSIVELY-RELIGIOUS",
+  "SB-P03-T01-EXCLUSIVELY-RELIGIOUS",
+  # Form 990PF parts
+  "PF-P00-T00-HEADER",
+  "PF-P01-T00-REVENUE-EXPENSE",
+  "PF-P02-T00-BALANCE-SHEET",
+  "PF-P03-T00-NET-ASSET-FUND-BALANCE-CHANGE",
+  "PF-P04-T00-INVEST-INCOME-TAX-CAPITAL-GAINLOSS",
+  "PF-P04-T01-INVEST-INCOME-TAX-CAPITAL-GAINLOSS",
+  "PF-P05-T00-NET-INVEST-INCOME-TAX-4940E",
+  "PF-P06-T00-INVEST-INCOME-EXCISE-TAX",
+  "PF-P07-T00-ACTIVITIES",
+  "PF-P07-T00-ACTIVITIES-4720",
+  "PF-P08-T00-COMPENSATION-CONTRACTORS",
+  "PF-P08-T00-COMPENSATION-HIGHEST",
+  "PF-P08-T01-COMPENSATION",
+  "PF-P08-T02-COMPENSATION-HIGHEST",
+  "PF-P08-T03-COMPENSATION-CONTRACTORS",
+  "PF-P09-T00-PROG-RELATED-INVESTMENTS",
+  "PF-P09-T01-CHARITABLE-ACTIVITIES",
+  "PF-P09-T02-PROG-RELATED-INVESTMENTS",
+  "PF-P10-T00-MINIMUM-INVESTMENT-RETURN",
+  "PF-P11-T00-DISTRIBUTABLE-AMOUNT",
+  "PF-P12-T00-QUALIFYING-DISTRIBUTIONS",
+  "PF-P13-T00-UNDISTRIBUTED-INCOME",
+  "PF-P14-T00-PRIVATE-OPERATING-FOUNDATIONS",
+  "PF-P15-T00-SUPPLEMENTARY-INFO",
+  "PF-P15-T00-SUPPLEMENTARY-INFO-GRANT-FUTURE",
+  "PF-P15-T00-SUPPLEMENTARY-INFO-GRANT-PAID",
+  "PF-P15-T01-SUPPLEMENTARY-INFO-GRANT-PAID",
+  "PF-P15-T02-SUPPLEMENTARY-INFO-GRANT-FUTURE",
+  "PF-P15-T03-SUPPLEMENTARY-INFO-GRANT-APP",
+  "PF-P16-T00-INCOME-PRODUCING-ACTS",
+  "PF-P16-T01-INCOME-PRODUCING-ACTS",
+  "PF-P16-T02-INCOME-PRODUCING-ACTS",
+  "PF-P16-T03-ACTS-RELATIONSHIP-EXEMPT-PURPOSE",
+  "PF-P17-T00-RELATIONSHIPS",
+  "PF-P17-T00-TRANSFERS-TRANSACTIONS",
+  "PF-P17-T01-TRANSFERS-TRANSACTIONS",
+  "PF-P17-T02-RELATIONSHIPS",
+  # Form 990PF supporting statements
+  "PF-P99-T00-AUXILLIARY",
+  "PF-P99-T01-ACC-FEES",
+  "PF-P99-T03-PROG-INVEST-OTH",
+  "PF-P99-T04-AMORTIZATION",
+  "PF-P99-T06-FUND-BORROWED",
+  "PF-P99-T09-COMP",
+  "PF-P99-T10-COMP-KONTR",
+  "PF-P99-T11-DEPREC",
+  "PF-P99-T12-DISSOLUTION",
+  "PF-P99-T14-COMP-EMPL",
+  "PF-P99-T16-EXP-RESPONSIBILITY",
+  "PF-P99-T19-SALE-NONPUB-SEC",
+  "PF-P99-T20-SALE-OTH-ASSET",
+  "PF-P99-T21-SALE-PUB-SEC",
+  "PF-P99-T22-SUPPLEMENTAL-INFO",
+  "PF-P99-T23-INVEST-CORP-BOND",
+  "PF-P99-T24-INVEST-CORP-STOCK",
+  "PF-P99-T25-INVEST-GOVT-SEC",
+  "PF-P99-T26-INVEST-LAND",
+  "PF-P99-T27-INVEST-OTH",
+  "PF-P99-T28-LAND-ETC",
+  "PF-P99-T29-LEGAL-FEES",
+  "PF-P99-T31-LOAN-OFF",
+  "PF-P99-T32-MTG-NOTE",
+  "PF-P99-T33-ASSET-OTH",
+  "PF-P99-T34-NETASSET-CHANGE",
+  "PF-P99-T35-DECREASE-OTH",
+  "PF-P99-T36-EXP-OTH",
+  "PF-P99-T37-INCOME-OTH",
+  "PF-P99-T38-INCREASE-OTH",
+  "PF-P99-T39-LIAB-OTH",
+  "PF-P99-T40-NOTE-LOAN-OTH-LONG",
+  "PF-P99-T41-NOTE-LOAN-OTH-SHORT",
+  "PF-P99-T42-PROF-FEES-OTH",
+  "PF-P99-T43-OFF-OTH",
+  "PF-P99-T46-SALE-INV",
+  "PF-P99-T48-CONTRIBUTOR",
+  "PF-P99-T49-TAXES",
+  "PF-P99-T51-TRANSFER-FROM-CE",
+  "PF-P99-T52-TRANSFER-TO-CE"
+)
+
+.efile_aliases_for <- function(form) {
+  if (identical(form, "990PF")) .EFILE_ALIASES_PF else .EFILE_ALIASES
+}
+
+.efile_tables_for <- function(form) {
+  if (identical(form, "990PF")) .EFILE_TABLES_PF else .EFILE_TABLES
+}
+
 #' Create an efile source configuration
 #'
 #' The NCCS efile release is versioned. Leave `root` as `NULL` to point at a
 #' published release by `version`, or pass `root` explicitly to read from a
 #' local directory or a mirror, in which case `version` is recorded as `NA`.
+#'
+#' @section Form family:
+#' Each release is published as two separate databases, and a source reads
+#' exactly one of them:
+#' \itemize{
+#'   \item `form = "990"` (the default): full Form 990 and 990EZ filers
+#'     together, told apart by `RETURN_TYPE`.
+#'   \item `form = "990PF"`: private foundations filing Form 990PF.
+#' }
+#' The two are not combined in one panel: the 990PF financial statements have
+#' a different structure from the 990 parts. The form family sets the URL
+#' prefix (`efile_` or `efilepf_`), the default `aliases`, the
+#' [table_catalog()], and the cache subdirectory used by [download_tables()].
+#' [panelize_pf()] builds a panel from the 990PF release.
 #'
 #' @section Source format:
 #' A release publishes each table-year under one stem in two formats, so
@@ -217,24 +368,31 @@
 #' @param format Source file format: `"parquet"` (the default, when a parquet
 #'   reader is installed) or `"csv"`. See the Source format section.
 #' @param aliases Named character vector mapping short aliases to table names.
-#' @return An `data_source` object carrying `root`, `version`, `format`, and
-#'   `aliases`.
+#'   `NULL` (default) uses the form family's aliases: `P00`, `P01`, `P08`-`P12`
+#'   and `A01` for `"990"`; `P00` and `PF00`-`PF03` for `"990PF"`.
+#' @param form Form family: `"990"` (default, Form 990 and 990EZ filers) or
+#'   `"990PF"` (private foundations). See the Form family section.
+#' @return An `data_source` object carrying `root`, `version`, `format`,
+#'   `aliases`, and `form`.
 #' @examples
 #' data_source()                          # current release, parquet
 #' data_source(version = "v2_2")          # pin the previous release
 #' data_source(format = "csv")            # same release, CSV files
+#' data_source(form = "990PF")            # the 990PF release
 #' @export
 data_source <- function(root = NULL, version = .EFILE_VERSION,
                         format = .efile_default_format(),
-                        aliases = .EFILE_ALIASES) {
+                        aliases = NULL, form = "990") {
+  form <- .efile_form(form)
+  if (is.null(aliases)) aliases <- .efile_aliases_for(form)
   if (is.null(root)) {
     if (!is.character(version) || length(version) != 1L || is.na(version) ||
         !nzchar(version))
       stop("`version` must be one non-empty string such as \"v2_3\".")
-    version <- sub("^efile_", "", tolower(trimws(version)))
+    version <- sub("^efile(pf)?_", "", tolower(trimws(version)))
     if (!grepl("^v[0-9]+_[0-9]+$", version))
       stop("`version` must look like \"v2_3\"; received \"", version, "\".")
-    root <- .efile_version_root(version)
+    root <- .efile_version_root(version, form)
   } else {
     if (!is.character(root) || length(root) != 1L || is.na(root) || !nzchar(root))
       stop("`root` must be one non-empty URL or directory path.")
@@ -243,8 +401,15 @@ data_source <- function(root = NULL, version = .EFILE_VERSION,
   if (!is.character(aliases) || is.null(names(aliases)) || any(!nzchar(names(aliases))))
     stop("`aliases` must be a named character vector.")
   structure(list(root = root, version = version,
-                 format = .efile_format(format), aliases = aliases),
+                 format = .efile_format(format), aliases = aliases, form = form),
             class = "data_source")
+}
+
+# Form family of a source. Sources built before the form field existed (for
+# example, a saved panel) carry no `form` and are 990 sources.
+.efile_source_form <- function(source) {
+  form <- source$form
+  if (is.null(form)) "990" else form
 }
 
 #' Current default efile release
@@ -263,7 +428,10 @@ efile_version <- function() .EFILE_VERSION
 #' Resolve aliases and literal efile table names
 #'
 #' Any non-empty literal table name is accepted, allowing newly published and
-#' user-specified tables without a package update.
+#' user-specified tables without a package update -- except that a table from
+#' the other form family is an error: `PF-*` tables exist only in the 990PF
+#' release, and the 990PF release holds only `PF-*` tables plus its copies of
+#' the shared header, signature, and Schedule B tables.
 #'
 #' @param tables Character vector of aliases or canonical table names.
 #' @param source An [data_source()] configuration.
@@ -275,42 +443,72 @@ resolve_tables <- function(tables, source = data_source()) {
   if (!is.character(tables) || !length(tables) || anyNA(tables) ||
       any(!nzchar(trimws(tables))))
     stop("`tables` must contain non-empty aliases or table names.")
+  form <- .efile_source_form(source)
+  catalog <- .efile_tables_for(form)
   request <- trimws(tables)
   upper <- toupper(request)
   alias <- upper %in% toupper(names(source$aliases))
   lookup <- stats::setNames(source$aliases, toupper(names(source$aliases)))
   resolved <- upper
   resolved[alias] <- unname(lookup[upper[alias]])
+
+  # A 990PF alias such as "PF01" asked of a 990 source would otherwise pass
+  # through as a literal table name and fail only at download time.
+  pf_alias <- !alias & upper %in% names(.EFILE_ALIASES_PF)
+  is_pf <- startsWith(resolved, "PF-") | pf_alias
+  wrong <- if (form == "990PF") !is_pf & !resolved %in% catalog else is_pf
+  if (any(wrong)) {
+    shown <- paste(unique(request[wrong]), collapse = ", ")
+    if (form == "990PF")
+      stop("Not published in the 990PF release: ", shown, ". A 990PF source ",
+           "reads PF-* tables and the shared header, signature, and Schedule B ",
+           "tables; see table_catalog(form = \"990PF\").", call. = FALSE)
+    stop("990PF tables requested from a 990 source: ", shown, ". Use ",
+         "panelize_pf() or data_source(form = \"990PF\").", call. = FALSE)
+  }
+
   data.frame(
     request = request,
     table = resolved,
     is_alias = alias,
     cardinality = vapply(resolved, .efile_table_cardinality, character(1L)),
-    known = resolved %in% .EFILE_TABLES,
+    known = resolved %in% catalog,
     stringsAsFactors = FALSE
   )
 }
 
 #' Catalog of canonical efile tables
 #'
-#' Returns the full reference set of NCCS efile tables (Form 990/990EZ core and
-#' Schedules A-R), each with its join cardinality and short alias where one is
-#' defined. Cardinality is derived from the table's T-number: `1x1` (one row per
-#' filing, T00), `1xm` (repeating rows, T01-T98), or `supplemental` (free-text,
-#' T99).
+#' Returns the full reference set of NCCS efile tables in one form family's
+#' release, each with its join cardinality and short alias where one is
+#' defined: Form 990/990EZ core and Schedules A-R for `"990"`, or the 990PF
+#' parts and supporting statements (plus the shared header, signature, and
+#' Schedule B tables) for `"990PF"`. Cardinality is derived from the table's
+#' T-number: `1x1` (one row per filing, T00), `1xm` (repeating rows, T01-T98),
+#' or `supplemental` (free-text, T99). In the 990PF release the `PF-P99-Txx`
+#' supporting-statement tables are numbered by statement, so `T00` is `1x1` and
+#' the rest are `1xm`.
 #'
 #' @param cardinality Filter to `"all"` (default), `"1x1"`, `"1xm"`, or
 #'   `"supplemental"`.
+#' @param form Form family: `"990"` (default) or `"990PF"`.
 #' @return A data frame with columns `table`, `alias` (NA when none), and
 #'   `cardinality`, one row per canonical table.
+#' @examples
+#' table_catalog("1x1")
+#' table_catalog(form = "990PF")
 #' @export
-table_catalog <- function(cardinality = c("all", "1x1", "1xm", "supplemental")) {
+table_catalog <- function(cardinality = c("all", "1x1", "1xm", "supplemental"),
+                          form = "990") {
   cardinality <- match.arg(cardinality)
-  alias_of <- stats::setNames(names(.EFILE_ALIASES), unname(.EFILE_ALIASES))
+  form <- .efile_form(form)
+  aliases <- .efile_aliases_for(form)
+  tables <- .efile_tables_for(form)
+  alias_of <- stats::setNames(names(aliases), unname(aliases))
   out <- data.frame(
-    table = .EFILE_TABLES,
-    alias = unname(alias_of[.EFILE_TABLES]),
-    cardinality = vapply(.EFILE_TABLES, .efile_table_cardinality, character(1L)),
+    table = tables,
+    alias = unname(alias_of[tables]),
+    cardinality = vapply(tables, .efile_table_cardinality, character(1L)),
     stringsAsFactors = FALSE, row.names = NULL
   )
   if (cardinality != "all") out <- out[out$cardinality == cardinality, , drop = FALSE]

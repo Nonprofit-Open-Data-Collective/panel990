@@ -17,5 +17,8 @@ whether the resolved name is in the canonical \code{\link[=table_catalog]{table_
 }
 \description{
 Any non-empty literal table name is accepted, allowing newly published and
-user-specified tables without a package update.
+user-specified tables without a package update -- except that a table from
+the other form family is an error: \verb{PF-*} tables exist only in the 990PF
+release, and the 990PF release holds only \verb{PF-*} tables plus its copies of
+the shared header, signature, and Schedule B tables.
 }

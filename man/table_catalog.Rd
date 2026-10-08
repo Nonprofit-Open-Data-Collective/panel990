@@ -4,20 +4,33 @@
 \alias{table_catalog}
 \title{Catalog of canonical efile tables}
 \usage{
-table_catalog(cardinality = c("all", "1x1", "1xm", "supplemental"))
+table_catalog(
+  cardinality = c("all", "1x1", "1xm", "supplemental"),
+  form = "990"
+)
 }
 \arguments{
 \item{cardinality}{Filter to \code{"all"} (default), \code{"1x1"}, \code{"1xm"}, or
 \code{"supplemental"}.}
+
+\item{form}{Form family: \code{"990"} (default) or \code{"990PF"}.}
 }
 \value{
 A data frame with columns \code{table}, \code{alias} (NA when none), and
 \code{cardinality}, one row per canonical table.
 }
 \description{
-Returns the full reference set of NCCS efile tables (Form 990/990EZ core and
-Schedules A-R), each with its join cardinality and short alias where one is
-defined. Cardinality is derived from the table's T-number: \verb{1x1} (one row per
-filing, T00), \verb{1xm} (repeating rows, T01-T98), or \code{supplemental} (free-text,
-T99).
+Returns the full reference set of NCCS efile tables in one form family's
+release, each with its join cardinality and short alias where one is
+defined: Form 990/990EZ core and Schedules A-R for \code{"990"}, or the 990PF
+parts and supporting statements (plus the shared header, signature, and
+Schedule B tables) for \code{"990PF"}. Cardinality is derived from the table's
+T-number: \verb{1x1} (one row per filing, T00), \verb{1xm} (repeating rows, T01-T98),
+or \code{supplemental} (free-text, T99). In the 990PF release the \code{PF-P99-Txx}
+supporting-statement tables are numbered by statement, so \code{T00} is \verb{1x1} and
+the rest are \verb{1xm}.
+}
+\examples{
+table_catalog("1x1")
+table_catalog(form = "990PF")
 }
