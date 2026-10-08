@@ -1,25 +1,30 @@
 # data-raw/build-concordance.R
 # Build the bundled field-scope / normalization concordance for panel990 from
-# the IRS Efile Master Concordance File (MCF).
+# the concordance990 package's xpath concordance (the successor to the IRS
+# Efile Master Concordance File, "MCF" below).
 #
 # Source (ODC-By v1.0, attribution required):
-#   https://github.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file
-#   file: concordance.csv  (one row per xpath / schema version)
+#   https://github.com/Nonprofit-Open-Data-Collective/concordance990
+#   file: concordance.csv  (one row per xpath, 990/990EZ and 990PF combined)
 #
 # Output: data/field_concordance.rda  (one row per RDB variable_name)
 #
 # Run with:  Rscript data-raw/build-concordance.R
 
-# --- 1. Load the master concordance (cached copy, or download) ----------------
-local_csv  <- "data-raw/concordance-master.csv"
+# --- 1. Load the concordance (cached copy, or download) -----------------------
+local_csv  <- "data-raw/concordance990.csv"
 source_url <- paste0(
   "https://raw.githubusercontent.com/Nonprofit-Open-Data-Collective/",
-  "irs-efile-master-concordance-file/master/concordance.csv"
+  "concordance990/main/concordance.csv"
 )
 src <- if (file.exists(local_csv)) local_csv else source_url
-# Source is Windows-1252; read as Latin-1 so smart quotes decode correctly.
 mcf <- data.table::fread(src, data.table = FALSE, colClasses = "character",
-                         encoding = "Latin-1")
+                         encoding = "UTF-8")
+
+# The 990PF release (efilepf_) is a separate database. Its PF-* tables stay out
+# of this 990/990EZ concordance; the shared header, signature, and Schedule B
+# tables keep their rows.
+mcf <- mcf[!grepl("^PF-", mcf$rdb_table), , drop = FALSE]
 
 # --- 2. Mapping rules (REVIEW THESE) ------------------------------------------
 # blank_meaning: how to read a blank on a form where the field IS in scope.

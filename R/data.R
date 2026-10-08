@@ -36,17 +36,18 @@
 #' }
 #'
 #' @details
-#' Built from the IRS Efile Master Concordance File by
-#' `data-raw/build-concordance.R`. Blank meanings are assigned by type: numeric
+#' Built from the concordance990 xpath concordance (the successor to the IRS
+#' Efile Master Concordance File) by `data-raw/build-concordance.R`, keeping
+#' the 990/990EZ tables and excluding the separate 990PF (`PF-*`) tables. Blank meanings are assigned by type: numeric
 #' money fields (by XSD type) become `implicit_zero`; checkboxes become
 #' `implicit_false`; text, dates, and non-money numerics become
 #' `literal_missing`. Conflicting source metadata is resolved by preferring the
 #' current schema version, then the most frequent value.
 #'
-#' @source IRS Efile Master Concordance File, Nonprofit Open Data Collective /
-#'   National Center for Charitable Statistics, distributed under the Open Data
-#'   Commons Attribution License (ODC-By) v1.0.
-#'   <https://github.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file>
+#' @source concordance990, Nonprofit Open Data Collective / National Center
+#'   for Charitable Statistics, distributed under the Open Data Commons
+#'   Attribution License (ODC-By) v1.0.
+#'   <https://github.com/Nonprofit-Open-Data-Collective/concordance990>
 #' @seealso [concordance()], [fields_in_scope()]
 "field_concordance"
 

@@ -2,7 +2,7 @@
 # and the version separate so callers can move between releases without
 # rebuilding the URL by hand; `.EFILE_VERSION` is only the default.
 .EFILE_BUCKET <- "https://nccs-efile.s3.us-east-1.amazonaws.com/public/"
-.EFILE_VERSION <- "v2_2"
+.EFILE_VERSION <- "v2_3"
 
 .efile_version_root <- function(version) {
   paste0(.EFILE_BUCKET, "efile_", version, "/")
@@ -28,6 +28,7 @@
 .EFILE_TABLES <- c(
   # Form 990 / 990EZ core
   "F9-P00-T00-HEADER",
+  "F9-P00-T01-AFFILIATE-LISTING",
   "F9-P01-T00-SUMMARY",
   "F9-P01-T00-SUMMARY-EZ",
   "F9-P02-T00-SIGNATURE",
@@ -59,17 +60,24 @@
   "SA-P00-T00-HEADER",
   "SA-P01-T00-PUBLIC-CHARITY-STATUS",
   "SA-P01-T01-PUBLIC-CHARITY-STATUS",
+  "SA-P01-T02-HOSPITAL-NAME-ADDRESS",
+  "SA-P01-T03-AGRI-RESEARCH-UNIV",
   "SA-P02-T00-SUPPORT_SCHEDULE_170",
   "SA-P03-T00-SUPPORT_SCHEDULE_509",
   "SA-P04-T00-SUPPORT-ORGS",
   "SA-P05-T00-SUPPORT-ORGS",
   "SA-P06-T99-SUPPLEMENTAL-INFO",
   # Schedule B
+  "SB-P00-T00-HEADER",
   "SB-P01-T01-CONTRIBUTORS",
+  "SB-P02-T01-NONCASH-PROPERTY",
+  "SB-P03-T00-EXCLUSIVELY-RELIGIOUS",
+  "SB-P03-T01-EXCLUSIVELY-RELIGIOUS",
   # Schedule C
   "SC-P01-T00-LOBBY",
   "SC-P01-T01-POLITICAL-ORGS-INFO",
   "SC-P02-T00-LOBBY",
+  "SC-P02-T01-AFFILIATED-GROUP",
   "SC-P03-T00-LOBBY",
   "SC-P04-T99-SUPPLEMENTAL-INFO",
   # Schedule D
@@ -79,9 +87,9 @@
   "SD-P04-T00-ESCROW-CUSTODIAL-ARRANGEMENTS",
   "SD-P05-T00-ENDOWMENT",
   "SD-P06-T00-LAND-BLDG-EQUIP",
+  "SD-P07-T00-INVESTMENTS-OTH-DERIVATIVES",
+  "SD-P07-T00-INVESTMENTS-OTH-EQUITY",
   "SD-P07-T00-INVESTMENTS-SECURITIES",
-  "SD-P07-T01-INVESTMENTS-OTH-DERIVATIVES",
-  "SD-P07-T01-INVESTMENTS-OTH-EQUITY",
   "SD-P07-T01-INVESTMENTS-OTH-SECURITIES",
   "SD-P08-T00-INVESTMENTS-PROG-RLTD",
   "SD-P08-T01-INVESTMENTS-PROG-RLTD",
@@ -109,7 +117,6 @@
   "SG-P01-T00-FUNDRAISING-ACTS",
   "SG-P01-T01-FUNDRAISERS-INFO",
   "SG-P02-T00-FUNDRAISING-EVENTS",
-  "SG-P02-T01-FUNDRAISING-EVENTS",
   "SG-P03-T00-GAMING",
   "SG-P04-T99-SUPPLEMENTAL-INFO",
   # Schedule H
@@ -120,9 +127,10 @@
   "SH-P05-T00-FAP-COMMUNITY-BENEFIT-POLICY",
   "SH-P05-T01-HOSPITAL-FACILITY",
   "SH-P05-T02-NON-HOSPITAL-FACILITY",
+  "SH-P05-T03-FACILITY-POLICIES-PRACTICES",
   "SH-P05-T99-SUPPLEMENTAL-INFO",
   "SH-P06-T99-SUPPLEMENTAL-INFO",
-  "SH-P99-T00-FAP-COMMUNITY-BENEFIT-POLICY",
+  "SH-P99-T01-FAP-COMMUNITY-BENEFIT-POLICY",
   # Schedule I
   "SI-P01-T00-GRANTS-INFO",
   "SI-P02-T00-GRANTS-US-ORGS-GOVTS",
@@ -161,7 +169,7 @@
   "SN-P03-T99-SUPPLEMENTAL-INFO",
   "SN-P99-T00-LIQUIDATION-TERMINATION-DISSOLUTION",
   # Schedule O
-  "SO-T99-SUPPLEMENTAL-INFO",
+  "SO-P00-T99-SUPPLEMENTAL-INFO",
   # Schedule R
   "SR-P01-T01-ID-DISREGARDED-ENTITIES",
   "SR-P02-T01-ID-RLTD-TAX-EXEMPED-ORGS",
@@ -204,8 +212,8 @@
 #'
 #' @param root Base URL or local directory containing table-year files. `NULL`
 #'   (default) builds the URL for `version`.
-#' @param version Published release, such as `"v2_2"` (the current default) or
-#'   `"v2_1"`. Ignored when `root` is supplied.
+#' @param version Published release, such as `"v2_3"` (the current default) or
+#'   `"v2_2"`. Ignored when `root` is supplied.
 #' @param format Source file format: `"parquet"` (the default, when a parquet
 #'   reader is installed) or `"csv"`. See the Source format section.
 #' @param aliases Named character vector mapping short aliases to table names.
@@ -213,7 +221,7 @@
 #'   `aliases`.
 #' @examples
 #' data_source()                          # current release, parquet
-#' data_source(version = "v2_1")          # pin the previous release
+#' data_source(version = "v2_2")          # pin the previous release
 #' data_source(format = "csv")            # same release, CSV files
 #' @export
 data_source <- function(root = NULL, version = .EFILE_VERSION,
@@ -222,10 +230,10 @@ data_source <- function(root = NULL, version = .EFILE_VERSION,
   if (is.null(root)) {
     if (!is.character(version) || length(version) != 1L || is.na(version) ||
         !nzchar(version))
-      stop("`version` must be one non-empty string such as \"v2_2\".")
+      stop("`version` must be one non-empty string such as \"v2_3\".")
     version <- sub("^efile_", "", tolower(trimws(version)))
     if (!grepl("^v[0-9]+_[0-9]+$", version))
-      stop("`version` must look like \"v2_2\"; received \"", version, "\".")
+      stop("`version` must look like \"v2_3\"; received \"", version, "\".")
     root <- .efile_version_root(version)
   } else {
     if (!is.character(root) || length(root) != 1L || is.na(root) || !nzchar(root))

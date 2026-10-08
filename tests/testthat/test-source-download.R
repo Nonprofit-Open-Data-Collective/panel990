@@ -120,7 +120,7 @@ test_that("a failing fetch retries up to retry_max and records the attempts", {
 
 test_that("data_source resolves a release version or an explicit root", {
   expect_equal(data_source()$version, efile_version())
-  expect_match(data_source()$root, "efile_v2_2/$")
+  expect_match(data_source()$root, "efile_v2_3/$")
   expect_match(data_source(version = "v2_1")$root, "efile_v2_1/$")
   # An explicit root wins and carries no version.
   local <- data_source(tempdir())

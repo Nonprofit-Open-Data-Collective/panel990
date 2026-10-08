@@ -15,8 +15,8 @@ data_source(
 \item{root}{Base URL or local directory containing table-year files. \code{NULL}
 (default) builds the URL for \code{version}.}
 
-\item{version}{Published release, such as \code{"v2_2"} (the current default) or
-\code{"v2_1"}. Ignored when \code{root} is supplied.}
+\item{version}{Published release, such as \code{"v2_3"} (the current default) or
+\code{"v2_2"}. Ignored when \code{root} is supplied.}
 
 \item{format}{Source file format: \code{"parquet"} (the default, when a parquet
 reader is installed) or \code{"csv"}. See the Source format section.}
@@ -59,6 +59,6 @@ explicit \code{format = "parquet"} is kept and fails at read time instead.
 
 \examples{
 data_source()                          # current release, parquet
-data_source(version = "v2_1")          # pin the previous release
+data_source(version = "v2_2")          # pin the previous release
 data_source(format = "csv")            # same release, CSV files
 }

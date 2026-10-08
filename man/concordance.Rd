@@ -36,8 +36,8 @@ normalization is distinct from panel imputation: it interprets source
 encoding only and never creates missing organization-year rows.
 
 Called with no arguments, \code{concordance()} returns the package's built-in
-concordance for IRS 990 efile variables, derived from the IRS Efile Master
-Concordance File (see \link{field_concordance}). Supply \code{field} and
+concordance for IRS 990 efile variables, derived from the concordance990
+xpath concordance (see \link{field_concordance}). Supply \code{field} and
 \code{blank_meaning} to build a custom concordance instead.
 }
 \seealso{
