@@ -51,13 +51,16 @@ interpretation of a blank source value, and is the basis for the built-in
 concordance returned by \code{\link[=concordance]{concordance()}}.
 }
 \details{
-Built from the concordance990 xpath concordance (the successor to the IRS
-Efile Master Concordance File) by \code{data-raw/build-concordance.R}, keeping
-the 990/990EZ tables and excluding the separate 990PF (\verb{PF-*}) tables. Blank meanings are assigned by type: numeric
-money fields (by XSD type) become \code{implicit_zero}; checkboxes become
-\code{implicit_false}; text, dates, and non-money numerics become
-\code{literal_missing}. Conflicting source metadata is resolved by preferring the
-current schema version, then the most frequent value.
+Built by \code{data-raw/build-concordance.R} from the concordance990 package
+(the successor to the IRS Efile Master Concordance File): the xpaths of the
+990/990EZ database, \code{concordance990::concordance(form = "F990")}, and each
+variable's money flag and blank meaning from
+\code{concordance990::data_dictionary("F990")}, so panel990 reads blank cells by
+the same rule as the other partner packages: numeric money fields (by XSD
+type) are \code{implicit_zero}; checkboxes are \code{implicit_false}; text, dates, and
+non-money numerics are \code{literal_missing}. Other conflicting source metadata
+is resolved by preferring the current schema version, then the most
+frequent value.
 }
 \seealso{
 \code{\link[=concordance]{concordance()}}, \code{\link[=fields_in_scope]{fields_in_scope()}}, \link{field_concordance_pf}

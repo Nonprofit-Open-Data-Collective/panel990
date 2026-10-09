@@ -1,4 +1,4 @@
-# Reconcile 990 rows to accounting identities with the least change
+# Reconcile 990 or 990PF rows to accounting identities with the least change
 
 Adjusts values as little as possible (weighted least squares) so that
 each row satisfies the bundled
@@ -25,7 +25,7 @@ reconcile(
 
 - data:
 
-  A data frame of 990 financial fields.
+  A data frame of 990 or 990PF financial fields.
 
 - section:
 

@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -94,10 +95,11 @@ little as possible.</p>
 <span><span class="va">by_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">accounting_identities</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"identity"</span>, <span class="st">"section"</span>, <span class="st">"type"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">by_id</span><span class="op">$</span><span class="va">section</span>, <span class="va">by_id</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                </span></span>
-<span><span class="co">#&gt;                 balance column grand_total net subtotal</span></span>
-<span><span class="co">#&gt;   balance_sheet       2      0           0   1        2</span></span>
-<span><span class="co">#&gt;   expenses            0     32           0   0        0</span></span>
-<span><span class="co">#&gt;   revenue             0     11           1   6        3</span></span></code></pre></div>
+<span><span class="co">#&gt;                 balance column grand_total net subtotal tie</span></span>
+<span><span class="co">#&gt;   balance_sheet       4      0           0   1       11   0</span></span>
+<span><span class="co">#&gt;   expenses            0     32           4   0        4   0</span></span>
+<span><span class="co">#&gt;   net_assets          0      0           0   1        1   3</span></span>
+<span><span class="co">#&gt;   revenue             0     11           1   8        6   0</span></span></code></pre></div>
 <p>58 identities across revenue (Part VIII), functional expenses (Part
 IX), and the balance sheet (Part X). Each is a linear combination of ef2
 fields that must equal zero; for example the contributions subtotal:</p>

@@ -1,4 +1,4 @@
-# Check 990 rows against accounting identities
+# Check 990 or 990PF rows against accounting identities
 
 Evaluates the bundled
 [accounting_identities](https://nonprofit-open-data-collective.github.io/panel990/reference/accounting_identities.md)
@@ -23,12 +23,14 @@ accounting_check(
 
 - data:
 
-  A data frame of 990 financial fields (e.g. a merged panel).
+  A data frame of 990 or 990PF financial fields (e.g. a merged panel).
+  Only identities whose fields are all present are evaluated.
 
 - section:
 
   Identity sections to check (`"revenue"`, `"expenses"`,
-  `"balance_sheet"`). `NULL` (default) checks all.
+  `"balance_sheet"`, and for the 990PF `"net_assets"`). `NULL` (default)
+  checks all.
 
 - id, time:
 

@@ -51,7 +51,10 @@ panelize(
 
 - source:
 
-  Efile source configuration.
+  Efile source configuration. Its form family decides which release is
+  read: the default reads Form 990 and 990EZ filers; see
+  [`panelize_pf()`](https://nonprofit-open-data-collective.github.io/panel990/reference/panelize_pf.md)
+  for private foundations.
 
 - bmf:
 

@@ -35,6 +35,7 @@ frame and a provenance log."></head><body>
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -111,7 +112,9 @@ prefilter reads and merges; <code>select</code> rules project columns.</p></dd>
 
 
 <dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
-<dd><p>Efile source configuration.</p></dd>
+<dd><p>Efile source configuration. Its form family decides which
+release is read: the default reads Form 990 and 990EZ filers; see
+<code><a href="panelize_pf.html">panelize_pf()</a></code> for private foundations.</p></dd>
 
 
 <dt id="arg-bmf">bmf<a class="anchor" aria-label="anchor" href="#arg-bmf"></a></dt>

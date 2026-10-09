@@ -9,6 +9,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/imputing-gaps.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/panels-and-slices.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/private-foundations.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/sampling-framework.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/smoothing-panels.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/articles/source-requirements.html</loc></url>
@@ -36,6 +37,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/create_sfw.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-efile_default_format.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-efile_form.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-efile_format.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_coerce.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/dot-p990_efile_types.html</loc></url>
@@ -51,12 +53,14 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/efile_version.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/fields_in_scope.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance_pf.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/financial_fields.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/manifest.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/merge_tables.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/normalize.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/panelize.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/panelize_pf.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/panel_balance.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/panel_complete.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/panel990/reference/panel_data.html</loc></url>

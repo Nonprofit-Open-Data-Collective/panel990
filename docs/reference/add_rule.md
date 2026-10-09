@@ -33,7 +33,16 @@ Appends a typed rule, or replaces the rule with the same `name`
 - `select`:
 
   `vars`, `scope`, `tables`, `drop` (resolved via
-  [field_concordance](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.md)).
+  [field_concordance](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.md)
+  and
+  [field_concordance_pf](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance_pf.md)).
+  `scope` takes a
+  [`fields_in_scope()`](https://nonprofit-open-data-collective.github.io/panel990/reference/fields_in_scope.md)
+  value or a `variable_scope` code; the 990-vs-990EZ scopes do not apply
+  to a 990PF panel, which
+  [`panelize_pf()`](https://nonprofit-open-data-collective.github.io/panel990/reference/panelize_pf.md)
+  rejects. `tables` takes table-name prefixes, a part code such as
+  `"P08"`, or a 990PF part code such as `"PF01"`.
 
 - `dedup`:
 

@@ -36,13 +36,16 @@
 #' }
 #'
 #' @details
-#' Built from the concordance990 xpath concordance (the successor to the IRS
-#' Efile Master Concordance File) by `data-raw/build-concordance.R`, keeping
-#' the 990/990EZ tables and excluding the separate 990PF (`PF-*`) tables. Blank meanings are assigned by type: numeric
-#' money fields (by XSD type) become `implicit_zero`; checkboxes become
-#' `implicit_false`; text, dates, and non-money numerics become
-#' `literal_missing`. Conflicting source metadata is resolved by preferring the
-#' current schema version, then the most frequent value.
+#' Built by `data-raw/build-concordance.R` from the concordance990 package
+#' (the successor to the IRS Efile Master Concordance File): the xpaths of the
+#' 990/990EZ database, `concordance990::concordance(form = "F990")`, and each
+#' variable's money flag and blank meaning from
+#' `concordance990::data_dictionary("F990")`, so panel990 reads blank cells by
+#' the same rule as the other partner packages: numeric money fields (by XSD
+#' type) are `implicit_zero`; checkboxes are `implicit_false`; text, dates, and
+#' non-money numerics are `literal_missing`. Other conflicting source metadata
+#' is resolved by preferring the current schema version, then the most
+#' frequent value.
 #'
 #' @source concordance990, Nonprofit Open Data Collective / National Center
 #'   for Charitable Statistics, distributed under the Open Data Commons
@@ -65,13 +68,14 @@
 #'   signature fields; `forms` is accordingly `"990PF"` or `"*"`.
 #'
 #' @details
-#' Built by `data-raw/build-concordance.R` from the same concordance990 source
-#' and with the same type, money, and blank-meaning rules as
-#' [field_concordance]. Money fields are detected from the XSD amount types;
-#' every numeric field in the 990PF financial statements (Parts I-III) is a
-#' money field. Some numeric fields whose source rows carry no XSD type -- a
-#' handful of supporting-statement amounts among them -- are treated
-#' conservatively as `literal_missing`.
+#' Built by `data-raw/build-concordance.R` the same way as [field_concordance],
+#' from the 990PF database of concordance990:
+#' `concordance990::concordance(form = "F990PF")`, which maps shared
+#' attachments such as the reasonable-cause explanation to their 990PF
+#' variables, and the flags of `concordance990::data_dictionary("F990PF")`.
+#' Every numeric field in the 990PF financial statements (Parts I-III) is a
+#' money field. A numeric field whose source rows carry no XSD type is treated
+#' conservatively as `literal_missing` until concordance990 types it.
 #'
 #' @source concordance990, Nonprofit Open Data Collective / National Center
 #'   for Charitable Statistics, distributed under the Open Data Commons

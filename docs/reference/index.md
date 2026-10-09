@@ -54,6 +54,8 @@ Download, read, merge, and stack efile tables into a panel.
 
 - [`panelize()`](https://nonprofit-open-data-collective.github.io/panel990/reference/panelize.md)
   : Download, filter, merge, append BMF, and stack a panel
+- [`panelize_pf()`](https://nonprofit-open-data-collective.github.io/panel990/reference/panelize_pf.md)
+  : Build a panel of 990PF filers
 - [`data_source()`](https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.md)
   : Create an efile source configuration
 - [`efile_version()`](https://nonprofit-open-data-collective.github.io/panel990/reference/efile_version.md)
@@ -131,17 +133,20 @@ Classify, label, filter, impute, and smooth panels over time.
 
 ## Accounting consistency
 
-Check and reconcile 990 rows against accounting identities.
+Check and reconcile 990 and 990PF rows against accounting identities.
 
 - [`accounting_check()`](https://nonprofit-open-data-collective.github.io/panel990/reference/accounting_check.md)
-  : Check 990 rows against accounting identities
+  : Check 990 or 990PF rows against accounting identities
 - [`reconcile()`](https://nonprofit-open-data-collective.github.io/panel990/reference/reconcile.md)
-  : Reconcile 990 rows to accounting identities with the least change
+  : Reconcile 990 or 990PF rows to accounting identities with the least
+  change
 
 ## Data
 
 - [`field_concordance`](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.md)
   : Field-scope and normalization concordance for IRS 990 efile
   variables
+- [`field_concordance_pf`](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance_pf.md)
+  : Field normalization concordance for IRS 990PF efile variables
 - [`accounting_identities`](https://nonprofit-open-data-collective.github.io/panel990/reference/accounting_identities.md)
-  : Accounting-identity registry for IRS 990 financial fields
+  : Accounting-identity registry for IRS 990 and 990PF financial fields

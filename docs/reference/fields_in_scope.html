@@ -31,6 +31,7 @@ both the full 990 and the 990EZ, which avoids conflating a structural blank
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -66,7 +67,7 @@ both the full 990 and the 990EZ, which avoids conflating a structural blank
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fields_in_scope</span><span class="op">(</span>form <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"990"</span>, <span class="st">"990EZ"</span>, <span class="st">"all"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fields_in_scope</span><span class="op">(</span>form <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"990"</span>, <span class="st">"990EZ"</span>, <span class="st">"all"</span>, <span class="st">"990PF"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -75,8 +76,9 @@ both the full 990 and the 990EZ, which avoids conflating a structural blank
 
 <dl><dt id="arg-form">form<a class="anchor" aria-label="anchor" href="#arg-form"></a></dt>
 <dd><p>One of <code>"both"</code> (present on the full 990 and the 990EZ),
-<code>"990"</code> (present on the full 990), <code>"990EZ"</code> (present on the 990EZ), or
-<code>"all"</code>. Header and signature fields count as present on every form.</p></dd>
+<code>"990"</code> (present on the full 990), <code>"990EZ"</code> (present on the 990EZ),
+<code>"all"</code> (every 990-release variable), or <code>"990PF"</code> (every 990PF-release
+variable). Header and signature fields count as present on every form.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -84,8 +86,14 @@ both the full 990 and the 990EZ, which avoids conflating a structural blank
     <p>A character vector of <code>variable_name</code> values.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Form scope is a 990-release concept. A 990PF return is one form, so the
+990PF release has no structural blanks of this kind; <code>"990PF"</code> simply
+returns every variable in <a href="field_concordance_pf.html">field_concordance_pf</a>.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="concordance.html">concordance()</a></code>, <a href="field_concordance.html">field_concordance</a>.</p></div>
+    <div class="dont-index"><p><code><a href="concordance.html">concordance()</a></code>, <a href="field_concordance.html">field_concordance</a>, <a href="field_concordance_pf.html">field_concordance_pf</a>.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

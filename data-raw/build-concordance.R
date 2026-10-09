@@ -1,56 +1,61 @@
 # data-raw/build-concordance.R
-# Build the bundled field-scope / normalization concordance for panel990 from
-# the concordance990 package's xpath concordance (the successor to the IRS
-# Efile Master Concordance File, "MCF" below).
+# Build the bundled field-scope / normalization concordances for panel990 from
+# the concordance990 package (the successor to the IRS Efile Master
+# Concordance File, "MCF" below).
 #
 # Source (ODC-By v1.0, attribution required):
 #   https://github.com/Nonprofit-Open-Data-Collective/concordance990
-#   file: concordance.csv  (one row per xpath, 990/990EZ and 990PF combined)
+#   concordance990::concordance(form = )      one row per xpath
+#   concordance990::data_dictionary(form = )  money_field and blank_meaning
 #
 # Output (one row per RDB variable_name each):
 #   data/field_concordance.rda     990/990EZ release (efile_)
 #   data/field_concordance_pf.rda  990PF release (efilepf_)
 #
+# Needs concordance990 >= 2.0.2 (the first release with money_field and
+# blank_meaning). It is a build-time dependency only, so it is not listed in
+# DESCRIPTION; install it from GitHub to rebuild.
+#
 # Run with:  Rscript data-raw/build-concordance.R
 
-# --- 1. Load the concordance (cached copy, or download) -----------------------
-local_csv  <- "data-raw/concordance990.csv"
-source_url <- paste0(
-  "https://raw.githubusercontent.com/Nonprofit-Open-Data-Collective/",
-  "concordance990/main/concordance.csv"
-)
-src <- if (file.exists(local_csv)) local_csv else source_url
-src_all <- data.table::fread(src, data.table = FALSE, colClasses = "character",
-                             encoding = "UTF-8")
+# --- 1. Load the concordances ---------------------------------------------------
+if (!requireNamespace("concordance990", quietly = TRUE) ||
+    utils::packageVersion("concordance990") < "2.0.2")
+  stop("data-raw/build-concordance.R needs concordance990 >= 2.0.2.")
+cc_version <- as.character(utils::packageVersion("concordance990"))
 
-# The 990/990EZ (efile_) and 990PF (efilepf_) releases are separate databases.
-# Each gets its own concordance, built from the tables its release publishes:
-# the 990 release has no PF-* tables, and the PF release carries only the PF-*
-# tables plus copies of the shared header, signature, and Schedule B tables.
-pf_shared_tables <- c("F9-P00-T00-HEADER", "F9-P02-T00-SIGNATURE")
-is_pf_table <- grepl("^PF-", src_all$rdb_table)
-mcf_990 <- src_all[!is_pf_table, , drop = FALSE]
-mcf_pf  <- src_all[is_pf_table | grepl("^SB-", src_all$rdb_table) |
-                     src_all$rdb_table %in% pf_shared_tables, , drop = FALSE]
+# The 990/990EZ (efile_) and 990PF (efilepf_) releases are separate databases,
+# and concordance990 describes each one as it is parsed: the 990 database has
+# no PF-* tables, and the 990PF database carries the PF-* tables plus the
+# shared header, signature, and Schedule B tables, with the attachments that
+# map to a 990PF variable in 990PF returns (xpath_forms.csv) mapped that way.
+load_form <- function(form) {
+  as.data.frame(concordance990::concordance("v1", form = form))
+}
+mcf_990 <- load_form("F990")
+mcf_pf  <- load_form("F990PF")
 
 # --- 2. Mapping rules (REVIEW THESE) ------------------------------------------
-# blank_meaning: how to read a blank on a form where the field IS in scope.
+# money_field and blank_meaning come from concordance990, so panel990 and the
+# other partner packages read blank cells by one rule:
 #   checkbox                 -> implicit_false
 #   numeric & money (USD)    -> implicit_zero      (blank dollar amount = 0)
 #   numeric & non-money      -> literal_missing    (counts/ratios/years/ids)
 #   text / date              -> literal_missing
-# Money is detected from the XSD schema type (data_type_xsd), which is far more
-# reliable than field-name matching. Resolved per variable via the modal rule.
-money_xsd_pattern <- "amount|amt|money|currenc"   # matches USAmountType, USAmountNNType
-blank_default <- "literal_missing"                # for empty/unknown data_type
-
-blank_meaning_for <- function(dtype, is_money) {
-  if (is.na(dtype)) return(blank_default)
-  if (dtype == "checkbox") return("implicit_false")
-  if (dtype == "numeric")  return(if (isTRUE(is_money)) "implicit_zero" else "literal_missing")
-  if (dtype %in% c("text", "date")) return("literal_missing")
-  blank_default
+# Money is a numeric variable whose XSD type is an amount type, preferring the
+# current schema's type (see ?concordance990::data_dictionary).
+load_flags <- function(form) {
+  dd <- as.data.frame(concordance990::data_dictionary(form))
+  flags <- unique(dd[, c("variable_name", "money_field", "blank_meaning")])
+  # a variable shared by several tables (the Part III program tables) has one
+  # dictionary row per table; the flags must agree across them
+  if (anyDuplicated(flags$variable_name))
+    stop("concordance990 flags disagree across tables for: ",
+         paste(unique(flags$variable_name[duplicated(flags$variable_name)]), collapse = ", "))
+  flags
 }
+flags_990 <- load_flags("F990")
+flags_pf  <- load_flags("F990PF")
 
 # variable_scope -> applicable return forms (used by normalize()).
 # PC = full 990 only; EZ = 990EZ only; PZ = both; PF = 990PF; HD/SG =
@@ -123,7 +128,8 @@ to_ascii <- function(x) {
 
 # `form_scope` derives a variable's scope from its xpaths and source scope:
 # xpath_form_scope() for the 990 release, pf_form_scope() for the PF release.
-collapse_concordance <- function(mcf, form_scope) {
+# `flags` carries concordance990's money_field and blank_meaning.
+collapse_concordance <- function(mcf, form_scope, flags) {
   mcf$.current <- is_true(mcf$current_version)
   mcf$data_type_simple[is.na(mcf$data_type_simple) | mcf$data_type_simple == ""] <-
     "text"  # ExplanationType blanks -> text
@@ -138,8 +144,10 @@ collapse_concordance <- function(mcf, form_scope) {
     dtype <- pick(sub$data_type_simple, type_priority)
     xsd   <- pick(sub$data_type_xsd,    character())
     if (!is.na(xsd) && xsd %in% identifier_xsd) dtype <- "text"
-    is_money <- !is.na(dtype) && dtype == "numeric" &&
-      !is.na(xsd) && grepl(money_xsd_pattern, xsd, ignore.case = TRUE)
+    flag <- flags[flags$variable_name == v, , drop = FALSE]
+    if (nrow(flag) != 1L) stop("No concordance990 flags for ", v)
+    if (isTRUE(flag$money_field) && !identical(dtype, "numeric"))
+      stop(v, " is money in concordance990 but ", dtype, " here")
     tables_all <- sort(unique(sub$rdb_table[!is.na(sub$rdb_table) & sub$rdb_table != ""]))
     data.frame(
       variable_name    = v,
@@ -149,8 +157,8 @@ collapse_concordance <- function(mcf, form_scope) {
       form_type        = pick(sub$form_type, character()),
       data_type_simple = dtype,
       data_type_xsd    = xsd,
-      money_field      = is_money,
-      blank_meaning    = blank_meaning_for(dtype, is_money),
+      money_field      = flag$money_field,
+      blank_meaning    = flag$blank_meaning,
       forms            = paste(scope_to_forms[[scope]], collapse = "|"),
       rdb_table        = pick(sub$rdb_table, character()),
       rdb_tables_all   = paste(tables_all, collapse = ";"),
@@ -186,8 +194,10 @@ report <- function(fc, name) {
   print(table(mcf = fc$scope_mcf, derived = fc$variable_scope))
 }
 
-field_concordance    <- collapse_concordance(mcf_990, xpath_form_scope)
-field_concordance_pf <- collapse_concordance(mcf_pf,  pf_form_scope)
+field_concordance    <- collapse_concordance(mcf_990, xpath_form_scope, flags_990)
+field_concordance_pf <- collapse_concordance(mcf_pf,  pf_form_scope,  flags_pf)
+cat("built from concordance990", cc_version, "
+")
 report(field_concordance, "field_concordance")
 report(field_concordance_pf, "field_concordance_pf")
 

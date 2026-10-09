@@ -27,13 +27,14 @@ tables and the release's copies of the shared header (\code{F9-P00}), signature
 \code{concordance(form = "990PF")}.
 }
 \details{
-Built by \code{data-raw/build-concordance.R} from the same concordance990 source
-and with the same type, money, and blank-meaning rules as
-\link{field_concordance}. Money fields are detected from the XSD amount types;
-every numeric field in the 990PF financial statements (Parts I-III) is a
-money field. Some numeric fields whose source rows carry no XSD type -- a
-handful of supporting-statement amounts among them -- are treated
-conservatively as \code{literal_missing}.
+Built by \code{data-raw/build-concordance.R} the same way as \link{field_concordance},
+from the 990PF database of concordance990:
+\code{concordance990::concordance(form = "F990PF")}, which maps shared
+attachments such as the reasonable-cause explanation to their 990PF
+variables, and the flags of \code{concordance990::data_dictionary("F990PF")}.
+Every numeric field in the 990PF financial statements (Parts I-III) is a
+money field. A numeric field whose source rows carry no XSD type is treated
+conservatively as \code{literal_missing} until concordance990 types it.
 }
 \seealso{
 \code{\link[=concordance]{concordance()}}, \link{field_concordance}, \code{\link[=financial_fields]{financial_fields()}}
