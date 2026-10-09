@@ -10,6 +10,8 @@ Authors@R:
 Description: Retrieve IRS efile tables, normalize source encodings using
     form-aware concordance rules, construct longitudinal panels, and support
     panel classification, filtering, missing-year imputation, and smoothing.
+URL: https://nonprofit-open-data-collective.github.io/panel990/,
+    https://github.com/Nonprofit-Open-Data-Collective/panel990
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

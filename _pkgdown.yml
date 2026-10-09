@@ -2,11 +2,26 @@ url: https://nonprofit-open-data-collective.github.io/panel990/
 
 template:
   bootstrap: 5
+  light-switch: true
+  bslib:
+    primary: "#bd5416"
+    navbar-bg: "#153243"
+    link-color: "#8f3f10"
+    body-color: "#1f2429"
+    border-color: "#dcdfe4"
+    code-color: "#8f3f10"
+    base_font: {google: "Source Sans 3"}
+    heading_font: {google: "Zilla Slab"}
+    code_font: {google: "Source Code Pro"}
+    font-size-base: "1.0625rem"
+    line-height-base: 1.62
 
 navbar:
+  type: dark
+  bg: primary
   structure:
     left: [intro, getting-started, reference, articles]
-    right: [search, github]
+    right: [search, lightswitch, github]
   components:
     getting-started:
       text: Getting started
