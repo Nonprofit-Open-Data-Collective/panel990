@@ -27,13 +27,13 @@ make_pf_source <- function() {
 test_that("data_source() selects the 990PF release by form", {
   pf <- data_source(form = "990PF")
   expect_identical(pf$form, "990PF")
-  expect_match(pf$root, "/efilepf_v2_3/$")
+  expect_match(pf$root, "/efilepf_v3_1/$")
   expect_identical(unname(pf$aliases[["PF01"]]), "PF-P01-T00-REVENUE-EXPENSE")
   expect_identical(unname(pf$aliases[["P00"]]), "F9-P00-T00-HEADER")
 
   f9 <- data_source()
   expect_identical(f9$form, "990")
-  expect_match(f9$root, "/efile_v2_3/$")
+  expect_match(f9$root, "/efile_v3_1/$")
   expect_false("PF01" %in% names(f9$aliases))
 
   expect_identical(data_source(form = "pf")$form, "990PF")

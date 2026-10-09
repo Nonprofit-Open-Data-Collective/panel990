@@ -212,7 +212,7 @@ panelize <- function(
 #' @param tables Aliases or literal 990PF table names. Defaults to the
 #'   990PF header and the Part I and Part II financial statements.
 #' @param years Tax years.
-#' @param version Published release, such as `"v2_3"`.
+#' @param version Published release, such as `"v3_1"`.
 #' @param format Source file format, `"parquet"` or `"csv"`.
 #' @param root Optional base URL or local directory holding a copy of the
 #'   990PF release; overrides `version`.
