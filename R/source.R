@@ -2,7 +2,7 @@
 # and the version separate so callers can move between releases without
 # rebuilding the URL by hand; `.EFILE_VERSION` is only the default.
 .EFILE_BUCKET <- "https://nccs-efile.s3.us-east-1.amazonaws.com/public/"
-.EFILE_VERSION <- "v2_3"
+.EFILE_VERSION <- "v3_1"
 
 # Each release is published as two databases under sibling prefixes: Form 990
 # and 990EZ filers together under efile_, and 990PF filers under efilepf_. A
@@ -363,8 +363,8 @@
 #'
 #' @param root Base URL or local directory containing table-year files. `NULL`
 #'   (default) builds the URL for `version`.
-#' @param version Published release, such as `"v2_3"` (the current default) or
-#'   `"v2_2"`. Ignored when `root` is supplied.
+#' @param version Published release, such as `"v3_1"` (the current default) or
+#'   `"v2_3"`. Ignored when `root` is supplied.
 #' @param format Source file format: `"parquet"` (the default, when a parquet
 #'   reader is installed) or `"csv"`. See the Source format section.
 #' @param aliases Named character vector mapping short aliases to table names.
@@ -376,7 +376,7 @@
 #'   `aliases`, and `form`.
 #' @examples
 #' data_source()                          # current release, parquet
-#' data_source(version = "v2_2")          # pin the previous release
+#' data_source(version = "v2_3")          # pin the previous release
 #' data_source(format = "csv")            # same release, CSV files
 #' data_source(form = "990PF")            # the 990PF release
 #' @export
@@ -388,10 +388,10 @@ data_source <- function(root = NULL, version = .EFILE_VERSION,
   if (is.null(root)) {
     if (!is.character(version) || length(version) != 1L || is.na(version) ||
         !nzchar(version))
-      stop("`version` must be one non-empty string such as \"v2_3\".")
+      stop("`version` must be one non-empty string such as \"v3_1\".")
     version <- sub("^efile(pf)?_", "", tolower(trimws(version)))
     if (!grepl("^v[0-9]+_[0-9]+$", version))
-      stop("`version` must look like \"v2_3\"; received \"", version, "\".")
+      stop("`version` must look like \"v3_1\"; received \"", version, "\".")
     root <- .efile_version_root(version, form)
   } else {
     if (!is.character(root) || length(root) != 1L || is.na(root) || !nzchar(root))

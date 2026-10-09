@@ -22,7 +22,7 @@ panelize_pf(
 
 \item{years}{Tax years.}
 
-\item{version}{Published release, such as \code{"v2_3"}.}
+\item{version}{Published release, such as \code{"v3_1"}.}
 
 \item{format}{Source file format, \code{"parquet"} or \code{"csv"}.}
 
