@@ -12,16 +12,17 @@
 #   data/field_concordance.rda     990/990EZ release (efile_)
 #   data/field_concordance_pf.rda  990PF release (efilepf_)
 #
-# Needs concordance990 >= 2.0.2 (the first release with money_field and
-# blank_meaning). It is a build-time dependency only, so it is not listed in
-# DESCRIPTION; install it from GitHub to rebuild.
+# Needs concordance990 >= 2.0.3 (2.0.2 is the first release with money_field and
+# blank_meaning; 2.0.3 types 26 more dollar amounts). It is a build-time
+# dependency only, so it is not listed in DESCRIPTION; install it from GitHub
+# to rebuild.
 #
 # Run with:  Rscript data-raw/build-concordance.R
 
 # --- 1. Load the concordances ---------------------------------------------------
 if (!requireNamespace("concordance990", quietly = TRUE) ||
-    utils::packageVersion("concordance990") < "2.0.2")
-  stop("data-raw/build-concordance.R needs concordance990 >= 2.0.2.")
+    utils::packageVersion("concordance990") < "2.0.3")
+  stop("data-raw/build-concordance.R needs concordance990 >= 2.0.3.")
 cc_version <- as.character(utils::packageVersion("concordance990"))
 
 # The 990/990EZ (efile_) and 990PF (efilepf_) releases are separate databases,
