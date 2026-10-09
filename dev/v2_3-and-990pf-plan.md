@@ -195,7 +195,7 @@ Where behavior really differs, dispatch on the form family:
      the other release is requested, before any download starts.
    - **Cache.** PF files are cached under `<path>/990PF/<year>/`. The 990
      layout is unchanged, so existing caches still work.
-   - **Concordance.** `field_concordance_pf` has 1,093 variables. It is built
+   - **Concordance.** `field_concordance_pf` has 1,062 variables. It is built
      by the same script and with the same rules as `field_concordance`.
      - **Correction to the earlier finding:** concordance990 *does* type most
        PF amounts as `USAmount*` (513 rows). The XSD money rule therefore
@@ -214,17 +214,26 @@ Where behavior really differs, dispatch on the form family:
    - **Bug fix.** `panel_normalize()` always reported 0 values zeroed. The
      data was zeroed correctly; only the count in the message and audit was
      wrong.
-3. **Next, upstream in concordance990.** Add `money_field` and
-   `blank_meaning` to the data dictionary for both forms, so the rule lives in
-   one place. panel990's build script would then read these columns instead
-   of deriving them.
-   - **Money flags.** These can start from the XSD rule panel990 uses now.
-     Review the PF numeric fields that have no XSD type and are therefore
-     treated as `literal_missing`, such as the `PF_AX19`/`PF_AX21` sale
-     amounts and `PF_13_UNDIST_INCOME_PY_*`.
-   - **Missing PF fields.** Five PF text fields are published in v2.3 but
-     absent from the concordance: `PF_AX09_COMP_*`, `PF_AX14_COMP_EMPL_*`,
-     and `PF_AX44_CAUSE_EXPLANATION`.
+3. **Done: money and blank-meaning flags in concordance990.**
+   `data_dictionary()` returns `money_field` and `blank_meaning`
+   ([Nonprofit-Open-Data-Collective/concordance990#20](https://github.com/Nonprofit-Open-Data-Collective/concordance990/pull/20), released in 2.0.2).
+4. **Done: panel990 reads the shared flags.** `data-raw/build-concordance.R`
+   now needs concordance990 >= 2.0.2.
+   - **Source.** It builds each dataset from that database's concordance,
+     `concordance990::concordance(form = "F990" | "F990PF")`.
+   - **Flags.** It takes `money_field` and `blank_meaning` from
+     `data_dictionary()` instead of deriving them.
+   - **Unchanged.** Types, scope, and flags are the same as before.
+   - **PF dataset.**
+     - It gains the six attachment variables that 990PF returns map to PF
+       variables (`PF_AX09_*`, `PF_AX14_*`, `PF_AX44_CAUSE_EXPLANATION`).
+     - It drops 37 990-only header variables that the PF release never
+       publishes.
+5. **Open, in concordance990.** About a dozen dollar fields have no XSD type,
+   so their blanks are read as missing rather than zero. Examples are
+   `F9_07_COMP_DTK_COMP_*_SUBTOT`, `F9_09_EXP_FEE_SVC_FUNDR_*`, and the
+   `PF_AX19`/`PF_AX21` sale amounts. Typing them there flows through to
+   panel990 on the next rebuild.
 
 ### Deferred
 
