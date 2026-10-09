@@ -15,6 +15,8 @@
   source](https://nonprofit-open-data-collective.github.io/panel990/articles/source-requirements.md):
 - [4. Panels and panel
   slices](https://nonprofit-open-data-collective.github.io/panel990/articles/panels-and-slices.md):
+- [5. Private foundations
+  (990PF)](https://nonprofit-open-data-collective.github.io/panel990/articles/private-foundations.md):
 
 ### Cleaning panels
 

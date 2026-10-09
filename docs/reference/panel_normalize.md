@@ -1,12 +1,16 @@
 # Normalize blank financial fields to zero, form-scoped
 
-Interprets blank core-990 financial cells as zero, respecting form scope
-and protecting non-filer rows:
+Interprets blank core financial cells as zero, respecting form scope and
+protecting non-filer rows:
 
-- both-form (`PZ`) fields are zeroed for every filer;
+- both-form (`PZ`) fields are zeroed for every 990 and 990EZ filer;
 
-- full-990-only (`PC`) fields are zeroed only for non-990EZ filers (they
+- full-990-only (`PC`) fields are zeroed only for full 990 filers (they
   are out of scope on the 990EZ and left `NA`);
+
+- 990PF (`PF`) fields are zeroed only for 990PF filers, so the same call
+  serves a panel from either release (see
+  [`panelize_pf()`](https://nonprofit-open-data-collective.github.io/panel990/reference/panelize_pf.md));
 
 - rows with **no** financial data at all (a non-filer / shell record)
   are left untouched – no fabricated zeros.

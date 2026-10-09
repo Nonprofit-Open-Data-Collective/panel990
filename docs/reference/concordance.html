@@ -3,15 +3,19 @@
 normalization is distinct from panel imputation: it interprets source
 encoding only and never creates missing organization-year rows.
 Called with no arguments, concordance() returns the package's built-in
-concordance for IRS 990 efile variables, derived from the IRS Efile Master
-Concordance File (see field_concordance). Supply field and
-blank_meaning to build a custom concordance instead."><meta property="og:description" content="Creates field-level rules for interpreting blank source values. Data
+concordance for IRS 990 efile variables, derived from the concordance990
+xpath concordance (see field_concordance). concordance(form = &quot;990PF&quot;)
+returns the built-in concordance for the 990PF release instead (see
+field_concordance_pf). Supply field and blank_meaning to build a custom
+concordance instead."><meta property="og:description" content="Creates field-level rules for interpreting blank source values. Data
 normalization is distinct from panel imputation: it interprets source
 encoding only and never creates missing organization-year rows.
 Called with no arguments, concordance() returns the package's built-in
-concordance for IRS 990 efile variables, derived from the IRS Efile Master
-Concordance File (see field_concordance). Supply field and
-blank_meaning to build a custom concordance instead."></head><body>
+concordance for IRS 990 efile variables, derived from the concordance990
+xpath concordance (see field_concordance). concordance(form = &quot;990PF&quot;)
+returns the built-in concordance for the 990PF release instead (see
+field_concordance_pf). Supply field and blank_meaning to build a custom
+concordance instead."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -37,6 +41,7 @@ blank_meaning to build a custom concordance instead."></head><body>
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -68,9 +73,11 @@ blank_meaning to build a custom concordance instead."></head><body>
 normalization is distinct from panel imputation: it interprets source
 encoding only and never creates missing organization-year rows.</p>
 <p>Called with no arguments, <code>concordance()</code> returns the package's built-in
-concordance for IRS 990 efile variables, derived from the IRS Efile Master
-Concordance File (see <a href="field_concordance.html">field_concordance</a>). Supply <code>field</code> and
-<code>blank_meaning</code> to build a custom concordance instead.</p>
+concordance for IRS 990 efile variables, derived from the concordance990
+xpath concordance (see <a href="field_concordance.html">field_concordance</a>). <code>concordance(form = "990PF")</code>
+returns the built-in concordance for the 990PF release instead (see
+<a href="field_concordance_pf.html">field_concordance_pf</a>). Supply <code>field</code> and <code>blank_meaning</code> to build a custom
+concordance instead.</p>
     </div>
 
     <div class="section level2">
@@ -80,7 +87,8 @@ Concordance File (see <a href="field_concordance.html">field_concordance</a>). S
 <span>  blank_meaning <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  forms <span class="op">=</span> <span class="st">"*"</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
-<span>  notes <span class="op">=</span> <span class="cn">NA_character_</span></span>
+<span>  notes <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
+<span>  form <span class="op">=</span> <span class="st">"990"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,6 +118,11 @@ as a separator. Use <code>"*"</code> for every form.</p></dd>
 
 <dt id="arg-notes">notes<a class="anchor" aria-label="anchor" href="#arg-notes"></a></dt>
 <dd><p>Optional explanatory notes.</p></dd>
+
+
+<dt id="arg-form">form<a class="anchor" aria-label="anchor" href="#arg-form"></a></dt>
+<dd><p>Form family of the built-in concordance returned when <code>field</code>
+is <code>NULL</code>: <code>"990"</code> (default) or <code>"990PF"</code>. Ignored otherwise.</p></dd>
 
 </dl></div>
     <div class="section level2">

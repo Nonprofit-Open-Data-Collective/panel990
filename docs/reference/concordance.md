@@ -5,9 +5,12 @@ normalization is distinct from panel imputation: it interprets source
 encoding only and never creates missing organization-year rows.
 
 Called with no arguments, `concordance()` returns the package's built-in
-concordance for IRS 990 efile variables, derived from the IRS Efile
-Master Concordance File (see
+concordance for IRS 990 efile variables, derived from the concordance990
+xpath concordance (see
 [field_concordance](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance.md)).
+`concordance(form = "990PF")` returns the built-in concordance for the
+990PF release instead (see
+[field_concordance_pf](https://nonprofit-open-data-collective.github.io/panel990/reference/field_concordance_pf.md)).
 Supply `field` and `blank_meaning` to build a custom concordance
 instead.
 
@@ -19,7 +22,8 @@ concordance(
   blank_meaning = NULL,
   forms = "*",
   table = NA_character_,
-  notes = NA_character_
+  notes = NA_character_,
+  form = "990"
 )
 ```
 
@@ -48,6 +52,11 @@ concordance(
 - notes:
 
   Optional explanatory notes.
+
+- form:
+
+  Form family of the built-in concordance returned when `field` is
+  `NULL`: `"990"` (default) or `"990PF"`. Ignored otherwise.
 
 ## Value
 

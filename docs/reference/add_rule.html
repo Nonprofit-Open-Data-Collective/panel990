@@ -23,7 +23,11 @@ keys and label column names; label also names the derived column.
 
 select
 vars, scope, tables, drop (resolved via
-field_concordance).
+field_concordance and field_concordance_pf). scope takes a
+fields_in_scope() value or a variable_scope code; the 990-vs-990EZ
+scopes do not apply to a 990PF panel, which panelize_pf() rejects.
+tables takes table-name prefixes, a part code such as "P08", or a
+990PF part code such as "PF01".
 
 dedup
 group, partial, amended, timestamp column overrides
@@ -64,7 +68,11 @@ keys and label column names; label also names the derived column.
 
 select
 vars, scope, tables, drop (resolved via
-field_concordance).
+field_concordance and field_concordance_pf). scope takes a
+fields_in_scope() value or a variable_scope code; the 990-vs-990EZ
+scopes do not apply to a 990PF panel, which panelize_pf() rejects.
+tables takes table-name prefixes, a part code such as "P08", or a
+990PF part code such as "PF01".
 
 dedup
 group, partial, amended, timestamp column overrides
@@ -107,6 +115,7 @@ value/code (a string) or fn (a function).
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -157,7 +166,11 @@ string is rejected: it cannot be pushed to the source.</p></dd>
 
 <dt><code>select</code></dt>
 <dd><p><code>vars</code>, <code>scope</code>, <code>tables</code>, <code>drop</code> (resolved via
-<a href="field_concordance.html">field_concordance</a>).</p></dd>
+<a href="field_concordance.html">field_concordance</a> and <a href="field_concordance_pf.html">field_concordance_pf</a>). <code>scope</code> takes a
+<code><a href="fields_in_scope.html">fields_in_scope()</a></code> value or a <code>variable_scope</code> code; the 990-vs-990EZ
+scopes do not apply to a 990PF panel, which <code><a href="panelize_pf.html">panelize_pf()</a></code> rejects.
+<code>tables</code> takes table-name prefixes, a part code such as <code>"P08"</code>, or a
+990PF part code such as <code>"PF01"</code>.</p></dd>
 
 <dt><code>dedup</code></dt>
 <dd><p><code>group</code>, <code>partial</code>, <code>amended</code>, <code>timestamp</code> column overrides

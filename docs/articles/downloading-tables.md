@@ -24,7 +24,8 @@ table_catalog()      # columns: table, alias, cardinality
 
 | alias | table | name | section | fields | cardinality |
 |:---|:---|:---|:---|---:|:---|
-| P00 | F9-P00-T00-HEADER | Header | Form 990 | 74 | 1x1 |
+| P00 | F9-P00-T00-HEADER | Header | Form 990 | 84 | 1x1 |
+|  | F9-P00-T01-AFFILIATE-LISTING | Affiliate listing | Form 990 | 9 | 1xm |
 | P01 | F9-P01-T00-SUMMARY | Summary | Form 990, Part 1 | 41 | 1x1 |
 |  | F9-P01-T00-SUMMARY-EZ | Summary (EZ) | Form 990, Part 1 | 2 | 1x1 |
 |  | F9-P02-T00-SIGNATURE | Signature | Form 990, Part 2 | 24 | 1x1 |
@@ -35,16 +36,16 @@ table_catalog()      # columns: table, alias, cardinality
 |  | F9-P03-T00-PROGRAMS | Programs | Form 990, Part 3 | 5 | 1x1 |
 |  | F9-P03-T01-PROGRAMS-OTHER | Programs other | Form 990, Part 3 | 0 | 1xm |
 |  | F9-P03-T02-PROGRAMS-EZ | Programs (EZ) | Form 990, Part 3 | 1 | 1xm |
-|  | F9-P04-T00-REQUIRED-SCHEDULES | Required schedules | Form 990, Part 4 | 55 | 1x1 |
+|  | F9-P04-T00-REQUIRED-SCHEDULES | Required schedules | Form 990, Part 4 | 56 | 1x1 |
 |  | F9-P04-T00-REQUIRED-SCHEDULES-EZ | Required schedules (EZ) | Form 990, Part 4 | 3 | 1x1 |
-|  | F9-P05-T00-OTHER-IRS-FILING | Other IRS filing | Form 990, Part 5 | 40 | 1x1 |
+|  | F9-P05-T00-OTHER-IRS-FILING | Other IRS filing | Form 990, Part 5 | 41 | 1x1 |
 |  | F9-P06-T00-GOVERNANCE | Governance | Form 990, Part 6 | 40 | 1x1 |
 |  | F9-P06-T00-GOVERNANCE-EZ | Governance (EZ) | Form 990, Part 6 | 8 | 1x1 |
-|  | F9-P07-T00-DIR-TRUST-KEY | Directors, trustees, key employees | Form 990, Part 7 | 15 | 1x1 |
+|  | F9-P07-T00-DIR-TRUST-KEY | Directors, trustees, key employees | Form 990, Part 7 | 17 | 1x1 |
 |  | F9-P07-T01-COMPENSATION | Compensation | Form 990, Part 7 | 26 | 1xm |
-|  | F9-P07-T01-COMPENSATION-HCE-EZ | Compensation HCE (EZ) | Form 990, Part 7 | 13 | 1xm |
-|  | F9-P07-T02-CONTRACTORS | Contractors | Form 990, Part 7 | 12 | 1xm |
-| P08 | F9-P08-T00-REVENUE | Revenue | Form 990, Part 8 | 78 | 1x1 |
+|  | F9-P07-T01-COMPENSATION-HCE-EZ | Compensation HCE (EZ) | Form 990, Part 7 | 12 | 1xm |
+|  | F9-P07-T02-CONTRACTORS | Contractors | Form 990, Part 7 | 11 | 1xm |
+| P08 | F9-P08-T00-REVENUE | Revenue | Form 990, Part 8 | 79 | 1x1 |
 |  | F9-P08-T01-REVENUE-PROGRAMS | Revenue programs | Form 990, Part 8 | 6 | 1xm |
 |  | F9-P08-T02-REVENUE-MISC | Revenue miscellaneous | Form 990, Part 8 | 6 | 1xm |
 | P09 | F9-P09-T00-EXPENSES | Expenses | Form 990, Part 9 | 123 | 1x1 |
@@ -53,17 +54,24 @@ table_catalog()      # columns: table, alias, cardinality
 | P11 | F9-P11-T00-ASSETS | Assets | Form 990, Part 11 | 7 | 1x1 |
 | P12 | F9-P12-T00-FINANCIAL-REPORTING | Financial reporting | Form 990, Part 12 | 16 | 1x1 |
 |  | SA-P00-T00-HEADER | Header | Schedule A | 1 | 1x1 |
-| A01 | SA-P01-T00-PUBLIC-CHARITY-STATUS | Public charity status | Schedule A, Part 1 | 29 | 1x1 |
+| A01 | SA-P01-T00-PUBLIC-CHARITY-STATUS | Public charity status | Schedule A, Part 1 | 25 | 1x1 |
 |  | SA-P01-T01-PUBLIC-CHARITY-STATUS | Public charity status | Schedule A, Part 1 | 9 | 1xm |
-|  | SA-P02-T00-SUPPORT_SCHEDULE_170 | Support schedule 170 | Schedule A, Part 2 | 60 | 1x1 |
+|  | SA-P01-T02-HOSPITAL-NAME-ADDRESS | Hospital name address | Schedule A, Part 1 | 5 | 1xm |
+|  | SA-P01-T03-AGRI-RESEARCH-UNIV | Agri research univ | Schedule A, Part 1 | 5 | 1xm |
+|  | SA-P02-T00-SUPPORT_SCHEDULE_170 | Support schedule 170 | Schedule A, Part 2 | 61 | 1x1 |
 |  | SA-P03-T00-SUPPORT_SCHEDULE_509 | Support schedule 509 | Schedule A, Part 3 | 105 | 1x1 |
 |  | SA-P04-T00-SUPPORT-ORGS | Support orgs | Schedule A, Part 4 | 35 | 1x1 |
-|  | SA-P05-T00-SUPPORT-ORGS | Support orgs | Schedule A, Part 5 | 79 | 1x1 |
+|  | SA-P05-T00-SUPPORT-ORGS | Support orgs | Schedule A, Part 5 | 81 | 1x1 |
 |  | SA-P06-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule A, Part 6 | 2 | supplemental |
-|  | SB-P01-T01-CONTRIBUTORS | Contributors | Schedule B, Part 1 | 8 | 1xm |
+|  | SB-P00-T00-HEADER | Header | Schedule B | 6 | 1x1 |
+|  | SB-P01-T01-CONTRIBUTORS | Contributors | Schedule B, Part 1 | 15 | 1xm |
+|  | SB-P02-T01-NONCASH-PROPERTY | Noncash property | Schedule B, Part 2 | 4 | 1xm |
+|  | SB-P03-T00-EXCLUSIVELY-RELIGIOUS | Exclusively religious | Schedule B, Part 3 | 1 | 1x1 |
+|  | SB-P03-T01-EXCLUSIVELY-RELIGIOUS | Exclusively religious | Schedule B, Part 3 | 12 | 1xm |
 |  | SC-P01-T00-LOBBY | Lobby | Schedule C, Part 1 | 10 | 1x1 |
 |  | SC-P01-T01-POLITICAL-ORGS-INFO | Political orgs info | Schedule C, Part 1 | 11 | 1xm |
-|  | SC-P02-T00-LOBBY | Lobby | Schedule C, Part 2 | 65 | 1x1 |
+|  | SC-P02-T00-LOBBY | Lobby | Schedule C, Part 2 | 67 | 1x1 |
+|  | SC-P02-T01-AFFILIATED-GROUP | Affiliated group | Schedule C, Part 2 | 19 | 1xm |
 |  | SC-P03-T00-LOBBY | Lobby | Schedule C, Part 3 | 10 | 1x1 |
 |  | SC-P04-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule C, Part 4 | 4 | supplemental |
 |  | SD-P01-T00-ORGS-DONOR-ADVISED-FUNDS-OTH | Orgs donor advised funds other | Schedule D, Part 1 | 10 | 1x1 |
@@ -72,9 +80,9 @@ table_catalog()      # columns: table, alias, cardinality
 |  | SD-P04-T00-ESCROW-CUSTODIAL-ARRANGEMENTS | Escrow custodial arrangements | Schedule D, Part 4 | 7 | 1x1 |
 |  | SD-P05-T00-ENDOWMENT | Endowment | Schedule D, Part 5 | 41 | 1x1 |
 |  | SD-P06-T00-LAND-BLDG-EQUIP | Land building equipment | Schedule D, Part 6 | 20 | 1x1 |
+|  | SD-P07-T00-INVESTMENTS-OTH-DERIVATIVES | Investments other derivatives | Schedule D, Part 7 | 2 | 1x1 |
+|  | SD-P07-T00-INVESTMENTS-OTH-EQUITY | Investments other equity | Schedule D, Part 7 | 2 | 1x1 |
 |  | SD-P07-T00-INVESTMENTS-SECURITIES | Investments securities | Schedule D, Part 7 | 1 | 1x1 |
-|  | SD-P07-T01-INVESTMENTS-OTH-DERIVATIVES | Investments other derivatives | Schedule D, Part 7 | 2 | 1xm |
-|  | SD-P07-T01-INVESTMENTS-OTH-EQUITY | Investments other equity | Schedule D, Part 7 | 2 | 1xm |
 |  | SD-P07-T01-INVESTMENTS-OTH-SECURITIES | Investments other securities | Schedule D, Part 7 | 3 | 1xm |
 |  | SD-P08-T00-INVESTMENTS-PROG-RLTD | Investments prog related | Schedule D, Part 8 | 1 | 1x1 |
 |  | SD-P08-T01-INVESTMENTS-PROG-RLTD | Investments prog related | Schedule D, Part 8 | 3 | 1xm |
@@ -98,20 +106,20 @@ table_catalog()      # columns: table, alias, cardinality
 |  | SF-P99-T00-FRGN-ORG-GRANTS | Foreign org grants | Schedule F, Part 99 | 1 | 1x1 |
 |  | SG-P01-T00-FUNDRAISING-ACTS | Fundraising activities | Schedule G, Part 1 | 12 | 1x1 |
 |  | SG-P01-T01-FUNDRAISERS-INFO | Fundraisers info | Schedule G, Part 1 | 14 | 1xm |
-|  | SG-P02-T00-FUNDRAISING-EVENTS | Fundraising events | Schedule G, Part 2 | 11 | 1x1 |
-|  | SG-P02-T01-FUNDRAISING-EVENTS | Fundraising events | Schedule G, Part 2 | 30 | 1xm |
+|  | SG-P02-T00-FUNDRAISING-EVENTS | Fundraising events | Schedule G, Part 2 | 41 | 1x1 |
 |  | SG-P03-T00-GAMING | Gaming | Schedule G, Part 3 | 68 | 1x1 |
 |  | SG-P04-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule G, Part 4 | 4 | supplemental |
 |  | SH-P01-T00-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 1 | 91 | 1x1 |
 |  | SH-P02-T00-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 2 | 60 | 1x1 |
 |  | SH-P03-T00-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 3 | 11 | 1x1 |
 |  | SH-P04-T01-COMPANY-JOINT-VENTURES | Company joint ventures | Schedule H, Part 4 | 6 | 1xm |
-|  | SH-P05-T00-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 5 | 88 | 1x1 |
-|  | SH-P05-T01-HOSPITAL-FACILITY | Hospital facility | Schedule H, Part 5 | 23 | 1xm |
-|  | SH-P05-T02-NON-HOSPITAL-FACILITY | Non hospital facility | Schedule H, Part 5 | 8 | 1xm |
-|  | SH-P05-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule H, Part 5 | 3 | supplemental |
+|  | SH-P05-T00-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 5 | 2 | 1x1 |
+|  | SH-P05-T01-HOSPITAL-FACILITY | Hospital facility | Schedule H, Part 5 | 24 | 1xm |
+|  | SH-P05-T02-NON-HOSPITAL-FACILITY | Non hospital facility | Schedule H, Part 5 | 9 | 1xm |
+|  | SH-P05-T03-FACILITY-POLICIES-PRACTICES | Facility policies practices | Schedule H, Part 5 | 98 | 1xm |
+|  | SH-P05-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule H, Part 5 | 2 | supplemental |
 |  | SH-P06-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule H, Part 6 | 20 | supplemental |
-|  | SH-P99-T00-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 99 | 48 | 1x1 |
+|  | SH-P99-T01-FAP-COMMUNITY-BENEFIT-POLICY | FAP community benefit policy | Schedule H, Part 99 | 48 | 1xm |
 |  | SI-P01-T00-GRANTS-INFO | Grants info | Schedule I, Part 1 | 1 | 1x1 |
 |  | SI-P02-T00-GRANTS-US-ORGS-GOVTS | Grants U.S. orgs governments | Schedule I, Part 2 | 2 | 1x1 |
 |  | SI-P02-T01-GRANTS-US-ORGS-GOVTS | Grants U.S. orgs governments | Schedule I, Part 2 | 15 | 1xm |
@@ -143,7 +151,7 @@ table_catalog()      # columns: table, alias, cardinality
 |  | SN-P02-T01-DISPOSITION-OF-ASSETS | Disposition of assets | Schedule N, Part 2 | 15 | 1xm |
 |  | SN-P03-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule N, Part 3 | 4 | supplemental |
 |  | SN-P99-T00-LIQUIDATION-TERMINATION-DISSOLUTION | Liquidation termination dissolution | Schedule N, Part 99 | 2 | 1x1 |
-|  | SO-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule O | 4 | supplemental |
+|  | SO-P00-T99-SUPPLEMENTAL-INFO | Supplemental info | Schedule O | 4 | supplemental |
 |  | SR-P01-T01-ID-DISREGARDED-ENTITIES | Id disregarded entities | Schedule R, Part 1 | 17 | 1xm |
 |  | SR-P02-T01-ID-RLTD-TAX-EXEMPED-ORGS | Id related tax exemped orgs | Schedule R, Part 2 | 18 | 1xm |
 |  | SR-P03-T01-ID-RLTD-ORGS-TAXABLE-PARTNERSHIP | Id related orgs taxable partnership | Schedule R, Part 3 | 22 | 1xm |
@@ -187,9 +195,9 @@ disk.
 ``` r
 src <- data_source()
 src$root
-#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"
+#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v3_1/"
 src$version
-#> [1] "v2_2"
+#> [1] "v3_1"
 ```
 
 The efile release is versioned in the S3 prefix, and `version` is an

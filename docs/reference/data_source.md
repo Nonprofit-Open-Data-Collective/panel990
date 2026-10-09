@@ -12,7 +12,8 @@ data_source(
   root = NULL,
   version = .EFILE_VERSION,
   format = .efile_default_format(),
-  aliases = .EFILE_ALIASES
+  aliases = NULL,
+  form = "990"
 )
 ```
 
@@ -25,7 +26,7 @@ data_source(
 
 - version:
 
-  Published release, such as `"v2_2"` (the current default) or `"v2_1"`.
+  Published release, such as `"v3_1"` (the current default) or `"v2_3"`.
   Ignored when `root` is supplied.
 
 - format:
@@ -35,12 +36,38 @@ data_source(
 
 - aliases:
 
-  Named character vector mapping short aliases to table names.
+  Named character vector mapping short aliases to table names. `NULL`
+  (default) uses the form family's aliases: `P00`, `P01`, `P08`-`P12`
+  and `A01` for `"990"`; `P00` and `PF00`-`PF03` for `"990PF"`.
+
+- form:
+
+  Form family: `"990"` (default, Form 990 and 990EZ filers) or `"990PF"`
+  (private foundations). See the Form family section.
 
 ## Value
 
-An `data_source` object carrying `root`, `version`, `format`, and
-`aliases`.
+An `data_source` object carrying `root`, `version`, `format`, `aliases`,
+and `form`.
+
+## Form family
+
+Each release is published as two separate databases, and a source reads
+exactly one of them:
+
+- `form = "990"` (the default): full Form 990 and 990EZ filers together,
+  told apart by `RETURN_TYPE`.
+
+- `form = "990PF"`: private foundations filing Form 990PF.
+
+The two are not combined in one panel: the 990PF financial statements
+have a different structure from the 990 parts. The form family sets the
+URL prefix (`efile_` or `efilepf_`), the default `aliases`, the
+[`table_catalog()`](https://nonprofit-open-data-collective.github.io/panel990/reference/table_catalog.md),
+and the cache subdirectory used by
+[`download_tables()`](https://nonprofit-open-data-collective.github.io/panel990/reference/download_tables.md).
+[`panelize_pf()`](https://nonprofit-open-data-collective.github.io/panel990/reference/panelize_pf.md)
+builds a panel from the 990PF release.
 
 ## Source format
 
@@ -72,10 +99,10 @@ an explicit `format = "parquet"` is kept and fails at read time instead.
 ``` r
 data_source()                          # current release, parquet
 #> $root
-#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"
+#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v3_1/"
 #> 
 #> $version
-#> [1] "v2_2"
+#> [1] "v3_1"
 #> 
 #> $format
 #> [1] "parquet"
@@ -89,15 +116,18 @@ data_source()                          # current release, parquet
 #>         "F9-P10-T00-BALANCE-SHEET"                "F9-P11-T00-ASSETS" 
 #>                                P12                                A01 
 #>   "F9-P12-T00-FINANCIAL-REPORTING" "SA-P01-T00-PUBLIC-CHARITY-STATUS" 
+#> 
+#> $form
+#> [1] "990"
 #> 
 #> attr(,"class")
 #> [1] "data_source"
-data_source(version = "v2_1")          # pin the previous release
+data_source(version = "v2_3")          # pin the previous release
 #> $root
-#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_1/"
+#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_3/"
 #> 
 #> $version
-#> [1] "v2_1"
+#> [1] "v2_3"
 #> 
 #> $format
 #> [1] "parquet"
@@ -111,15 +141,18 @@ data_source(version = "v2_1")          # pin the previous release
 #>         "F9-P10-T00-BALANCE-SHEET"                "F9-P11-T00-ASSETS" 
 #>                                P12                                A01 
 #>   "F9-P12-T00-FINANCIAL-REPORTING" "SA-P01-T00-PUBLIC-CHARITY-STATUS" 
+#> 
+#> $form
+#> [1] "990"
 #> 
 #> attr(,"class")
 #> [1] "data_source"
 data_source(format = "csv")            # same release, CSV files
 #> $root
-#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v2_2/"
+#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efile_v3_1/"
 #> 
 #> $version
-#> [1] "v2_2"
+#> [1] "v3_1"
 #> 
 #> $format
 #> [1] "csv"
@@ -133,6 +166,36 @@ data_source(format = "csv")            # same release, CSV files
 #>         "F9-P10-T00-BALANCE-SHEET"                "F9-P11-T00-ASSETS" 
 #>                                P12                                A01 
 #>   "F9-P12-T00-FINANCIAL-REPORTING" "SA-P01-T00-PUBLIC-CHARITY-STATUS" 
+#> 
+#> $form
+#> [1] "990"
+#> 
+#> attr(,"class")
+#> [1] "data_source"
+data_source(form = "990PF")            # the 990PF release
+#> $root
+#> [1] "https://nccs-efile.s3.us-east-1.amazonaws.com/public/efilepf_v3_1/"
+#> 
+#> $version
+#> [1] "v3_1"
+#> 
+#> $format
+#> [1] "parquet"
+#> 
+#> $aliases
+#>                                        P00 
+#>                        "F9-P00-T00-HEADER" 
+#>                                       PF00 
+#>                        "PF-P00-T00-HEADER" 
+#>                                       PF01 
+#>               "PF-P01-T00-REVENUE-EXPENSE" 
+#>                                       PF02 
+#>                 "PF-P02-T00-BALANCE-SHEET" 
+#>                                       PF03 
+#> "PF-P03-T00-NET-ASSET-FUND-BALANCE-CHANGE" 
+#> 
+#> $form
+#> [1] "990PF"
 #> 
 #> attr(,"class")
 #> [1] "data_source"

@@ -14,10 +14,11 @@ data("accounting_identities", package = "panel990")
 by_id <- unique(accounting_identities[, c("identity", "section", "type")])
 table(by_id$section, by_id$type)
 #>                
-#>                 balance column grand_total net subtotal
-#>   balance_sheet       2      0           0   1        2
-#>   expenses            0     32           0   0        0
-#>   revenue             0     11           1   6        3
+#>                 balance column grand_total net subtotal tie
+#>   balance_sheet       4      0           0   1       11   0
+#>   expenses            0     32           4   0        4   0
+#>   net_assets          0      0           0   1        1   3
+#>   revenue             0     11           1   8        6   0
 ```
 
 58 identities across revenue (Part VIII), functional expenses (Part IX),

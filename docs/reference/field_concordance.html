@@ -31,6 +31,7 @@ concordance returned by concordance()."></head><body>
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -133,23 +134,27 @@ scope or type and a value was chosen by the build rule.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
-    <p>IRS Efile Master Concordance File, Nonprofit Open Data Collective /
-National Center for Charitable Statistics, distributed under the Open Data
-Commons Attribution License (ODC-By) v1.0.
-<a href="https://github.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file" class="external-link">https://github.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file</a></p>
+    <p>concordance990, Nonprofit Open Data Collective / National Center
+for Charitable Statistics, distributed under the Open Data Commons
+Attribution License (ODC-By) v1.0.
+<a href="https://github.com/Nonprofit-Open-Data-Collective/concordance990" class="external-link">https://github.com/Nonprofit-Open-Data-Collective/concordance990</a></p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Built from the IRS Efile Master Concordance File by
-<code>data-raw/build-concordance.R</code>. Blank meanings are assigned by type: numeric
-money fields (by XSD type) become <code>implicit_zero</code>; checkboxes become
-<code>implicit_false</code>; text, dates, and non-money numerics become
-<code>literal_missing</code>. Conflicting source metadata is resolved by preferring the
-current schema version, then the most frequent value.</p>
+    <p>Built by <code>data-raw/build-concordance.R</code> from the concordance990 package
+(the successor to the IRS Efile Master Concordance File): the xpaths of the
+990/990EZ database, <code>concordance990::concordance(form = "F990")</code>, and each
+variable's money flag and blank meaning from
+<code>concordance990::data_dictionary("F990")</code>, so panel990 reads blank cells by
+the same rule as the other partner packages: numeric money fields (by XSD
+type) are <code>implicit_zero</code>; checkboxes are <code>implicit_false</code>; text, dates, and
+non-money numerics are <code>literal_missing</code>. Other conflicting source metadata
+is resolved by preferring the current schema version, then the most
+frequent value.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="concordance.html">concordance()</a></code>, <code><a href="fields_in_scope.html">fields_in_scope()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="concordance.html">concordance()</a></code>, <code><a href="fields_in_scope.html">fields_in_scope()</a></code>, <a href="field_concordance_pf.html">field_concordance_pf</a></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

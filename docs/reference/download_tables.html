@@ -33,6 +33,7 @@ cache may hold either or both.'></head><body>
     <li><a class="dropdown-item" href="../articles/sampling-framework.html">2. The sampling framework</a></li>
     <li><a class="dropdown-item" href="../articles/source-requirements.html">3. Cross-year requirements on the source</a></li>
     <li><a class="dropdown-item" href="../articles/panels-and-slices.html">4. Panels and panel slices</a></li>
+    <li><a class="dropdown-item" href="../articles/private-foundations.html">5. Private foundations (990PF)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cleaning panels</h6></li>
     <li><a class="dropdown-item" href="../articles/imputing-gaps.html">Imputing missing years</a></li>
@@ -138,6 +139,9 @@ and an OK/FAIL line when it settles, so a stalled file is identifiable while
 it is still running.</p>
 <p>Every call writes its own log under <code>&lt;path&gt;/logs</code> named for the run, so
 repeated runs accumulate rather than overwrite. See <code><a href="retrieval_log.html">retrieval_log()</a></code>.</p>
+<p>Files are cached as <code>&lt;path&gt;/&lt;year&gt;/&lt;table&gt;-&lt;year&gt;.&lt;ext&gt;</code>. A 990PF source
+(<code><a href="data_source.html">data_source()</a></code> with <code>form = "990PF"</code>) caches under <code>&lt;path&gt;/990PF/&lt;year&gt;/</code>
+instead, because the 990PF release reuses the shared table names.</p>
     </div>
     <div class="section level2">
     <h2 id="timeouts">Timeouts<a class="anchor" aria-label="anchor" href="#timeouts"></a></h2>

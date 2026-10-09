@@ -87,6 +87,11 @@ Every call writes its own log under `<path>/logs` named for the run, so
 repeated runs accumulate rather than overwrite. See
 [`retrieval_log()`](https://nonprofit-open-data-collective.github.io/panel990/reference/retrieval_log.md).
 
+Files are cached as `<path>/<year>/<table>-<year>.<ext>`. A 990PF source
+([`data_source()`](https://nonprofit-open-data-collective.github.io/panel990/reference/data_source.md)
+with `form = "990PF"`) caches under `<path>/990PF/<year>/` instead,
+because the 990PF release reuses the shared table names.
+
 ## Timeouts
 
 R's download timeout is a budget for an entire transfer, not a limit on
