@@ -15,6 +15,17 @@ template:
     code_font: {google: "Source Code Pro"}
     font-size-base: "1.0625rem"
     line-height-base: 1.62
+  includes:
+    in_header: |
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-TX1F2DS6CS"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-TX1F2DS6CS');
+      </script>
 
 navbar:
   type: dark
