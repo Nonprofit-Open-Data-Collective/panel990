@@ -65,9 +65,47 @@ data.frame(
 )
 ```
 
+## Centred, trailing, and forward windows
+
+By default the window is centred on each year, so the smoothed value for year
+`t` borrows from `t + 1`. That is fine for description, but it leaks the future
+into the past -- a problem whenever the smoothed series is used as a baseline
+or covariate before some event. `align` controls where the window sits:
+
+- **`"center"`** (default) -- the `window` *rows* centred on the focal row.
+- **`"right"`** -- a trailing window: calendar years `t - (window - 1)` through
+  `t`. No value after `t` is ever used.
+- **`"left"`** -- the forward-looking mirror: years `t` through
+  `t + (window - 1)`.
+
+The trailing and forward windows count calendar years, not rows, so a filing
+gap is never bridged. Here 2017--2018 are missing:
+
+```{r}
+gappy <- data.frame(
+  EIN2     = "A",
+  TAX_YEAR = c(2015, 2016, 2019, 2020, 2021),
+  revenue  = c(10, 20, 30, 40, 50)
+)
+a <- function(al) panel_smooth(gappy, "revenue", window = 3, align = al,
+                               verbose = FALSE)$revenue
+data.frame(year = gappy$TAX_YEAR, raw = gappy$revenue,
+           center = a("center"), right = a("right"), left = a("left"))
+```
+
+The centred 2019 value averages 2016, 2019, and 2020 -- three rows spanning
+five years. The trailing 2019 value uses 2019 alone, because 2017 and 2018 were
+not filed and 2016 is outside the three-year window. Early years in a trailing
+window (and late years in a forward one) simply use the part of the window that
+is observed. Off-centre windows may also be even (`window = 2`).
+
+`weights` work the same way, with distance counted in calendar years:
+`decay` gives `0.5^(t - year)` and `half` puts 0.5 on the current year. The
+trade-off is lag: a trailing window spreads a real change over `window` years.
+
 ## Edges, gaps, and multiple series
 
-At the ends of a series the fixed-width window slides inward rather than
+With `align = "center"`, at the ends of a series the fixed-width window slides inward rather than
 shrinking, and organizations with fewer years than `window` use a smaller
 effective window. Missing values (`NA`/`NaN`) are dropped from each window and
 the remaining weights are renormalized, so a stray gap does not blank out its

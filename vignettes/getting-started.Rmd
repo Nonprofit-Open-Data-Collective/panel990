@@ -145,7 +145,9 @@ call.)
 
 `panel_smooth()` replaces a numeric field with a rolling weighted average taken
 within each organization. `window` sets how many years are averaged; `weights`
-sets how much the focal year keeps (`"equal"`, `"half"`, or `"decay"`):
+sets how much the focal year keeps (`"equal"`, `"half"`, or `"decay"`). The window
+is centred by default; `align = "right"` uses a trailing window of calendar years
+that never looks ahead (see `vignette("smoothing-panels")`):
 
 ![panel_smooth() applied with different window and weights settings, compared against the raw series](figures/panel-smooth.svg){width=100%}
 
