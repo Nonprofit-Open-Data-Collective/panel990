@@ -9,6 +9,7 @@ panel_smooth(
   vars,
   window = 3,
   weights = c("equal", "half", "decay"),
+  align = c("center", "left", "right"),
   time = "TAX_YEAR",
   id = "EIN2",
   verbose = TRUE
@@ -19,9 +20,14 @@ panel_smooth(
 
 \item{vars}{Numeric fields to smooth.}
 
-\item{window}{Odd rolling-window width.}
+\item{window}{Rolling-window width: an odd integer for \code{align = "center"},
+any positive integer otherwise.}
 
 \item{weights}{\code{"equal"}, \code{"half"}, or \code{"decay"}.}
+
+\item{align}{\code{"center"} (default, row-based centred window), \code{"right"}
+(trailing calendar-year window, no future values), or \code{"left"}
+(forward-looking calendar-year window). See \emph{Window alignment}.}
 
 \item{time}{Panel-time column.}
 
@@ -33,5 +39,53 @@ panel_smooth(
 Input rows in original order with selected fields smoothed.
 }
 \description{
-Smooth numeric variables within panel IDs
+Replaces each selected field with a rolling weighted average taken within
+each panel ID, ordered by \code{time}.
+}
+\section{Window alignment}{
+
+\itemize{
+\item \code{"center"} (default) averages the \code{window} \emph{rows} centred on the focal
+row. Positions are counted by row, not calendar year, so a filing gap is
+bridged; at the ends of a series the fixed-width window slides inward, and
+IDs with fewer rows than \code{window} use all their rows. \code{window} must be odd.
+\item \code{"right"} is a trailing (backward-looking) window: for a row in year \code{t}
+it uses only rows whose \code{time} falls in \code{t - (window - 1)} through \code{t}.
+Years are counted on the calendar, so a missing filing year simply leaves
+a hole in the window -- it is never bridged by reaching further back --
+and no value later than \code{t} is ever used. Early rows use whatever of the
+window is observed.
+\item \code{"left"} is the forward-looking mirror: years \code{t} through
+\code{t + (window - 1)}.
+}
+
+For \code{"right"} and \code{"left"}, \code{window} may be any positive integer and \code{time}
+must be numeric (or coercible to numeric, such as \code{"2021"}).
+}
+
+\section{Weights}{
+
+Weights are assigned to the window's slots and then renormalized over the
+values actually present.
+\itemize{
+\item \code{"equal"}: every slot counts the same.
+\item \code{"half"}: the focal year gets 0.5; the other \code{window - 1} slots share the
+other 0.5 equally.
+\item \code{"decay"}: \code{0.5^distance}, where distance is in rows for \code{"center"} and
+in calendar years (\code{t - year} for \code{"right"}, \code{year - t} for \code{"left"})
+otherwise.
+}
+
+Missing values (\code{NA}/\code{NaN}) are dropped from each window and the remaining
+weights renormalized, so a missing focal value is filled from its
+neighbours; a window with nothing observed returns \code{NA}.
+}
+
+\examples{
+df <- data.frame(EIN2 = "A", TAX_YEAR = c(2018, 2019, 2021, 2022),
+                 revenue = c(10, 20, 30, 40))
+# centred (row-based)
+panel_smooth(df, "revenue", verbose = FALSE)$revenue
+# trailing 3-year window; 2020 is missing, so 2021 uses 2019 and 2021 only
+panel_smooth(df, "revenue", align = "right", verbose = FALSE)$revenue
 }

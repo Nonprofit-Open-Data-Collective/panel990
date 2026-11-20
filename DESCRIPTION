@@ -1,6 +1,6 @@
 Package: panel990
 Title: Retrieve, Normalize, and Prepare IRS Efile Panel Data
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R:
     person(given = "Jesse",
            family = "Lecy",
